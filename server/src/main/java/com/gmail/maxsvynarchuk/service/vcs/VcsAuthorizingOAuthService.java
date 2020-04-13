@@ -1,6 +1,6 @@
 package com.gmail.maxsvynarchuk.service.vcs;
 
-public interface VCSAuthorizingOAuthService {
+public interface VcsAuthorizingOAuthService {
 
     String getAuthorizeOAuthURL(String state);
 

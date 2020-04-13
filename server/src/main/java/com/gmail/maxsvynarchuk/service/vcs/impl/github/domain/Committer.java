@@ -1,4 +1,4 @@
-package com.gmail.maxsvynarchuk.service.vcs.impl.github.entity;
+package com.gmail.maxsvynarchuk.service.vcs.impl.github.domain;
 
 import java.util.Date;
 import java.util.StringJoiner;

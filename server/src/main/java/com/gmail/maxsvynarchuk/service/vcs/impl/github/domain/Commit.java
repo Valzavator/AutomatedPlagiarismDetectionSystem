@@ -1,10 +1,12 @@
-package com.gmail.maxsvynarchuk.service.vcs.impl.github.entity;
+package com.gmail.maxsvynarchuk.service.vcs.impl.github.domain;
 
 import java.util.StringJoiner;
 
 public class Commit {
-    Committer author;
-    Tree tree;
+
+    private Committer author;
+
+    private Tree tree;
 
     public Committer getAuthor() {
         return author;

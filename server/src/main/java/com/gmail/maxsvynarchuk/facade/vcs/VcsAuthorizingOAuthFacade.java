@@ -1,6 +1,6 @@
 package com.gmail.maxsvynarchuk.facade.vcs;
 
-public interface VCSAuthorizingOAuthFacade {
+public interface VcsAuthorizingOAuthFacade {
 
     String getAuthorizeOAuthURL(String user);
 

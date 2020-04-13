@@ -1,10 +1,13 @@
-package com.gmail.maxsvynarchuk.service.vcs.impl.github.entity;
+package com.gmail.maxsvynarchuk.service.vcs.impl.github.domain;
 
 import java.util.StringJoiner;
 
-public class TreeEntity {
+public class Blob {
+
     private String path;
+
     private String type;
+
     private String url;
 
     public String getPath() {
@@ -33,7 +36,7 @@ public class TreeEntity {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", TreeEntity.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", Blob.class.getSimpleName() + "[", "]")
                 .add("path='" + path + "'")
                 .add("type='" + type + "'")
                 .add("url='" + url + "'")

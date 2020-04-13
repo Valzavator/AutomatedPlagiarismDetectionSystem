@@ -1,15 +1,10 @@
-package com.gmail.maxsvynarchuk.service.vcs.impl.github.entity;
+package com.gmail.maxsvynarchuk.service.vcs;
 
 // https://api.github.com/repos/Muguvara/test_github_api/commits?until=2020-05-11T00:00:00Z&per_page=1
 // https://api.github.com/repos/Muguvara/test_github_api/git/trees/f255bd3c6d1c7fa08f6475ed14de4441d2d77427?recursive=true
 // https://api.github.com/repos/Muguvara/test_github_api/git/blobs/87c86a35909aebcca5813444779350abc473a926 with Accept: application/vnd.github.3.raw
 
-import kong.unirest.Unirest;
-
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class RepositoryManager {
     public static void main(String[] args) throws IOException {

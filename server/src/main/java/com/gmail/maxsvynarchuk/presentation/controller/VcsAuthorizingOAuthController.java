@@ -1,6 +1,6 @@
 package com.gmail.maxsvynarchuk.presentation.controller;
 
-import com.gmail.maxsvynarchuk.facade.vcs.VCSAuthorizingOAuthFacade;
+import com.gmail.maxsvynarchuk.facade.vcs.VcsAuthorizingOAuthFacade;
 import com.gmail.maxsvynarchuk.presentation.util.ControllerUtil;
 import kong.unirest.Unirest;
 import org.springframework.stereotype.Controller;
@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/oauth2")
-public class VCSAuthorizingOAuthController {
-    private final VCSAuthorizingOAuthFacade vcsAuthorizingOAuthFacade;
+public class VcsAuthorizingOAuthController {
+    private final VcsAuthorizingOAuthFacade vcsAuthorizingOAuthFacade;
     private String userState = "asdasd";
 
-    public VCSAuthorizingOAuthController(VCSAuthorizingOAuthFacade vcsAuthorizingOAuthFacade) {
+    public VcsAuthorizingOAuthController(VcsAuthorizingOAuthFacade vcsAuthorizingOAuthFacade) {
         this.vcsAuthorizingOAuthFacade = vcsAuthorizingOAuthFacade;
     }
 

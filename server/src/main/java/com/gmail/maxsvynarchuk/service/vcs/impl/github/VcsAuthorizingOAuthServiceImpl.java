@@ -4,15 +4,15 @@ import com.gmail.maxsvynarchuk.config.constant.VCS;
 import com.gmail.maxsvynarchuk.service.exception.OAuthIllegalAuthorizeStateException;
 import com.gmail.maxsvynarchuk.service.exception.OAuthIllegalTokenException;
 import com.gmail.maxsvynarchuk.service.exception.OAuthIllegalTokenScopeException;
-import com.gmail.maxsvynarchuk.service.vcs.VCSAuthorizingOAuthService;
-import com.gmail.maxsvynarchuk.service.vcs.impl.github.entity.AccessToken;
+import com.gmail.maxsvynarchuk.service.vcs.VcsAuthorizingOAuthService;
+import com.gmail.maxsvynarchuk.service.vcs.impl.github.domain.GitHubAccessToken;
 import kong.unirest.Unirest;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
 @Service
-public class VCSAuthorizingOAuthServiceImpl implements VCSAuthorizingOAuthService {
+public class VcsAuthorizingOAuthServiceImpl implements VcsAuthorizingOAuthService {
     private static final String CLIENT_ID = "client_id";
     private static final String CLIENT_SECRET = "client_secret";
     private static final String SCOPE = "scope";
@@ -33,13 +33,13 @@ public class VCSAuthorizingOAuthServiceImpl implements VCSAuthorizingOAuthServic
             throw new OAuthIllegalAuthorizeStateException();
         }
 
-        AccessToken accessToken = Unirest.post(VCS.GITHUB_AUTHORIZE_OAUTH_TOKEN_URL)
+        GitHubAccessToken accessToken = Unirest.post(VCS.GITHUB_AUTHORIZE_OAUTH_TOKEN_URL)
                 .queryString(CLIENT_ID, VCS.GITHUB_AUTHORIZE_OAUTH_CLIENT_ID)
                 .queryString(CLIENT_SECRET, VCS.GITHUB_AUTHORIZE_OAUTH_CLIENT_SECRET)
                 .queryString(CODE, code)
                 .queryString(STATE, validState)
                 .header("Accept", "application/json")
-                .asObject(AccessToken.class)
+                .asObject(GitHubAccessToken.class)
                 .getBody();
 
         validateAccessToken(accessToken);
@@ -47,7 +47,7 @@ public class VCSAuthorizingOAuthServiceImpl implements VCSAuthorizingOAuthServic
         return accessToken.getTokenType() + " " + accessToken.getAccessToken();
     }
 
-    private void validateAccessToken(AccessToken accessToken) {
+    private void validateAccessToken(GitHubAccessToken accessToken) {
         if (Objects.isNull(accessToken) ||
                 Objects.isNull(accessToken.getAccessToken()) ||
                 Objects.isNull(accessToken.getTokenType())) {

@@ -1,14 +1,14 @@
 package com.gmail.maxsvynarchuk.facade.vcs.impl.github;
 
-import com.gmail.maxsvynarchuk.facade.vcs.VCSAuthorizingOAuthFacade;
-import com.gmail.maxsvynarchuk.service.vcs.VCSAuthorizingOAuthService;
+import com.gmail.maxsvynarchuk.facade.vcs.VcsAuthorizingOAuthFacade;
+import com.gmail.maxsvynarchuk.service.vcs.VcsAuthorizingOAuthService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class VCSAuthorizingOAuthFacadeImpl implements VCSAuthorizingOAuthFacade {
-    private final VCSAuthorizingOAuthService vcsAuthorizingOAuthService;
+public class VcsAuthorizingOAuthFacadeImpl implements VcsAuthorizingOAuthFacade {
+    private final VcsAuthorizingOAuthService vcsAuthorizingOAuthService;
 
-    public VCSAuthorizingOAuthFacadeImpl(VCSAuthorizingOAuthService vcsAuthorizingOAuthService) {
+    public VcsAuthorizingOAuthFacadeImpl(VcsAuthorizingOAuthService vcsAuthorizingOAuthService) {
         this.vcsAuthorizingOAuthService = vcsAuthorizingOAuthService;
     }
 

@@ -1,14 +1,17 @@
-package com.gmail.maxsvynarchuk.service.vcs.impl.github.entity;
+package com.gmail.maxsvynarchuk.service.vcs.impl.github.domain;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public class AccessToken {
+public class GitHubAccessToken {
+
     @SerializedName("access_token")
     private String accessToken;
+
     private String scope;
+
     @SerializedName("token_type")
     private String tokenType;
 
@@ -38,7 +41,7 @@ public class AccessToken {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", AccessToken.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", GitHubAccessToken.class.getSimpleName() + "[", "]")
                 .add("accessToken='" + accessToken + "'")
                 .add("scope='" + scope + "'")
                 .add("tokenType='" + tokenType + "'")
@@ -49,7 +52,7 @@ public class AccessToken {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AccessToken that = (AccessToken) o;
+        GitHubAccessToken that = (GitHubAccessToken) o;
         return Objects.equals(getAccessToken(), that.getAccessToken()) &&
                 Objects.equals(getScope(), that.getScope()) &&
                 Objects.equals(getTokenType(), that.getTokenType());

@@ -7,9 +7,12 @@ public final class VCS {
     public static final String GITHUB_AUTHORIZE_OAUTH_CLIENT_SECRET = System.getenv("CLIENT_SECRET");
     public static final String GITHUB_AUTHORIZE_OAUTH_URL = ResourceManager.VCS.getProperty("github.authorize.oauth.url");
     public static final String GITHUB_AUTHORIZE_OAUTH_SCOPE = ResourceManager.VCS.getProperty("github.authorize.oauth.scope");
-//    public static final String GITHUB_AUTHORIZE_OAUTH_STATE = ResourceManager.VCS.getProperty("github.authorize.oauth.state");
     public static final String GITHUB_AUTHORIZE_OAUTH_TOKEN_URL = ResourceManager.VCS.getProperty("github.authorize.oauth.token.url");
-
+    public static final String GITHUB_WEBSITE_REPOSITORY_PREFIX_ENDPOINT = ResourceManager.VCS.getProperty("github.website.repository.prefix.endpoint");
+    public static final String GITHUB_API_REPOSITORY_PREFIX_ENDPOINT = ResourceManager.VCS.getProperty("github.api.repository.prefix.endpoint");
+    public static final String GITHUB_API_COMMITS_SUFFIX_ENDPOINT = ResourceManager.VCS.getProperty("github.api.commits.suffix.endpoint");
+    public static final String GITHUB_API_JSON_ACCEPT_FORMAT = ResourceManager.VCS.getProperty("github.api.json.accept.format");
+    public static final String GITHUB_API_RAW_ACCEPT_FORMAT = ResourceManager.VCS.getProperty("github.api.raw.accept.format");
 
     private VCS() {
     }

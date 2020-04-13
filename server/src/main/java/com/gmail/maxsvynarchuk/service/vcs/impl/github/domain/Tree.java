@@ -1,12 +1,14 @@
-package com.gmail.maxsvynarchuk.service.vcs.impl.github.entity;
+package com.gmail.maxsvynarchuk.service.vcs.impl.github.domain;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 public class Tree {
+
     private String url;
-    private List<TreeEntity> tree;
+
+    private List<Blob> tree;
 
     public String getUrl() {
         return url;
@@ -16,11 +18,11 @@ public class Tree {
         this.url = url;
     }
 
-    public List<TreeEntity> getTree() {
+    public List<Blob> getTree() {
         return tree;
     }
 
-    public void setTree(List<TreeEntity> tree) {
+    public void setTree(List<Blob> tree) {
         this.tree = tree;
     }
 
