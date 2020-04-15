@@ -1,4 +1,4 @@
-package com.gmail.maxsvynarchuk.service.exception;
+package com.gmail.maxsvynarchuk.persistence.exception.oauth;
 
 /**
  * Artificial exception that should be thrown out of the Service layer
