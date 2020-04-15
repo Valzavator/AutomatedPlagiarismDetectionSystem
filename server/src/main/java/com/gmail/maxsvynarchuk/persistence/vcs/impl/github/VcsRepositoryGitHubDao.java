@@ -7,7 +7,7 @@ import com.gmail.maxsvynarchuk.persistence.domain.RepositoryInfo;
 import com.gmail.maxsvynarchuk.persistence.exception.oauth.InvalidVcsUrlException;
 import com.gmail.maxsvynarchuk.persistence.exception.oauth.OAuthIllegalTokenException;
 import com.gmail.maxsvynarchuk.persistence.vcs.VcsRepositoryDao;
-import com.gmail.maxsvynarchuk.persistence.vcs.impl.github.domain.*;
+import com.gmail.maxsvynarchuk.persistence.vcs.impl.github.dto.*;
 import com.google.gson.Gson;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
@@ -36,16 +36,25 @@ public class VcsRepositoryGitHubDao implements VcsRepositoryDao {
                                                         String prefixPath,
                                                         Date lastCommitDate) {
         GitHubRepositoryInfo gitHubRepositoryInfo = getGitHubRepositoryInfo(accessToken, repositoryUrl);
-        Optional<Commit> lastCommitOpt = getLastCommit(accessToken, gitHubRepositoryInfo, lastCommitDate);
+        Optional<GitHubCommit> lastCommitOpt = getLastCommit(accessToken, gitHubRepositoryInfo, lastCommitDate);
         if (lastCommitOpt.isEmpty()) {
             return createRepositoryInfo(gitHubRepositoryInfo, List.of(), prefixPath);
         }
-        Tree tree = getTreeOfCommit(accessToken, lastCommitOpt.get());
+        GitHubTree tree = getTreeOfCommit(accessToken, lastCommitOpt.get());
         return createRepositoryInfo(gitHubRepositoryInfo, tree.getTree(), prefixPath);
     }
 
+    @Override
+    public String getRawFileContent(AccessToken accessToken, RepositoryFileInfo fileInfo) {
+        return Unirest.get(fileInfo.getUrl())
+                .header("Authorization", accessToken.getAccessToken())
+                .header("Accept", VCS.GITHUB_API_RAW_ACCEPT_FORMAT)
+                .asString()
+                .getBody();
+    }
+
     private RepositoryInfo createRepositoryInfo(GitHubRepositoryInfo gitHubRepositoryInfo,
-                                                List<Blob> filesInfo,
+                                                List<GitHubBlob> filesInfo,
                                                 String prefixPath) {
         List<RepositoryFileInfo> filteredFilesInfo = filesInfo.stream()
                 .filter(blob -> blob.getType().equals("blob")
@@ -69,27 +78,18 @@ public class VcsRepositoryGitHubDao implements VcsRepositoryDao {
                 .build();
     }
 
-    @Override
-    public String getRawFileContent(AccessToken accessToken, RepositoryFileInfo fileInfo) {
-        return Unirest.get(fileInfo.getUrl())
-                .header("Authorization", accessToken.getAccessToken())
-                .header("Accept", VCS.GITHUB_API_RAW_ACCEPT_FORMAT)
-                .asString()
-                .getBody();
-    }
-
     private GitHubRepositoryInfo getGitHubRepositoryInfo(AccessToken accessToken, String repositoryUrl) {
-        String apiRepositoryUrl = getApiRepositoryUrl(repositoryUrl);
+        String apiRepositoryUrl = getRepositoryUrl(repositoryUrl);
         return executeGetRequest(
                 accessToken,
                 apiRepositoryUrl,
                 GitHubRepositoryInfo.class);
     }
 
-    public Optional<Commit> getLastCommit(AccessToken accessToken,
-                                          GitHubRepositoryInfo repositoryInfo,
-                                          Date lastCommitDate) {
-        String repositoryCommitsUrl = getRepositoryCommitsURL(repositoryInfo.getApiUrl(), lastCommitDate);
+    private Optional<GitHubCommit> getLastCommit(AccessToken accessToken,
+                                                GitHubRepositoryInfo repositoryInfo,
+                                                Date lastCommitDate) {
+        String repositoryCommitsUrl = getRepositoryCommitsUrl(repositoryInfo.getApiUrl(), lastCommitDate);
 
         JSONArray jsonArray = Unirest.get(repositoryCommitsUrl)
                 .header("Authorization", accessToken.getAccessToken())
@@ -107,17 +107,17 @@ public class VcsRepositoryGitHubDao implements VcsRepositoryDao {
             JSONObject jsonObject = jsonArray.getJSONObject(0)
                     .getJSONObject("commit");
             return Optional.of(
-                    gson.fromJson(jsonObject.toString(), Commit.class));
+                    gson.fromJson(jsonObject.toString(), GitHubCommit.class));
         } catch (JSONException ex) {
             throw new InvalidVcsUrlException(ex);
         }
     }
 
-    public Tree getTreeOfCommit(AccessToken accessToken, Commit commit) {
+    private GitHubTree getTreeOfCommit(AccessToken accessToken, GitHubCommit commit) {
         return executeGetRequest(
                 accessToken,
                 commit.getTree().getUrl() + "?recursive=true",
-                Tree.class);
+                GitHubTree.class);
     }
 
     private <T> T executeGetRequest(AccessToken accessToken,
@@ -134,26 +134,28 @@ public class VcsRepositoryGitHubDao implements VcsRepositoryDao {
 
     private <T> Consumer<HttpResponse<T>> errorHandler() {
         return response -> {
-            ErrorResponse errorResponse = response.mapError(ErrorResponse.class);
+            HttpStatus httpStatus = HttpStatus.valueOf(response.getStatus());
+            if (httpStatus.is2xxSuccessful()) {
+                response.getParsingError().ifPresent(ex -> {
+                    throw new InvalidVcsUrlException(ex);
+                });
+            }
 
+            GitHubErrorResponse errorResponse = response.mapError(GitHubErrorResponse.class);
             if (Objects.nonNull(errorResponse)) {
                 errorResponse.setStatus(response.getStatus());
                 errorResponse.setStatusText(response.getStatusText());
 
-                if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
+                if (httpStatus == HttpStatus.UNAUTHORIZED) {
                     throw new OAuthIllegalTokenException(errorResponse.toString());
                 } else {
                     throw new InvalidVcsUrlException(errorResponse.toString());
                 }
             }
-
-            response.getParsingError().ifPresent(ex -> {
-                throw new InvalidVcsUrlException(ex);
-            });
         };
     }
 
-    private String getApiRepositoryUrl(String repositoryUrl) {
+    private String getRepositoryUrl(String repositoryUrl) {
         if (Objects.isNull(repositoryUrl) || repositoryUrl.isBlank()) {
             throw new InvalidVcsUrlException();
         }
@@ -169,7 +171,7 @@ public class VcsRepositoryGitHubDao implements VcsRepositoryDao {
         throw new InvalidVcsUrlException();
     }
 
-    private String getRepositoryCommitsURL(String repositoryUrl, Date lastCommitDate) {
+    private String getRepositoryCommitsUrl(String repositoryUrl, Date lastCommitDate) {
         repositoryUrl += VCS.GITHUB_API_COMMITS_SUFFIX_ENDPOINT + "?page=1&per_page=1";
         if (Objects.nonNull(lastCommitDate)) {
             repositoryUrl += "&until=" + lastCommitDate.toString();

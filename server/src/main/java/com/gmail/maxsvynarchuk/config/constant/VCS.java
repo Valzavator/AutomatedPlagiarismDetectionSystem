@@ -20,6 +20,8 @@ public final class VCS {
     public static final String BITBUCKET_AUTHORIZE_OAUTH_URL = ResourceManager.VCS.getProperty("bitbucket.authorize.oauth.url");
     public static final String BITBUCKET_AUTHORIZE_OAUTH_TOKEN_URL = ResourceManager.VCS.getProperty("bitbucket.authorize.oauth.token.url");
     public static final String BITBUCKET_AUTHORIZE_OAUTH_SCOPE = ResourceManager.VCS.getProperty("bitbucket.authorize.oauth.scope");
+    public static final String BITBUCKET_WEBSITE_REPOSITORY_PREFIX_ENDPOINT = ResourceManager.VCS.getProperty("bitbucket.website.repository.prefix.endpoint");
+    public static final String BITBUCKET_API_REPOSITORY_PREFIX_ENDPOINT = ResourceManager.VCS.getProperty("bitbucket.api.repository.prefix.endpoint");
 
     private VCS() {
     }

@@ -18,7 +18,7 @@ public class AccessToken {
     private String tokenType;
 
     @SerializedName(value = "refresh_token")
-    private String refreshType;
+    private String refreshToken;
 
     private AuthorizationProvider authorizationProvider;
 

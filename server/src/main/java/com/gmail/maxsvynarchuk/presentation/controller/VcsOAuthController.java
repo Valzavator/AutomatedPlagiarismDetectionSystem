@@ -75,13 +75,23 @@ public class VcsOAuthController {
 
         System.out.println(accessToken);
 
-        String res = Unirest.get("https://api.bitbucket.org/2.0/repositories/Valzavator/webprogbase2")
+        String res1 = Unirest.get("https://api.bitbucket.org/2.0/repositories/Muguvara/test_api_oauth")
                 .header("Authorization", accessToken.getAccessToken())
-//                .header("Accept", "application/vnd.github.v3+json")
                 .asString()
                 .getBody();
 
-        System.out.println(res);
+        System.out.println(res1);
+        System.out.println("\n\n\n");
+
+//        accessToken = vcsOAuthBitbucketDao.getRefreshedOAuthToken(accessToken);
+//        System.out.println(accessToken);
+//
+//        String res2 = Unirest.get("https://api.bitbucket.org/2.0/repositories/Muguvara/test_api_oauth")
+//                .header("Authorization", accessToken.getAccessToken())
+//                .asString()
+//                .getBody();
+//
+//        System.out.println(res2);
 
         return ControllerUtil.redirectTo("/");
     }

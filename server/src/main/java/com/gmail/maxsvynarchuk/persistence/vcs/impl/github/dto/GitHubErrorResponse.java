@@ -1,14 +1,10 @@
-package com.gmail.maxsvynarchuk.persistence.vcs.impl.github.domain;
+package com.gmail.maxsvynarchuk.persistence.vcs.impl.github.dto;
 
 import com.google.gson.annotations.SerializedName;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class ErrorResponse {
+public class GitHubErrorResponse {
     private int status;
 
     private String statusText;

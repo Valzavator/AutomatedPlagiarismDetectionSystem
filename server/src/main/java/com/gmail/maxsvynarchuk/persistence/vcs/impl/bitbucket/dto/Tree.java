@@ -1,12 +1,10 @@
-package com.gmail.maxsvynarchuk.persistence.vcs.impl.github.domain;
+package com.gmail.maxsvynarchuk.persistence.vcs.impl.bitbucket.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.StringJoiner;
 
 @Data
 @NoArgsConstructor
@@ -14,5 +12,5 @@ import java.util.StringJoiner;
 public class Tree {
     private String url;
 
-    private List<Blob> tree;
+    private List<BitbucketBlob> tree;
 }

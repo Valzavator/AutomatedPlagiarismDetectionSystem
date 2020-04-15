@@ -18,6 +18,7 @@ public class VcsOAuthBitbucketDao implements VcsOAuthDao {
     private static final String CLIENT_SECRET = "client_secret";
     private static final String GRANT_TYPE = "grant_type";
     private static final String AUTHORIZATION_CODE = "authorization_code";
+    private static final String REFRESH_TOKEN = "refresh_token";
     private static final String CODE = "code";
 
     @Override
@@ -49,35 +50,34 @@ public class VcsOAuthBitbucketDao implements VcsOAuthDao {
 
     @Override
     public AccessToken getRefreshedOAuthToken(AccessToken expiredAccessToken) {
-        throw new OAuthIllegalTokenException();
+        AccessToken accessToken = Unirest.post(VCS.BITBUCKET_AUTHORIZE_OAUTH_TOKEN_URL)
+                .field(CLIENT_ID, VCS.BITBUCKET_AUTHORIZE_OAUTH_CLIENT_ID)
+                .field(CLIENT_SECRET, VCS.BITBUCKET_AUTHORIZE_OAUTH_CLIENT_SECRET)
+                .field(GRANT_TYPE, REFRESH_TOKEN)
+                .field(REFRESH_TOKEN, expiredAccessToken.getRefreshToken())
+                .header("Accept", "application/json")
+                .asObject(AccessToken.class)
+                .getBody();
+        accessToken.setAuthorizationProvider(AuthorizationProvider.BITBUCKET);
+        // TODO - refactor: capitalize first letter in another way
+        accessToken.setTokenType(
+                capitalizeFirstLetter(accessToken.getTokenType()));
+
+        validateAccessToken(accessToken);
+
+        return accessToken;
     }
 
     private void validateAccessToken(AccessToken accessToken) {
         if (Objects.isNull(accessToken) ||
                 Objects.isNull(accessToken.getAccessToken()) ||
-                Objects.isNull(accessToken.getTokenType()) ||
-                Objects.isNull(accessToken.getScope())) {
+                Objects.isNull(accessToken.getTokenType())) {
             throw new OAuthIllegalTokenException();
         }
 
-        System.out.println("\n\n\n");
-        System.out.println(VCS.BITBUCKET_AUTHORIZE_OAUTH_SCOPE);
-        System.out.println(accessToken.getScope());
-
-        String[] requiredScopes = VCS.BITBUCKET_AUTHORIZE_OAUTH_SCOPE.split(",");
-        String[] receivedScopes = accessToken.getScope().split("\\s");
-
-        for (String requiredScope : requiredScopes) {
-            boolean isPresent = false;
-            for (String receivedScope : receivedScopes) {
-                if (requiredScope.equals(receivedScope)) {
-                    isPresent = true;
-                    break;
-                }
-            }
-            if (!isPresent) {
-                throw new OAuthIllegalTokenScopeException(accessToken.getScope());
-            }
+        if (Objects.isNull(accessToken.getScope()) ||
+                !accessToken.getScope().equals(VCS.BITBUCKET_AUTHORIZE_OAUTH_SCOPE)) {
+            throw new OAuthIllegalTokenScopeException(accessToken.getScope());
         }
     }
 
