@@ -1,5 +1,6 @@
 package com.gmail.maxsvynarchuk.persistence.domain;
 
+import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +14,8 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder
 public class RepositoryInfo {
+    private AuthorizationProvider authorizationProvider;
+
     private String name;
 
     private String websiteUrl;

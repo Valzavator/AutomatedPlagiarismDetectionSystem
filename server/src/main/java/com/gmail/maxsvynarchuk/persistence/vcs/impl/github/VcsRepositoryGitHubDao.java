@@ -4,6 +4,7 @@ import com.gmail.maxsvynarchuk.config.constant.VCS;
 import com.gmail.maxsvynarchuk.persistence.domain.AccessToken;
 import com.gmail.maxsvynarchuk.persistence.domain.RepositoryFileInfo;
 import com.gmail.maxsvynarchuk.persistence.domain.RepositoryInfo;
+import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
 import com.gmail.maxsvynarchuk.persistence.exception.oauth.InvalidVcsUrlException;
 import com.gmail.maxsvynarchuk.persistence.exception.oauth.OAuthIllegalTokenException;
 import com.gmail.maxsvynarchuk.persistence.vcs.VcsRepositoryDao;
@@ -28,6 +29,8 @@ import java.util.stream.Collectors;
 @Repository("vcsRepositoryGitHubDao")
 @AllArgsConstructor
 public class VcsRepositoryGitHubDao implements VcsRepositoryDao {
+    public static final String AUTHORIZATION = "Authorization";
+    public static final String ACCEPT = "Accept";
     private final Gson gson;
 
     @Override
@@ -47,8 +50,8 @@ public class VcsRepositoryGitHubDao implements VcsRepositoryDao {
     @Override
     public String getRawFileContent(AccessToken accessToken, RepositoryFileInfo fileInfo) {
         return Unirest.get(fileInfo.getUrl())
-                .header("Authorization", accessToken.getAccessToken())
-                .header("Accept", VCS.GITHUB_API_RAW_ACCEPT_FORMAT)
+                .header(AUTHORIZATION, accessToken.getAccessToken())
+                .header(ACCEPT, VCS.GITHUB_API_RAW_ACCEPT_FORMAT)
                 .asString()
                 .getBody();
     }
@@ -69,6 +72,7 @@ public class VcsRepositoryGitHubDao implements VcsRepositoryDao {
                 .collect(Collectors.toList());
 
         return RepositoryInfo.builder()
+                .authorizationProvider(AuthorizationProvider.GITHUB)
                 .name(gitHubRepositoryInfo.getName())
                 .apiUrl(gitHubRepositoryInfo.getApiUrl())
                 .websiteUrl(gitHubRepositoryInfo.getWebsiteUrl())
@@ -92,8 +96,8 @@ public class VcsRepositoryGitHubDao implements VcsRepositoryDao {
         String repositoryCommitsUrl = getRepositoryCommitsUrl(repositoryInfo.getApiUrl(), lastCommitDate);
 
         JSONArray jsonArray = Unirest.get(repositoryCommitsUrl)
-                .header("Authorization", accessToken.getAccessToken())
-                .header("Accept", VCS.GITHUB_API_JSON_ACCEPT_FORMAT)
+                .header(AUTHORIZATION, accessToken.getAccessToken())
+                .header(ACCEPT, VCS.GITHUB_API_JSON_ACCEPT_FORMAT)
                 .asJson()
                 .ifFailure(errorHandler())
                 .getBody()
@@ -124,8 +128,8 @@ public class VcsRepositoryGitHubDao implements VcsRepositoryDao {
                                     String url,
                                     Class<T> entityType) {
         HttpResponse<T> response = Unirest.get(url)
-                .header("Authorization", accessToken.getAccessToken())
-                .header("Accept", VCS.GITHUB_API_JSON_ACCEPT_FORMAT)
+                .header(AUTHORIZATION, accessToken.getAccessToken())
+                .header(ACCEPT, VCS.GITHUB_API_JSON_ACCEPT_FORMAT)
                 .asObject(entityType)
                 .ifFailure(errorHandler());
 
@@ -156,19 +160,7 @@ public class VcsRepositoryGitHubDao implements VcsRepositoryDao {
     }
 
     private String getRepositoryUrl(String repositoryUrl) {
-        if (Objects.isNull(repositoryUrl) || repositoryUrl.isBlank()) {
-            throw new InvalidVcsUrlException();
-        }
-
-        if (repositoryUrl.startsWith(VCS.GITHUB_API_REPOSITORY_PREFIX_ENDPOINT)) {
-            return repositoryUrl;
-        } else if (repositoryUrl.startsWith(VCS.GITHUB_WEBSITE_REPOSITORY_PREFIX_ENDPOINT)) {
-            return repositoryUrl.replaceFirst(
-                    VCS.GITHUB_WEBSITE_REPOSITORY_PREFIX_ENDPOINT,
-                    VCS.GITHUB_API_REPOSITORY_PREFIX_ENDPOINT);
-        }
-
-        throw new InvalidVcsUrlException();
+        return AuthorizationProvider.GITHUB.getApiRepositoryUrl(repositoryUrl);
     }
 
     private String getRepositoryCommitsUrl(String repositoryUrl, Date lastCommitDate) {

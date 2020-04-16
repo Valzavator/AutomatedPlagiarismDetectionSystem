@@ -35,17 +35,9 @@ public class VcsOAuthBitbucketDao implements VcsOAuthDao {
                 .field(CLIENT_SECRET, VCS.BITBUCKET_AUTHORIZE_OAUTH_CLIENT_SECRET)
                 .field(GRANT_TYPE, AUTHORIZATION_CODE)
                 .field(CODE, code)
-                .header("Accept", "application/json")
                 .asObject(AccessToken.class)
                 .getBody();
-        accessToken.setAuthorizationProvider(AuthorizationProvider.BITBUCKET);
-        // TODO - refactor: capitalize first letter in another way
-        accessToken.setTokenType(
-                capitalizeFirstLetter(accessToken.getTokenType()));
-
-        validateAccessToken(accessToken);
-
-        return accessToken;
+        return processAccessToken(accessToken);
     }
 
     @Override
@@ -55,16 +47,18 @@ public class VcsOAuthBitbucketDao implements VcsOAuthDao {
                 .field(CLIENT_SECRET, VCS.BITBUCKET_AUTHORIZE_OAUTH_CLIENT_SECRET)
                 .field(GRANT_TYPE, REFRESH_TOKEN)
                 .field(REFRESH_TOKEN, expiredAccessToken.getRefreshToken())
-                .header("Accept", "application/json")
                 .asObject(AccessToken.class)
                 .getBody();
+        return processAccessToken(accessToken);
+    }
+
+    private AccessToken processAccessToken(AccessToken accessToken) {
         accessToken.setAuthorizationProvider(AuthorizationProvider.BITBUCKET);
         // TODO - refactor: capitalize first letter in another way
         accessToken.setTokenType(
                 capitalizeFirstLetter(accessToken.getTokenType()));
 
         validateAccessToken(accessToken);
-
         return accessToken;
     }
 

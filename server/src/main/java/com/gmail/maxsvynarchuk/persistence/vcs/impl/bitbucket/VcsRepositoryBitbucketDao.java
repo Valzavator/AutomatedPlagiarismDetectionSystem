@@ -4,6 +4,7 @@ import com.gmail.maxsvynarchuk.config.constant.VCS;
 import com.gmail.maxsvynarchuk.persistence.domain.AccessToken;
 import com.gmail.maxsvynarchuk.persistence.domain.RepositoryFileInfo;
 import com.gmail.maxsvynarchuk.persistence.domain.RepositoryInfo;
+import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
 import com.gmail.maxsvynarchuk.persistence.exception.oauth.InvalidVcsUrlException;
 import com.gmail.maxsvynarchuk.persistence.exception.oauth.OAuthIllegalTokenException;
 import com.gmail.maxsvynarchuk.persistence.vcs.VcsRepositoryDao;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Repository("vcsRepositoryBitbucketDao")
 public class VcsRepositoryBitbucketDao implements VcsRepositoryDao {
+    public static final String AUTHORIZATION = "Authorization";
     private final static String REPOSITORY_INFO_FIELDS_PARAM =
             "?fields=name,is_private,links.self,links.source,links.html";
     private final static String COMMITS_INFO_FIELDS_PARAM =
@@ -52,7 +54,7 @@ public class VcsRepositoryBitbucketDao implements VcsRepositoryDao {
     @Override
     public String getRawFileContent(AccessToken accessToken, RepositoryFileInfo fileInfo) {
         return Unirest.get(fileInfo.getUrl())
-                .header("Authorization", accessToken.getAccessToken())
+                .header(AUTHORIZATION, accessToken.getAccessToken())
                 .asString()
                 .getBody();
     }
@@ -73,6 +75,7 @@ public class VcsRepositoryBitbucketDao implements VcsRepositoryDao {
                 .collect(Collectors.toList());
 
         return RepositoryInfo.builder()
+                .authorizationProvider(AuthorizationProvider.BITBUCKET)
                 .name(bitbucketRepositoryInfo.getName())
                 .apiUrl(bitbucketRepositoryInfo.getApiUrl())
                 .websiteUrl(bitbucketRepositoryInfo.getWebsiteUrl())
@@ -85,16 +88,16 @@ public class VcsRepositoryBitbucketDao implements VcsRepositoryDao {
     private BitbucketRepositoryInfo getBitbucketRepositoryInfo(AccessToken accessToken, String repositoryUrl) {
         String apiRepositoryUrl = getRepositoryUrl(repositoryUrl);
         return Unirest.get(apiRepositoryUrl)
-                .header("Authorization", accessToken.getAccessToken())
+                .header(AUTHORIZATION, accessToken.getAccessToken())
                 .asObject(BitbucketRepositoryInfo.class)
                 .ifFailure(errorHandler())
                 .getBody();
     }
 
     private Optional<BitbucketCommit> getLastCommit(AccessToken accessToken,
-                                                   BitbucketRepositoryInfo repositoryInfo,
-                                                   String prefixPath,
-                                                   Date lastCommitDate) {
+                                                    BitbucketRepositoryInfo repositoryInfo,
+                                                    String prefixPath,
+                                                    Date lastCommitDate) {
         String repositoryCommitsUrl = getRepositoryCommitsUrl(repositoryInfo.getApiUrl(), prefixPath);
         BitbucketPagination<BitbucketCommit> commits = BitbucketPagination.<BitbucketCommit>builder()
                 .next(repositoryCommitsUrl)
@@ -103,7 +106,7 @@ public class VcsRepositoryBitbucketDao implements VcsRepositoryDao {
 
         while (Objects.nonNull(commits.getNext())) {
             commits = Unirest.get(commits.getNext())
-                    .header("Authorization", accessToken.getAccessToken())
+                    .header(AUTHORIZATION, accessToken.getAccessToken())
                     .asObject(new GenericType<BitbucketPagination<BitbucketCommit>>() {
                     })
                     .ifFailure(errorHandler())
@@ -118,9 +121,9 @@ public class VcsRepositoryBitbucketDao implements VcsRepositoryDao {
     }
 
     private List<BitbucketBlob> getFilesInfo(AccessToken accessToken,
-                                            BitbucketRepositoryInfo bitbucketRepositoryInfo,
-                                            BitbucketCommit commit,
-                                            String prefixPath) {
+                                             BitbucketRepositoryInfo bitbucketRepositoryInfo,
+                                             BitbucketCommit commit,
+                                             String prefixPath) {
         String repositorySrcUrl = bitbucketRepositoryInfo.getSourceUrl() + "/" +
                 commit.getHash() + "/" + prefixPath + BLOB_INFO_FIELDS_PARAM;
         return getSubDirFilesInfo(accessToken, repositorySrcUrl);
@@ -134,7 +137,7 @@ public class VcsRepositoryBitbucketDao implements VcsRepositoryDao {
 
         while (Objects.nonNull(filesInfoPage.getNext())) {
             filesInfoPage = Unirest.get(filesInfoPage.getNext())
-                    .header("Authorization", accessToken.getAccessToken())
+                    .header(AUTHORIZATION, accessToken.getAccessToken())
                     .asObject(new GenericType<BitbucketPagination<BitbucketBlob>>() {
                     })
                     .ifFailure(errorHandler())
@@ -185,19 +188,8 @@ public class VcsRepositoryBitbucketDao implements VcsRepositoryDao {
     }
 
     private String getRepositoryUrl(String repositoryUrl) {
-        if (Objects.isNull(repositoryUrl) || repositoryUrl.isBlank()) {
-            throw new InvalidVcsUrlException();
-        }
-
-        if (repositoryUrl.startsWith(VCS.BITBUCKET_API_REPOSITORY_PREFIX_ENDPOINT)) {
-            return repositoryUrl + REPOSITORY_INFO_FIELDS_PARAM;
-        } else if (repositoryUrl.startsWith(VCS.BITBUCKET_WEBSITE_REPOSITORY_PREFIX_ENDPOINT)) {
-            return repositoryUrl.replaceFirst(
-                    VCS.BITBUCKET_WEBSITE_REPOSITORY_PREFIX_ENDPOINT,
-                    VCS.BITBUCKET_API_REPOSITORY_PREFIX_ENDPOINT) + REPOSITORY_INFO_FIELDS_PARAM;
-        }
-
-        throw new InvalidVcsUrlException();
+        return AuthorizationProvider.BITBUCKET.getApiRepositoryUrl(repositoryUrl)
+                + REPOSITORY_INFO_FIELDS_PARAM;
     }
 
     private String getRepositoryCommitsUrl(String repositoryUrl, String prefixPath) {
