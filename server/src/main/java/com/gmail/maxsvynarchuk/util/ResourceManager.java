@@ -3,7 +3,8 @@ package com.gmail.maxsvynarchuk.util;
 import java.util.ResourceBundle;
 
 public enum  ResourceManager {
-    VCS(ResourceBundle.getBundle("properties.vcs_api"));
+    VCS(ResourceBundle.getBundle("properties.vcs_api")),
+    PATH(ResourceBundle.getBundle("properties.path"));
 
     private ResourceBundle resourceBundle;
 
