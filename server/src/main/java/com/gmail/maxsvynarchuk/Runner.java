@@ -1,19 +1,9 @@
 package com.gmail.maxsvynarchuk;
 
 import com.gmail.maxsvynarchuk.config.constant.Path;
-import com.gmail.maxsvynarchuk.persistence.domain.AccessToken;
-import com.gmail.maxsvynarchuk.persistence.vcs.impl.bitbucket.VcsRepositoryBitbucketDao;
-import com.gmail.maxsvynarchuk.persistence.vcs.impl.github.VcsRepositoryGitHubDao;
-import com.gmail.maxsvynarchuk.service.vcs.VcsDownloadToFileSystemService;
-import com.gmail.maxsvynarchuk.service.vcs.impl.VcsDownloadToFileSystemServiceImpl;
-import com.gmail.maxsvynarchuk.util.FileSystemWriter;
-import com.gmail.maxsvynarchuk.util.preprocessing.CyrillicRemovalStrategy;
-import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
 
 public class Runner {
     public static final String githubUrl = "https://github.com/Muguvara/test_github_api";

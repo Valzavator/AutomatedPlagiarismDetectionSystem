@@ -1,4 +1,4 @@
-package com.gmail.maxsvynarchuk.persistence.domain;
+package com.gmail.maxsvynarchuk.persistence.domain.vcs;
 
 import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
 import com.google.gson.annotations.SerializedName;

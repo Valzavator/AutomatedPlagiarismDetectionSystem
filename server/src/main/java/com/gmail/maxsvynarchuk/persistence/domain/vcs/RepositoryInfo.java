@@ -1,4 +1,4 @@
-package com.gmail.maxsvynarchuk.persistence.domain;
+package com.gmail.maxsvynarchuk.persistence.domain.vcs;
 
 import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
 import lombok.AllArgsConstructor;

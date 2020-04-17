@@ -1,11 +1,12 @@
 package com.gmail.maxsvynarchuk.presentation.controller;
 
-import com.gmail.maxsvynarchuk.persistence.domain.AccessToken;
+import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
 import com.gmail.maxsvynarchuk.persistence.vcs.VcsOAuthDao;
 import com.gmail.maxsvynarchuk.presentation.util.ControllerUtil;
 import com.gmail.maxsvynarchuk.service.vcs.VcsOAuthService;
 import kong.unirest.Unirest;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,13 +14,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/oauth2")
 @AllArgsConstructor
 public class VcsOAuthController {
-    private final VcsOAuthService vcsOAuthService;
-    private final VcsOAuthDao vcsOAuthBitbucketDao;
+    @Qualifier("vcsOAuthBitbucketService")
+    private final VcsOAuthService vcsOAuthBitbucketService;
+    @Qualifier("vcsOAuthGitHubService")
+    private final VcsOAuthService vcsOAuthGitHubService;
 
     @GetMapping("/github/authorize")
     public String getGitHubAuthorizeUrl() {
         return ControllerUtil.redirectTo(
-                vcsOAuthService.getAuthorizeOAuthUrl());
+                vcsOAuthGitHubService.getAuthorizeOAuthUrl());
     }
 
     @GetMapping("/code/github")
@@ -36,7 +39,7 @@ public class VcsOAuthController {
 //                .get("access_token")
 //                .toString();
 
-        AccessToken accessToken = vcsOAuthService.getAuthorizeOAuthToken(code, state);
+        AccessToken accessToken = vcsOAuthGitHubService.getAuthorizeOAuthToken(code, state);
 
         System.out.println(accessToken);
 
@@ -54,7 +57,7 @@ public class VcsOAuthController {
     @GetMapping("/bitbucket/authorize")
     public String getBitbucketAuthorizeUrl() {
         return ControllerUtil.redirectTo(
-                vcsOAuthBitbucketDao.getAuthorizeOAuthUrl());
+                vcsOAuthBitbucketService.getAuthorizeOAuthUrl());
     }
 
     @GetMapping("/code/bitbucket")
@@ -71,7 +74,7 @@ public class VcsOAuthController {
 //                .get("access_token")
 //                .toString();
 
-        AccessToken accessToken = vcsOAuthBitbucketDao.getAuthorizeOAuthToken(code, "");
+        AccessToken accessToken = vcsOAuthBitbucketService.getAuthorizeOAuthToken(code, "");
 
         System.out.println(accessToken);
 

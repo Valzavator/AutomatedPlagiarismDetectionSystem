@@ -1,8 +1,8 @@
 package com.gmail.maxsvynarchuk.persistence.vcs;
 
-import com.gmail.maxsvynarchuk.persistence.domain.AccessToken;
-import com.gmail.maxsvynarchuk.persistence.domain.RepositoryFileInfo;
-import com.gmail.maxsvynarchuk.persistence.domain.RepositoryInfo;
+import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
+import com.gmail.maxsvynarchuk.persistence.domain.vcs.RepositoryFileInfo;
+import com.gmail.maxsvynarchuk.persistence.domain.vcs.RepositoryInfo;
 
 import java.util.Date;
 

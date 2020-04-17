@@ -1,9 +1,10 @@
 package com.gmail.maxsvynarchuk.service.vcs.impl;
 
+import com.gmail.maxsvynarchuk.config.constant.Path;
 import com.gmail.maxsvynarchuk.config.constant.VCS;
-import com.gmail.maxsvynarchuk.persistence.domain.AccessToken;
-import com.gmail.maxsvynarchuk.persistence.domain.RepositoryFileInfo;
-import com.gmail.maxsvynarchuk.persistence.domain.RepositoryInfo;
+import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
+import com.gmail.maxsvynarchuk.persistence.domain.vcs.RepositoryFileInfo;
+import com.gmail.maxsvynarchuk.persistence.domain.vcs.RepositoryInfo;
 import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
 import com.gmail.maxsvynarchuk.persistence.vcs.VcsRepositoryDao;
 import com.gmail.maxsvynarchuk.service.vcs.VcsDownloadToFileSystemService;
@@ -41,7 +42,7 @@ public class VcsDownloadToFileSystemServiceImpl implements VcsDownloadToFileSyst
                 repositoryUrl,
                 prefixPath,
                 lastDateCommit);
-        String directoryPath = VCS.DATA_FOLDER + "task1/" + repositoryInfo.getName() + "/";
+        String directoryPath = Path.DATA_FOLDER + "task1/" + repositoryInfo.getName() + "/";
         fileSystemWriter.deleteDirectory(directoryPath);
         for (RepositoryFileInfo fileInfo : repositoryInfo.getFilesInfo()) {
             String fileData = vcsRepositoryDao.getRawFileContent(userAccessToken, fileInfo);

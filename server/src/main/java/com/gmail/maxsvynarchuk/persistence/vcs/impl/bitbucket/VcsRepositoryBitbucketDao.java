@@ -1,9 +1,9 @@
 package com.gmail.maxsvynarchuk.persistence.vcs.impl.bitbucket;
 
 import com.gmail.maxsvynarchuk.config.constant.VCS;
-import com.gmail.maxsvynarchuk.persistence.domain.AccessToken;
-import com.gmail.maxsvynarchuk.persistence.domain.RepositoryFileInfo;
-import com.gmail.maxsvynarchuk.persistence.domain.RepositoryInfo;
+import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
+import com.gmail.maxsvynarchuk.persistence.domain.vcs.RepositoryFileInfo;
+import com.gmail.maxsvynarchuk.persistence.domain.vcs.RepositoryInfo;
 import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
 import com.gmail.maxsvynarchuk.persistence.exception.oauth.InvalidVcsUrlException;
 import com.gmail.maxsvynarchuk.persistence.exception.oauth.OAuthIllegalTokenException;

@@ -1,6 +1,6 @@
 package com.gmail.maxsvynarchuk.service.vcs;
 
-import com.gmail.maxsvynarchuk.persistence.domain.AccessToken;
+import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
 
 import java.util.Date;
 

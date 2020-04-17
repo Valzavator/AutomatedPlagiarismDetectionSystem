@@ -1,4 +1,4 @@
-package com.gmail.maxsvynarchuk.service.vcs.impl.github;
+package com.gmail.maxsvynarchuk.service.vcs.impl.bitbucket;
 
 import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
 import com.gmail.maxsvynarchuk.persistence.vcs.VcsOAuthDao;
@@ -6,12 +6,12 @@ import com.gmail.maxsvynarchuk.service.vcs.VcsOAuthService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-@Service("vcsOAuthGitHubService")
+@Service("vcsOAuthBitbucketService")
 public class VcsOAuthServiceImpl implements VcsOAuthService {
     private final VcsOAuthDao vcsAuthorizingOAuthDao;
 
     public VcsOAuthServiceImpl(
-            @Qualifier("vcsOAuthGitHubDao") VcsOAuthDao vcsAuthorizingOAuthDao) {
+            @Qualifier("vcsOAuthBitbucketDao") VcsOAuthDao vcsAuthorizingOAuthDao) {
         this.vcsAuthorizingOAuthDao = vcsAuthorizingOAuthDao;
     }
 
@@ -29,4 +29,5 @@ public class VcsOAuthServiceImpl implements VcsOAuthService {
     public AccessToken getRefreshedOAuthToken(AccessToken expiredAccessToken) {
         return vcsAuthorizingOAuthDao.getRefreshedOAuthToken(expiredAccessToken);
     }
+
 }

@@ -3,9 +3,6 @@ package com.gmail.maxsvynarchuk.config.constant;
 import com.gmail.maxsvynarchuk.util.ResourceManager;
 
 public final class VCS {
-    public static final String DATA_FOLDER = ResourceManager.VCS.getProperty("data.repositories.folder");
-    public static final String ANALYSIS_RESULT_FOLDER = ResourceManager.VCS.getProperty("data.analysis.results.folder");
-
     public static final String GITHUB_AUTHORIZE_OAUTH_CLIENT_ID = System.getenv("GITHUB_CLIENT_ID");
     public static final String GITHUB_AUTHORIZE_OAUTH_CLIENT_SECRET = System.getenv("GITHUB_CLIENT_SECRET");
     public static final String GITHUB_AUTHORIZE_OAUTH_URL = ResourceManager.VCS.getProperty("github.authorize.oauth.url");

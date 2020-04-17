@@ -1,7 +1,7 @@
 package com.gmail.maxsvynarchuk.persistence.vcs.impl.github;
 
 import com.gmail.maxsvynarchuk.config.constant.VCS;
-import com.gmail.maxsvynarchuk.persistence.domain.AccessToken;
+import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
 import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
 import com.gmail.maxsvynarchuk.persistence.exception.oauth.OAuthIllegalAuthorizeStateException;
 import com.gmail.maxsvynarchuk.persistence.exception.oauth.OAuthIllegalTokenException;
