@@ -19,5 +19,7 @@ public class Student implements Serializable  {
 
     private String vcsRepositoryLink;
 
+    private User user;
+
     private List<Group> group;
 }

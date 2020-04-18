@@ -1,9 +1,10 @@
 package com.gmail.maxsvynarchuk.persistence.plagiarism;
 
 import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionSetting;
+import com.gmail.maxsvynarchuk.persistence.domain.PlagResult;
 
 public interface SoftwarePlagDetectionTool {
 
-    boolean generateHtmlResult(PlagDetectionSetting configuration);
+    PlagResult generateHtmlResult(PlagDetectionSetting configuration);
 
 }

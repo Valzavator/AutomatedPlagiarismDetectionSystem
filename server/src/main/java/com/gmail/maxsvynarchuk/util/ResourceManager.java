@@ -4,7 +4,8 @@ import java.util.ResourceBundle;
 
 public enum  ResourceManager {
     VCS(ResourceBundle.getBundle("properties.vcs_api")),
-    PATH(ResourceBundle.getBundle("properties.path"));
+    PATH(ResourceBundle.getBundle("properties.path")),
+    JPLAG(ResourceBundle.getBundle("properties.jplag"));
 
     private ResourceBundle resourceBundle;
 

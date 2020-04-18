@@ -1,6 +1,10 @@
 package com.gmail.maxsvynarchuk;
 
+import com.gmail.maxsvynarchuk.config.constant.JPlag;
 import com.gmail.maxsvynarchuk.config.constant.Path;
+import com.gmail.maxsvynarchuk.persistence.domain.*;
+import com.gmail.maxsvynarchuk.persistence.plagiarism.jplag.SoftwarePlagDetectionToolImpl;
+import com.gmail.maxsvynarchuk.util.ResourceManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,23 +50,24 @@ public class Runner {
 
 //        String javaCmd = ProcessUtils.getJavaCmd().getAbsolutePath();
 
-        System.out.println(System.getProperty("java.version"));
-        System.out.println(System.getenv("JAVA_HOME"));
-        File file = new File("jplag");
+//        System.out.println(System.getProperty("java.version"));
+//        System.out.println(System.getenv("JAVA_HOME"));
+//        File file = new File("jplag");
 //        ProcessBuilder builder = new ProcessBuilder( "\"C:\\Program Files\\Java\\jdk-12\\bin\\java\"", "", "--version");
-        ProcessBuilder builder = new ProcessBuilder(
-                System.getenv("JAVA_HOME") + "\\bin\\java",
-                "-jar",
-                "jplag\\jplag-2.12.1.jar",
-                "-s", "data\\task1",
-                "-r", Path.ANALYSIS_RESULT_FOLDER,
-                "-l", "java19");
+//        ProcessBuilder builder = new ProcessBuilder("C:/Program Files/Java/jdk-12/bin/java",
+////                System.getenv("JAVA_HOME") + "\\bin\\java",
+//                "-jar",
+//                "jplag\\jplag-2.12.1.jar",
+//                "-s", "data/task1",
+//                "-r", Path.ANALYSIS_RESULT_FOLDER,
+//                "-l", "java19"
+//        );
 
-        Process process = builder.inheritIO().start();
+//        Process process = builder.inheritIO().start();
 
         //        process.waitFor();
-        System.out.println(process.waitFor());
-        System.out.println(process.exitValue());
+//        System.out.println(process.waitFor());
+//        System.out.println(process.exitValue());
 //        // Then retreive the process output
 //        InputStream in = process.getInputStream();
 //        InputStream err = process.getErrorStream();
@@ -74,5 +79,19 @@ public class Runner {
 //        byte c[]=new byte[err.available()];
 //        err.read(c,0,c.length);
 //        System.out.println(new String(c));
+
+        PlagDetectionSetting setting = PlagDetectionSetting.builder()
+                .programLanguage(new ProgramLanguage(null, "java19"))
+//                .comparisonSensitivity(20)
+//                .minimumSimilarityPercent(1)
+//                .baseCodePath("data")
+//                .typeDetection()
+                .dataPath(Path.DATA_FOLDER + "/" + "task1")
+                .resultPath(Path.ANALYSIS_RESULT_FOLDER + "/" + "task1")
+                .build();
+        SoftwarePlagDetectionToolImpl s = new SoftwarePlagDetectionToolImpl();
+
+        PlagResult result = s.generateHtmlResult(setting);
+        System.out.println(result);
     }
 }

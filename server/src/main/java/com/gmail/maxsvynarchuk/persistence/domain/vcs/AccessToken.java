@@ -1,5 +1,6 @@
 package com.gmail.maxsvynarchuk.persistence.domain.vcs;
 
+import com.gmail.maxsvynarchuk.persistence.domain.User;
 import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
 import com.google.gson.annotations.SerializedName;
 import lombok.*;
@@ -8,6 +9,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccessToken {
+    private Long id;
+
     @SerializedName(value = "access_token")
     private String accessTokenString;
 
@@ -21,6 +24,8 @@ public class AccessToken {
     private String refreshToken;
 
     private AuthorizationProvider authorizationProvider;
+
+    private User user;
 
     public String getAccessToken() {
         return tokenType + " " + accessTokenString;

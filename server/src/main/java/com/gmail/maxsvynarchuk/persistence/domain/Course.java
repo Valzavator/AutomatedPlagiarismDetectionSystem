@@ -22,4 +22,6 @@ public class Course implements Serializable {
     private User user;
 
     private List<Group> groups;
+
+    private List<Task> tasks;
 }

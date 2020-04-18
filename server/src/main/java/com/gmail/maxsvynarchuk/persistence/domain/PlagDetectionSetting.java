@@ -25,5 +25,9 @@ public class PlagDetectionSetting implements Serializable {
 
     private TypeDetection typeDetection;
 
-    private Task task;
+    private String dataPath;
+
+    private String resultPath;
+
+    private TaskGroup taskGroup;
 }

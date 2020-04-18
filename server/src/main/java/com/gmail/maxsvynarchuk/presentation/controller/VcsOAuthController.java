@@ -1,5 +1,8 @@
 package com.gmail.maxsvynarchuk.presentation.controller;
 
+import com.gmail.maxsvynarchuk.persistence.dao.UserDao;
+import com.gmail.maxsvynarchuk.persistence.domain.User;
+import com.gmail.maxsvynarchuk.persistence.domain.type.Gender;
 import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
 import com.gmail.maxsvynarchuk.persistence.vcs.VcsOAuthDao;
 import com.gmail.maxsvynarchuk.presentation.util.ControllerUtil;
@@ -9,6 +12,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 @Controller
 @RequestMapping("/oauth2")
@@ -99,11 +104,21 @@ public class VcsOAuthController {
         return ControllerUtil.redirectTo("/");
     }
 
+    private UserDao userDao;
+
     @GetMapping("/test")
     public void test() {
-        AccessToken accessToken = new AccessToken();
-        accessToken.setAccessTokenString("119d33f6aaa20f3a7f2d397a76f433043b83dbb2");
-        accessToken.setTokenType("bearer");
+        User user = User.builder()
+                .dateOfBirth(new Date())
+                .email("email")
+                .firstName("firstName")
+                .lastName("lastName")
+                .gender(Gender.FEMALE)
+                .password("111")
+                .build();
+
+        userDao.save(user);
+
 //        vcsRepositoryDao.getRepositoryInfo(accessToken, "asd");
     }
 

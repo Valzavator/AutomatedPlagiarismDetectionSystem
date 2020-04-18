@@ -15,9 +15,11 @@ import java.util.Date;
 public class PlagResult implements Serializable  {
     private Long id;
 
+    private boolean isSuccessful;
+
     private String resultPath;
 
     private Date date;
 
-    private Task task;
+    private TaskGroup taskGroup;
 }

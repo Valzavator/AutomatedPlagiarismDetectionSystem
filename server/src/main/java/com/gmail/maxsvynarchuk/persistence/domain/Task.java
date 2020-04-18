@@ -16,15 +16,9 @@ public class Task implements Serializable {
 
     private String name;
 
+    private String repositoryPrefixPath;
+
     private String description;
 
-    private String creationDate;
-
-    private String expiryDate;
-
-    private Group group;
-
-    private PlagDetectionSetting plagDetectionSetting;
-
-    private PlagResult plagResult;
+    private Course course;
 }
