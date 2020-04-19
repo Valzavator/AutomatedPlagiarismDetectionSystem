@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+    <Properties>
+        <Property name="LOG_FILEPATH">logs/</Property>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} - %-5p: [%t] %c{}:%L - %m%n</Property>
+    </Properties>
+    <Appenders>
+
+        <Console name="STDOUT" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+
+        <!-- Rolling File Appender -->
+        <RollingFile
+                name="FILE_LOG"
+                fileName="${LOG_FILEPATH}/log.log"
+                filePattern="${LOG_FILEPATH}/log.%d{yyyy-MM-dd}-%i.log.zip"
+                ignoreExceptions="false">
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${LOG_PATTERN}" disableAnsi="false"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+            <DefaultRolloverStrategy max="5"/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="ERROR">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="FILE_LOG"/>
+        </Root>
+
+        <Logger name="com.gmail.maxsvynarchuk" level="DEBUG" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="FILE_LOG"/>
+        </Logger>
+    </Loggers>
+</Configuration>

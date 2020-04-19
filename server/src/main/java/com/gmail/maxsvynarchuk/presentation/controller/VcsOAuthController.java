@@ -9,6 +9,9 @@ import com.gmail.maxsvynarchuk.presentation.util.ControllerUtil;
 import com.gmail.maxsvynarchuk.service.vcs.VcsOAuthService;
 import kong.unirest.Unirest;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +21,11 @@ import java.util.Date;
 @Controller
 @RequestMapping("/oauth2")
 @AllArgsConstructor
+//@Slf4j
 public class VcsOAuthController {
+    private static final Logger logger = LogManager.getLogger(VcsOAuthController.class);
+
+
     @Qualifier("vcsOAuthBitbucketService")
     private final VcsOAuthService vcsOAuthBitbucketService;
     @Qualifier("vcsOAuthGitHubService")
@@ -108,6 +115,7 @@ public class VcsOAuthController {
 
     @GetMapping("/test")
     public void test() {
+        logger.error("TEST");
         User user = User.builder()
                 .dateOfBirth(new Date())
                 .email("email")

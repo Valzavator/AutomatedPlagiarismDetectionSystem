@@ -39,7 +39,7 @@ public class User implements Serializable  {
     @NotNull
     @Enumerated(EnumType.STRING)
     private Gender gender;
-
+    
     @NotNull
     private Date dateOfBirth;
 
