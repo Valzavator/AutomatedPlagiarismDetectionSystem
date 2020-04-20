@@ -1,9 +1,6 @@
 package com.gmail.maxsvynarchuk.persistence.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -40,6 +37,7 @@ public class Task implements Serializable {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Course course;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "group")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "task")
+    @ToString.Exclude
     private Set<TaskGroup> taskGroups;
 }

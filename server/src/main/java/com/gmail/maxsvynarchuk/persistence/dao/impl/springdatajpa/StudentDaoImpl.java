@@ -3,6 +3,7 @@ package com.gmail.maxsvynarchuk.persistence.dao.impl.springdatajpa;
 import com.gmail.maxsvynarchuk.persistence.dao.StudentDao;
 import com.gmail.maxsvynarchuk.persistence.dao.repository.StudentRepository;
 import com.gmail.maxsvynarchuk.persistence.domain.Student;
+import com.gmail.maxsvynarchuk.persistence.domain.Task;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +14,11 @@ import java.util.Optional;
 @AllArgsConstructor
 public class StudentDaoImpl implements StudentDao {
     private final StudentRepository repository;
+
+    @Override
+    public List<Student> findAllWhoHaveTask(Task task) {
+        return repository.findAllWhoHaveTask(task);
+    }
 
     @Override
     public Optional<Student> findOne(Long id) {

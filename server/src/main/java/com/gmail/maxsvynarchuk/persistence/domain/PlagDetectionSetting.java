@@ -1,10 +1,7 @@
 package com.gmail.maxsvynarchuk.persistence.domain;
 
 import com.gmail.maxsvynarchuk.persistence.domain.type.TypeDetection;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -44,11 +41,12 @@ public class PlagDetectionSetting implements Serializable {
     @NotBlank
     private String resultPath;
 
-    @OneToOne(fetch = FetchType.LAZY,
-            mappedBy = "plagDetectionSetting")
-    private TaskGroup taskGroup;
+    //    @OneToOne(fetch = FetchType.LAZY,
+//            mappedBy = "plagDetectionSetting")
+//    @ToString.Exclude
+//    private TaskGroup taskGroup;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "programming_language_id", nullable = false)
-    private ProgrammingLanguage programLanguage;
+    private ProgrammingLanguage programmingLanguage;
 }

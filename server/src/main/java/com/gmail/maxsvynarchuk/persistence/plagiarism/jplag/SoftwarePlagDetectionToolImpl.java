@@ -26,7 +26,7 @@ public class SoftwarePlagDetectionToolImpl implements SoftwarePlagDetectionTool 
 
         PlagDetectionResult result = PlagDetectionResult.builder()
                 .date(new Date())
-                .taskGroup(configuration.getTaskGroup())
+//                .taskGroup(configuration.getTaskGroup())
                 .isSuccessful(isSuccessful)
                 .build();
         if (isSuccessful) {
@@ -53,7 +53,7 @@ public class SoftwarePlagDetectionToolImpl implements SoftwarePlagDetectionTool 
 
         // programming language type
         commands.add("-l");
-        commands.add(configuration.getProgramLanguage().getName());
+        commands.add(configuration.getProgrammingLanguage().getName());
 
         // sensitivity of the comparison
         if (Objects.nonNull(configuration.getComparisonSensitivity())) {

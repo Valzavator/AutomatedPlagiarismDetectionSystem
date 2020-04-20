@@ -1,9 +1,9 @@
 package com.gmail.maxsvynarchuk.presentation.controller;
 
-import com.gmail.maxsvynarchuk.persistence.dao.AccessTokenDao;
-import com.gmail.maxsvynarchuk.persistence.dao.RoleDao;
-import com.gmail.maxsvynarchuk.persistence.dao.UserDao;
+import com.gmail.maxsvynarchuk.persistence.dao.*;
+import com.gmail.maxsvynarchuk.persistence.dao.repository.StudentRepository;
 import com.gmail.maxsvynarchuk.persistence.domain.Role;
+import com.gmail.maxsvynarchuk.persistence.domain.Task;
 import com.gmail.maxsvynarchuk.persistence.domain.User;
 import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
 import com.gmail.maxsvynarchuk.persistence.domain.type.Gender;
@@ -137,7 +137,10 @@ public class VcsOAuthController {
 //        User user = userDao.findOneByEmail("email@email.com").get();
 //        System.out.println("\n" + userDao.findOneByEmail("email@email.com").get());
         //
-        userDao.delete(userDao.findOneByEmail("email@email.com").get());
+        User user = userDao.findOneByEmail("max@gmail.com").get();
+        System.out.println("\n\n\n");
+        System.out.println(user);
+//        userDao.delete();
 //
 //        AccessToken accessToken = new AccessToken();
 //        accessToken.setScope("scopescope");
@@ -162,6 +165,19 @@ public class VcsOAuthController {
 
 //        Role role = roleDao.findOne(2).get();
 //        roleDao.delete(role);
+    }
+
+    private StudentDao studentDao;
+    private GroupDao groupDao;
+    private TaskDao taskDao;
+    @GetMapping("test1/{id}")
+    public void test1(@PathVariable Long id) {
+        System.out.println(groupDao.findAll());
+
+        Task task = taskDao.findOne(id).get();
+        System.out.println(task);
+
+        System.out.println(studentDao.findAllWhoHaveTask(task));
     }
 
 }

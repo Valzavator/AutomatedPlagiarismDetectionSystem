@@ -1,9 +1,6 @@
 package com.gmail.maxsvynarchuk.persistence.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -11,7 +8,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -40,11 +36,12 @@ public class Group implements Serializable {
                     CascadeType.PERSIST,
                     CascadeType.MERGE
             })
-    @JoinTable(name = "students",
+    @JoinTable(name = "student_group",
             joinColumns = {@JoinColumn(name = "group_id")},
             inverseJoinColumns = {@JoinColumn(name = "student_id")})
-    private List<Student> students;
+    private Set<Student> students;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "task")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "group")
+    @ToString.Exclude
     private Set<TaskGroup> taskGroups;
 }

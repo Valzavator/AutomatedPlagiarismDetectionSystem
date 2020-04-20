@@ -78,7 +78,7 @@ public class Runner {
 //        System.out.println(new String(c));
 
         PlagDetectionSetting setting = PlagDetectionSetting.builder()
-                .programLanguage(new ProgrammingLanguage(null, "java19"))
+                .programmingLanguage(new ProgrammingLanguage(null, "java19"))
 //                .comparisonSensitivity(20)
 //                .minimumSimilarityPercent(1)
 //                .baseCodePath("data")
