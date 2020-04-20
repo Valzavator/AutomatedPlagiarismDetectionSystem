@@ -1,12 +1,9 @@
 package com.gmail.maxsvynarchuk;
 
-import com.gmail.maxsvynarchuk.config.constant.JPlag;
 import com.gmail.maxsvynarchuk.config.constant.Path;
 import com.gmail.maxsvynarchuk.persistence.domain.*;
 import com.gmail.maxsvynarchuk.persistence.plagiarism.jplag.SoftwarePlagDetectionToolImpl;
-import com.gmail.maxsvynarchuk.util.ResourceManager;
 
-import java.io.File;
 import java.io.IOException;
 
 public class Runner {
@@ -81,7 +78,7 @@ public class Runner {
 //        System.out.println(new String(c));
 
         PlagDetectionSetting setting = PlagDetectionSetting.builder()
-                .programLanguage(new ProgramLanguage(null, "java19"))
+                .programLanguage(new ProgrammingLanguage(null, "java19"))
 //                .comparisonSensitivity(20)
 //                .minimumSimilarityPercent(1)
 //                .baseCodePath("data")
@@ -91,7 +88,7 @@ public class Runner {
                 .build();
         SoftwarePlagDetectionToolImpl s = new SoftwarePlagDetectionToolImpl();
 
-        PlagResult result = s.generateHtmlResult(setting);
+        PlagDetectionResult result = s.generateHtmlResult(setting);
         System.out.println(result);
     }
 }

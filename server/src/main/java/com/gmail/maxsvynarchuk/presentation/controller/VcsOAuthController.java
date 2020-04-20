@@ -1,7 +1,11 @@
 package com.gmail.maxsvynarchuk.presentation.controller;
 
+import com.gmail.maxsvynarchuk.persistence.dao.AccessTokenDao;
+import com.gmail.maxsvynarchuk.persistence.dao.RoleDao;
 import com.gmail.maxsvynarchuk.persistence.dao.UserDao;
+import com.gmail.maxsvynarchuk.persistence.domain.Role;
 import com.gmail.maxsvynarchuk.persistence.domain.User;
+import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
 import com.gmail.maxsvynarchuk.persistence.domain.type.Gender;
 import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
 import com.gmail.maxsvynarchuk.persistence.vcs.VcsOAuthDao;
@@ -21,10 +25,8 @@ import java.util.Date;
 @Controller
 @RequestMapping("/oauth2")
 @AllArgsConstructor
-//@Slf4j
+@Slf4j
 public class VcsOAuthController {
-    private static final Logger logger = LogManager.getLogger(VcsOAuthController.class);
-
 
     @Qualifier("vcsOAuthBitbucketService")
     private final VcsOAuthService vcsOAuthBitbucketService;
@@ -111,23 +113,55 @@ public class VcsOAuthController {
         return ControllerUtil.redirectTo("/");
     }
 
+    private RoleDao roleDao;
     private UserDao userDao;
+    private AccessTokenDao accessTokenDao;
 
     @GetMapping("/test")
     public void test() {
-        logger.error("TEST");
-        User user = User.builder()
-                .dateOfBirth(new Date())
-                .email("email")
-                .firstName("firstName")
-                .lastName("lastName")
-                .gender(Gender.FEMALE)
-                .password("111")
-                .build();
+        log.error("TEST");
 
-        userDao.save(user);
+//        Role role = new Role();
+//        role.setName("Test");
+//        roleDao.save(role);
+
+//        User user = User.builder()
+//                .dateOfBirth(new Date())
+//                .email("email@email.com")
+//                .firstName("firstName")
+//                .lastName("lastName")
+//                .gender(Gender.FEMALE)
+//                .password("123456")
+//                .role(role)
+//                .build();
+//        User user = userDao.findOneByEmail("email@email.com").get();
+//        System.out.println("\n" + userDao.findOneByEmail("email@email.com").get());
+        //
+        userDao.delete(userDao.findOneByEmail("email@email.com").get());
+//
+//        AccessToken accessToken = new AccessToken();
+//        accessToken.setScope("scopescope");
+//        accessToken.setAccessTokenString("qweqwe");
+//        accessToken.setTokenType("BearerBearer");
+//        accessToken.setAuthorizationProvider(AuthorizationProvider.BITBUCKET);
+//        accessToken.setUser(user);
+
+//        AccessToken accessToken = accessTokenDao.findOne(6L).get();
+
+//        System.out.println("\n" + accessToken);
+//        accessTokenDao.delete(accessToken);
+
+//        System.out.println("\n" + userDao.findOneByEmail("email@email.com").get());
+
+//        accessTokenDao.delete(accessToken);
+
+//        System.out.println("\n" + userDao.findOneByEmail("email@email.com").get());
+
 
 //        vcsRepositoryDao.getRepositoryInfo(accessToken, "asd");
+
+//        Role role = roleDao.findOne(2).get();
+//        roleDao.delete(role);
     }
 
 }

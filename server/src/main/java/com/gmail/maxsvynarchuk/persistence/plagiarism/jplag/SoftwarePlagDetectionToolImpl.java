@@ -2,7 +2,7 @@ package com.gmail.maxsvynarchuk.persistence.plagiarism.jplag;
 
 import com.gmail.maxsvynarchuk.config.constant.JPlag;
 import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionSetting;
-import com.gmail.maxsvynarchuk.persistence.domain.PlagResult;
+import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionResult;
 import com.gmail.maxsvynarchuk.persistence.plagiarism.SoftwarePlagDetectionTool;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.util.Objects;
 public class SoftwarePlagDetectionToolImpl implements SoftwarePlagDetectionTool {
 
     @Override
-    public PlagResult generateHtmlResult(PlagDetectionSetting configuration) {
+    public PlagDetectionResult generateHtmlResult(PlagDetectionSetting configuration) {
         ProcessBuilder processBuilder = configureJplagProcess(configuration);
         boolean isSuccessful = false;
         try {
@@ -24,7 +24,7 @@ public class SoftwarePlagDetectionToolImpl implements SoftwarePlagDetectionTool 
             e.printStackTrace();
         }
 
-        PlagResult result = PlagResult.builder()
+        PlagDetectionResult result = PlagDetectionResult.builder()
                 .date(new Date())
                 .taskGroup(configuration.getTaskGroup())
                 .isSuccessful(isSuccessful)
@@ -53,7 +53,7 @@ public class SoftwarePlagDetectionToolImpl implements SoftwarePlagDetectionTool 
 
         // programming language type
         commands.add("-l");
-        commands.add(configuration.getProgramLanguage().getLanguage());
+        commands.add(configuration.getProgramLanguage().getName());
 
         // sensitivity of the comparison
         if (Objects.nonNull(configuration.getComparisonSensitivity())) {

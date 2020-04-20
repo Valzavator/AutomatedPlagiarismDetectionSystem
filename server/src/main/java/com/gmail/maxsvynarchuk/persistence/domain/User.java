@@ -2,15 +2,14 @@ package com.gmail.maxsvynarchuk.persistence.domain;
 
 import com.gmail.maxsvynarchuk.persistence.domain.type.Gender;
 import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -18,32 +17,44 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User implements Serializable  {
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
-    @NotNull
+    @NotBlank
+    @Size(max = 32)
     private String firstName;
 
-    @NotNull
+    @NotBlank
+    @Size(max = 32)
     private String lastName;
 
-    @NotNull
+    @NaturalId
+    @NotBlank
+    @Size(max = 255)
+    @Email(regexp = "^(.+@.+\\..+)$")
+    @Column(unique = true)
     private String email;
 
-    @NotNull
+    @NotBlank
+    @Size(min = 6)
     private String password;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     private Gender gender;
-    
+
     @NotNull
     private Date dateOfBirth;
 
-//    private List<Course> courses;
-//
-//    private List<AccessToken> tokens;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
+
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            mappedBy = "user")
+    private Set<AccessToken> tokens;
 }

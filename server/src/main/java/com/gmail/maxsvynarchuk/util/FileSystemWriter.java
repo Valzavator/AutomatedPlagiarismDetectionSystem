@@ -1,5 +1,7 @@
 package com.gmail.maxsvynarchuk.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +13,7 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 
+@Slf4j
 public class FileSystemWriter {
     private UnaryOperator<String> preProcessingStrategy;
 
@@ -54,6 +57,7 @@ public class FileSystemWriter {
                     .map(Path::toFile)
                     .forEach(File::delete);
         } catch (IOException e) {
+            log.error("", e);
             return false;
         }
         return true;
