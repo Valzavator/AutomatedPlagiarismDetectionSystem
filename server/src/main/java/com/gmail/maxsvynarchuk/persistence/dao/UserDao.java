@@ -11,7 +11,7 @@ public interface UserDao extends GenericDao<User, Long> {
      * @param email identifier of user
      * @return optional, which contains retrieved object or {@code null}
      */
-    Optional<User> findOneByEmail(String email);
+    Optional<User> findByEmail(String email);
 
     /**
      * Check if user exists in database.

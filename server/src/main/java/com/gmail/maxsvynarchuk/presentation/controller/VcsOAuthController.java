@@ -1,26 +1,17 @@
 package com.gmail.maxsvynarchuk.presentation.controller;
 
 import com.gmail.maxsvynarchuk.persistence.dao.*;
-import com.gmail.maxsvynarchuk.persistence.dao.repository.StudentRepository;
-import com.gmail.maxsvynarchuk.persistence.domain.Role;
 import com.gmail.maxsvynarchuk.persistence.domain.Task;
 import com.gmail.maxsvynarchuk.persistence.domain.User;
-import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
-import com.gmail.maxsvynarchuk.persistence.domain.type.Gender;
 import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
-import com.gmail.maxsvynarchuk.persistence.vcs.VcsOAuthDao;
 import com.gmail.maxsvynarchuk.presentation.util.ControllerUtil;
 import com.gmail.maxsvynarchuk.service.vcs.VcsOAuthService;
 import kong.unirest.Unirest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Date;
 
 @Controller
 @RequestMapping("/oauth2")
@@ -137,7 +128,7 @@ public class VcsOAuthController {
 //        User user = userDao.findOneByEmail("email@email.com").get();
 //        System.out.println("\n" + userDao.findOneByEmail("email@email.com").get());
         //
-        User user = userDao.findOneByEmail("max@gmail.com").get();
+        User user = userDao.findByEmail("max@gmail.com").get();
         System.out.println("\n\n\n");
         System.out.println(user);
 //        userDao.delete();

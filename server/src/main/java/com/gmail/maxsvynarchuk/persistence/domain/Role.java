@@ -1,12 +1,13 @@
 package com.gmail.maxsvynarchuk.persistence.domain;
 
+import com.gmail.maxsvynarchuk.persistence.domain.type.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Entity
@@ -21,7 +22,7 @@ public class Role implements Serializable {
     private Integer id;
 
     @NaturalId
-    @NotBlank
-    @Column(unique = true)
-    private String name;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private UserRole name;
 }
