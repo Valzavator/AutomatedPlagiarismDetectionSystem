@@ -1,7 +1,8 @@
-package com.gmail.maxsvynarchuk.config.security;
+package com.gmail.maxsvynarchuk.presentation.security.serivce;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gmail.maxsvynarchuk.persistence.domain.User;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,9 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-public class UserDetailsImpl implements UserDetails {
+public class UserPrincipal implements UserDetails {
     private static final long serialVersionUID = -59580931378724443L;
 
     private Long id;
@@ -25,8 +25,11 @@ public class UserDetailsImpl implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, String username, String email, String password,
-                           Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(Long id,
+                         String username,
+                         String email,
+                         String password,
+                         Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -34,12 +37,11 @@ public class UserDetailsImpl implements UserDetails {
         this.authorities = authorities;
     }
 
-    public static UserDetailsImpl build(User user) {
-        List<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .collect(Collectors.toList());
+    public static UserPrincipal build(User user) {
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(
+                user.getRole().getName().name()));
 
-        return new UserDetailsImpl(
+        return new UserPrincipal(
                 user.getId(),
                 user.getLastName() + user.getFirstName(),
                 user.getEmail(),
@@ -96,7 +98,12 @@ public class UserDetailsImpl implements UserDetails {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        UserDetailsImpl user = (UserDetailsImpl) o;
+        UserPrincipal user = (UserPrincipal) o;
         return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

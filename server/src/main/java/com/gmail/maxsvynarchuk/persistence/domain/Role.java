@@ -1,6 +1,6 @@
 package com.gmail.maxsvynarchuk.persistence.domain;
 
-import com.gmail.maxsvynarchuk.persistence.domain.type.UserRole;
+import com.gmail.maxsvynarchuk.persistence.domain.type.RoleType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,5 +24,5 @@ public class Role implements Serializable {
     @NaturalId
     @NotNull
     @Enumerated(EnumType.STRING)
-    private UserRole name;
+    private RoleType name;
 }

@@ -9,7 +9,6 @@ import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -19,7 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @NamedEntityGraph(name = "User.detail",
-        attributeNodes = @NamedAttributeNode("roles"))
+        attributeNodes = @NamedAttributeNode("role"))
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +41,7 @@ public class User implements Serializable {
     private String email;
 
     @NotBlank
-    @Size(min = 6)
+    @Size(min = 6, max = 255)
     private String password;
 
     @NotNull
@@ -52,15 +51,15 @@ public class User implements Serializable {
     @NotNull
     private Date dateOfBirth;
 
-//    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-//    @JoinColumn(name = "role_id", nullable = false)
-//    private Role role;
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
+//    @ManyToMany(fetch = FetchType.LAZY)
+//    @JoinTable(name = "user_role",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "role_id"))
+//    private Set<Role> roles = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL,
             fetch = FetchType.LAZY,

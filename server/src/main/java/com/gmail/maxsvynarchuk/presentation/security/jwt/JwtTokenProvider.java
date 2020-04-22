@@ -1,6 +1,6 @@
-package com.gmail.maxsvynarchuk.config.security.jwt;
+package com.gmail.maxsvynarchuk.presentation.security.jwt;
 
-import com.gmail.maxsvynarchuk.config.security.UserDetailsImpl;
+import com.gmail.maxsvynarchuk.presentation.security.serivce.UserPrincipal;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,28 +11,34 @@ import java.util.Date;
 
 @Component
 @Slf4j
-public class JwtUtils {
+public class JwtTokenProvider {
 
-    @Value("${app.jwtSecret}")
+    @Value("${APP_JWT_SECRET}")
     private String jwtSecret;
 
-    @Value("${app.jwtExpirationMs}")
-    private int jwtExpirationMs;
+    @Value("${APP_JWT_EXPIRATION_IN_MS}")
+    private int jwtExpirationInMs;
 
     public String generateJwtToken(Authentication authentication) {
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
 
-        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+        Date issuedAtDate = new Date();
+        Date expiryDate = new Date(issuedAtDate.getTime() + jwtExpirationInMs);
 
         return Jwts.builder()
                 .setSubject(userPrincipal.getEmail())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .setIssuedAt(issuedAtDate)
+                .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
 
-    public String getUserNameFromJwtToken(String token) {
-        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+    public String getEmailFromJwtToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 
     public boolean validateJwtToken(String authToken) {

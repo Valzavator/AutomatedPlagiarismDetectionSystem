@@ -1,7 +1,6 @@
 package com.gmail.maxsvynarchuk.persistence.domain.type;
 
-public enum UserRole {
+public enum RoleType {
     ROLE_USER,
-    ROLE_MODERATOR,
     ROLE_ADMIN
 }

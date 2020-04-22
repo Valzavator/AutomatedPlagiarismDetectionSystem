@@ -1,10 +1,10 @@
-package com.gmail.maxsvynarchuk.persistence.dao;
+package com.gmail.maxsvynarchuk.service;
 
 import com.gmail.maxsvynarchuk.persistence.domain.TaskGroup;
 
 import java.util.List;
 
-public interface TaskGroupDao extends GenericDao<TaskGroup, Long> {
+public interface TaskGroupService {
 
     List<TaskGroup> findAllExpiredTaskGroupWithPendingStatus();
 

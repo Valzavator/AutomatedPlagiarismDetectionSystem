@@ -1,11 +1,13 @@
-package com.gmail.maxsvynarchuk.config.security;
+package com.gmail.maxsvynarchuk.presentation.security;
 
-import com.gmail.maxsvynarchuk.config.security.jwt.AuthEntryPointJwt;
-import com.gmail.maxsvynarchuk.config.security.jwt.AuthTokenFilter;
+import com.gmail.maxsvynarchuk.presentation.security.jwt.JwtAuthenticationEntryPoint;
+import com.gmail.maxsvynarchuk.presentation.security.jwt.JwtAuthenticationFilter;
+import com.gmail.maxsvynarchuk.presentation.security.serivce.UserDetailsServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,29 +20,28 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(
-        // securedEnabled = true,
-        // jsr250Enabled = true,
-        prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @AllArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsServiceImpl userDetailsService;
-    private final AuthEntryPointJwt unauthorizedHandler;
+    private final JwtAuthenticationEntryPoint unauthorizedHandler;
+    private final String[] patterns = {
+            "/",
+            "/api/v1/test/**",
+            "/api/v1/auth/**",
+            "/favicon.ico",
+            "/**/*.png",
+            "/**/*.gif",
+            "/**/*.svg",
+            "/**/*.jpg",
+            "/**/*.html",
+            "/**/*.css",
+            "/**/*.js"
+    };
 
     @Bean
-    public AuthTokenFilter authenticationJwtTokenFilter() {
-        return new AuthTokenFilter();
-    }
-
-    @Override
-    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-    }
-
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    public JwtAuthenticationFilter authenticationJwtTokenFilter() {
+        return new JwtAuthenticationFilter();
     }
 
     @Bean
@@ -49,12 +50,28 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
+    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+        authenticationManagerBuilder
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder());
+    }
+
+    @Bean(BeanIds.AUTHENTICATION_MANAGER)
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/api/test/**").permitAll()
+        http
+                .cors().and().csrf().disable()
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                .antMatchers(patterns).permitAll()
                 .anyRequest().authenticated();
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

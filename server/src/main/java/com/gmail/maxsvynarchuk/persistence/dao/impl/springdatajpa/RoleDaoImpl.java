@@ -3,7 +3,7 @@ package com.gmail.maxsvynarchuk.persistence.dao.impl.springdatajpa;
 import com.gmail.maxsvynarchuk.persistence.dao.RoleDao;
 import com.gmail.maxsvynarchuk.persistence.dao.repository.RoleRepository;
 import com.gmail.maxsvynarchuk.persistence.domain.Role;
-import com.gmail.maxsvynarchuk.persistence.domain.type.UserRole;
+import com.gmail.maxsvynarchuk.persistence.domain.type.RoleType;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -16,7 +16,7 @@ public class RoleDaoImpl implements RoleDao {
     private final RoleRepository repository;
 
     @Override
-    public Optional<Role> findByName(UserRole name) {
+    public Optional<Role> findByName(RoleType name) {
         return repository.findByName(name);
     }
 

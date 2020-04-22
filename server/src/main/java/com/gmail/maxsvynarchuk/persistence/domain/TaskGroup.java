@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Table(name = "task_group")
@@ -31,10 +32,10 @@ public class TaskGroup implements Serializable {
     private Task task;
 
     @NotNull
-    private String creationDate;
+    private Date creationDate;
 
     @NotNull
-    private String expiryDate;
+    private Date expiryDate;
 
     @NotNull
     @Enumerated(EnumType.STRING)

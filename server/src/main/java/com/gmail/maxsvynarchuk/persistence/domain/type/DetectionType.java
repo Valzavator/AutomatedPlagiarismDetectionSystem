@@ -1,6 +1,6 @@
 package com.gmail.maxsvynarchuk.persistence.domain.type;
 
-public enum TypeDetection {
+public enum DetectionType {
     COURSE,
     GROUP
 }

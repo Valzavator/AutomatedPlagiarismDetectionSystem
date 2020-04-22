@@ -1,125 +1,59 @@
 package com.gmail.maxsvynarchuk.presentation.controller;
 
-import com.gmail.maxsvynarchuk.config.security.UserDetailsImpl;
-import com.gmail.maxsvynarchuk.config.security.jwt.JwtUtils;
-import com.gmail.maxsvynarchuk.persistence.dao.repository.RoleRepository;
-import com.gmail.maxsvynarchuk.persistence.dao.repository.UserRepository;
-import com.gmail.maxsvynarchuk.persistence.domain.Role;
-import com.gmail.maxsvynarchuk.persistence.domain.User;
-import com.gmail.maxsvynarchuk.persistence.domain.type.Gender;
-import com.gmail.maxsvynarchuk.persistence.domain.type.UserRole;
-import com.gmail.maxsvynarchuk.presentation.payload.request.LoginRequest;
-import com.gmail.maxsvynarchuk.presentation.payload.request.SignupRequest;
-import com.gmail.maxsvynarchuk.presentation.payload.response.JwtResponse;
-import com.gmail.maxsvynarchuk.presentation.payload.response.MessageResponse;
+import com.gmail.maxsvynarchuk.facade.UserFacade;
+import com.gmail.maxsvynarchuk.presentation.security.jwt.JwtTokenProvider;
+import com.gmail.maxsvynarchuk.presentation.payload.request.LoginDto;
+import com.gmail.maxsvynarchuk.presentation.payload.request.SignUpDto;
+import com.gmail.maxsvynarchuk.presentation.payload.response.JwtAuthenticationResponse;
+import com.gmail.maxsvynarchuk.presentation.payload.response.ApiResponse;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.net.URI;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 @AllArgsConstructor
 public class AuthController {
+    private UserFacade userFacade;
     private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder encoder;
-    private final JwtUtils jwtUtils;
+    private final JwtTokenProvider tokenProvider;
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getEmail(),
+                        loginRequest.getPassword())
+        );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(new JwtResponse(jwt,
-                "Bearer",
-                userDetails.getId(),
-                userDetails.getUsername(),
-                userDetails.getEmail(),
-                roles));
+        String jwt = tokenProvider.generateJwtToken(authentication);
+        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 
+    @PreAuthorize("isAnonymous()")
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Username is already taken!"));
-        }
-
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Email is already in use!"));
-        }
-
-        // Create new user's account
-        User user = User.builder()
-                .firstName(signUpRequest.getUsername())
-                .lastName(signUpRequest.getUsername())
-                .email(signUpRequest.getEmail())
-                .password(encoder.encode(signUpRequest.getPassword()))
-                .dateOfBirth(new Date())
-                .gender(Gender.MALE)
-                .build();
-
-        Set<String> strRoles = signUpRequest.getRole();
-        Set<Role> roles = new HashSet<>();
-
-        if (strRoles == null) {
-            Role userRole = roleRepository.findByName(UserRole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpDto signUpDto) {
+        boolean isSuccessful = userFacade.registerUser(signUpDto);
+        if (isSuccessful) {
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentContextPath().path("/api/v1/user")
+                    .buildAndExpand()
+                    .toUri();
+            return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully!"));
         } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByName(UserRole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(adminRole);
-
-                        break;
-                    case "mod":
-                        Role modRole = roleRepository.findByName(UserRole.ROLE_MODERATOR)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(modRole);
-
-                        break;
-                    default:
-                        Role userRole = roleRepository.findByName(UserRole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(userRole);
-                }
-            });
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse(false, "Email is already taken!"));
         }
-
-        user.setRoles(roles);
-        userRepository.save(user);
-
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 }

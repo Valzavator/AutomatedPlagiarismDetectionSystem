@@ -3,9 +3,11 @@ package com.gmail.maxsvynarchuk.persistence.dao.impl.springdatajpa;
 import com.gmail.maxsvynarchuk.persistence.dao.TaskGroupDao;
 import com.gmail.maxsvynarchuk.persistence.dao.repository.TaskGroupRepository;
 import com.gmail.maxsvynarchuk.persistence.domain.TaskGroup;
+import com.gmail.maxsvynarchuk.persistence.domain.type.PlagDetectionStatus;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +15,13 @@ import java.util.Optional;
 @AllArgsConstructor
 public class TaskGroupImpl implements TaskGroupDao {
     private final TaskGroupRepository repository;
+
+    @Override
+    public List<TaskGroup> findAllExpiredTaskGroupWithPendingStatus() {
+        return repository.findByPlagDetectionStatusAndExpiryDateBefore(
+                PlagDetectionStatus.PENDING,
+                new Date());
+    }
 
     @Override
     public Optional<TaskGroup> findOne(Long id) {

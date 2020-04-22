@@ -5,7 +5,8 @@ import java.util.ResourceBundle;
 public enum  ResourceManager {
     VCS(ResourceBundle.getBundle("properties.vcs_api")),
     PATH(ResourceBundle.getBundle("properties.path")),
-    JPLAG(ResourceBundle.getBundle("properties.jplag"));
+    JPLAG(ResourceBundle.getBundle("properties.jplag")),
+    PAGINATION(ResourceBundle.getBundle("properties.pagination"));
 
     private ResourceBundle resourceBundle;
 

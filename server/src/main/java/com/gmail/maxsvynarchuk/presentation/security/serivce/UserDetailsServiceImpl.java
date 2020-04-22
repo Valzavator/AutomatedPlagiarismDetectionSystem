@@ -1,6 +1,6 @@
-package com.gmail.maxsvynarchuk.config.security;
+package com.gmail.maxsvynarchuk.presentation.security.serivce;
 
-import com.gmail.maxsvynarchuk.persistence.dao.repository.UserRepository;
+import com.gmail.maxsvynarchuk.persistence.dao.UserDao;
 import com.gmail.maxsvynarchuk.persistence.domain.User;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,14 +12,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
-    private final UserRepository userRepository;
+    private final UserDao userDao;
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
+        return loadUserByEmail(email);
+    }
+
+    @Transactional
+    public UserDetails loadUserByEmail(String email) throws UsernameNotFoundException {
+        User user = userDao.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email: " + email));
-        return UserDetailsImpl.build(user);
+        return UserPrincipal.build(user);
     }
 
 }

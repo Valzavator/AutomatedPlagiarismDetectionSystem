@@ -1,6 +1,6 @@
-package com.gmail.maxsvynarchuk.config.security.jwt;
+package com.gmail.maxsvynarchuk.presentation.security.jwt;
 
-import com.gmail.maxsvynarchuk.config.security.UserDetailsServiceImpl;
+import com.gmail.maxsvynarchuk.presentation.security.serivce.UserDetailsServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,11 +15,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
 
 @Slf4j
-public class AuthTokenFilter extends OncePerRequestFilter {
-    private final static String TOKEN_PREFIX = "Bearer ";
-    private JwtUtils jwtUtils;
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    public static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String TOKEN_PREFIX = "Bearer ";
+    private JwtTokenProvider jwtTokenProvider;
     private UserDetailsServiceImpl userDetailsService;
 
     @Override
@@ -27,11 +29,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         try {
-            String jwt = parseJwt(request);
-            if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
-                String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            String jwt = getJwtFromRequest(request);
+            if (Objects.nonNull(jwt) && jwtTokenProvider.validateJwtToken(jwt)) {
+                String email = jwtTokenProvider.getEmailFromJwtToken(jwt);
 
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = userDetailsService.loadUserByEmail(email);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -39,26 +41,24 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
-            log.error("Cannot set user authentication: ", e);
+            log.error("Could not set user authentication in security context: ", e);
         }
 
         filterChain.doFilter(request, response);
     }
 
-    private String parseJwt(HttpServletRequest request) {
-        String headerAuth = request.getHeader("Authorization");
-
+    private String getJwtFromRequest(HttpServletRequest request) {
+        String headerAuth = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(headerAuth) &&
                 headerAuth.startsWith(TOKEN_PREFIX)) {
             return headerAuth.substring(TOKEN_PREFIX.length());
         }
-
         return null;
     }
 
     @Autowired
-    public void setJwtUtils(JwtUtils jwtUtils) {
-        this.jwtUtils = jwtUtils;
+    public void setJwtTokenProvider(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Autowired

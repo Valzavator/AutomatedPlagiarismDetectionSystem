@@ -3,8 +3,8 @@
 /*==============================================================*/
 
 INSERT INTO roles(role_id, name)
-VALUES (1, 'user'),
-       (2, 'admin');
+VALUES (1, 'ROLE_USER'),
+       (2, 'ROLE_ADMIN');
 
 INSERT INTO programming_languages(programming_language_id, name)
 VALUES (1, 'java19'),
@@ -56,11 +56,11 @@ VALUES (1, 'TAKS-1', '', 1),
        (2, 'TAKS-2', '', 1);
 
 INSERT INTO plagiarism_detection_settings(plagiarism_detection_setting_id, base_code_path, comparison_sensitivity, data_path, minimum_similarity_percent, result_path, type_detection, programming_language_id)
-VALUES (1, null, 1, '\', 1, '\', 'GROUP', 1),
-       (2, null, 1, '\', 1, '\', 'GROUP', 2),
-       (3, null, 1, '\', 1, '\', 'GROUP', 3);
+VALUES (1, null, 1, '\\', 1, '\\', 'GROUP', 1),
+       (2, null, 1, '\\', 1, '\\', 'GROUP', 2),
+       (3, null, 1, '\\', 1, '\\', 'GROUP', 3);
 
 INSERT INTO task_group(group_id, task_id, creation_date, expiry_date, plag_detection_status, plagiarism_detection_result_id, plagiarism_detection_setting_id)
-VALUES (1, 1, '2020-04-20 17-16-30',  '2020-04-21 17-16-30', 'PENDING', null, 1),
-       (3, 1, '2020-04-20 17-16-30',  '2020-04-21 17-16-30', 'PENDING', null, 2),
-       (2, 2, '2020-04-20 17-16-30',  '2020-04-21 17-16-30', 'PENDING', null, 3);
+VALUES (1, 1, '2020-04-20 10:16:30',  '2020-04-22 03:00:00', 'PENDING', null, 1),
+       (3, 1, '2020-04-20 10:16:30',  '2020-04-22 02:00:00', 'PENDING', null, 2),
+       (2, 2, '2020-04-20 10:16:30',  '2020-04-22 03:35:00', 'PENDING', null, 3);
