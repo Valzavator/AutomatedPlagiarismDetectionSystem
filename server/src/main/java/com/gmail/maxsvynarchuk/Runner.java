@@ -5,6 +5,9 @@ import com.gmail.maxsvynarchuk.persistence.domain.*;
 import com.gmail.maxsvynarchuk.persistence.plagiarism.jplag.SoftwarePlagDetectionToolImpl;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
 
 public class Runner {
     public static final String githubUrl = "https://github.com/Muguvara/test_github_api";
@@ -16,6 +19,11 @@ public class Runner {
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
+        try {
+            throw new IllegalArgumentException("qwe");
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
+        }
 //        AccessToken accessToken = new AccessToken();
 //        accessToken.setAccessTokenString(githubToken);
 //        accessToken.setTokenType("Bearer");
@@ -77,18 +85,78 @@ public class Runner {
 //        err.read(c,0,c.length);
 //        System.out.println(new String(c));
 
-        PlagDetectionSetting setting = PlagDetectionSetting.builder()
-                .programmingLanguage(new ProgrammingLanguage(null, "java19"))
-//                .comparisonSensitivity(20)
-//                .minimumSimilarityPercent(1)
-//                .baseCodePath("data")
-//                .typeDetection()
-                .dataPath(Path.DATA_FOLDER + "/" + "task1")
-                .resultPath(Path.ANALYSIS_RESULT_FOLDER + "/" + "task1")
-                .build();
-        SoftwarePlagDetectionToolImpl s = new SoftwarePlagDetectionToolImpl();
+//        PlagDetectionSetting setting = PlagDetectionSetting.builder()
+//                .programmingLanguage(new ProgrammingLanguage(null, "java19"))
+////                .comparisonSensitivity(20)
+////                .minimumSimilarityPercent(1)
+////                .baseCodePath("data")
+////                .typeDetection()
+//                .dataPath(Path.DATA_FOLDER + "/" + "task1")
+//                .resultPath(Path.ANALYSIS_RESULT_FOLDER + "/" + "task1")
+//                .build();
+//        SoftwarePlagDetectionToolImpl s = new SoftwarePlagDetectionToolImpl();
+//
+//        PlagDetectionResult result = s.generateHtmlResult(setting);
+//        System.out.println(result);
 
-        PlagDetectionResult result = s.generateHtmlResult(setting);
-        System.out.println(result);
+//
+//        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
+//
+//        List<Future<Boolean>> futures = new ArrayList<>(5);
+
+//        for (int i = 1; i <= 5; i++) {
+//            RunTask task = new RunTask(String.valueOf(i));
+//            futures.add(executor.submit(task));
+//        }
+//
+//        executor.shutdown();
+//
+//        System.out.println("start executor");
+//        if (!executor.awaitTermination(1000, TimeUnit.MILLISECONDS)) {
+//            executor.shutdownNow();
+//            if (!executor.awaitTermination(2000, TimeUnit.MILLISECONDS)) {
+//                System.out.println("Pool did not terminate");
+//            }
+//        }
+//        System.out.println("end executor");
+
+//        futures.forEach(f -> {
+////            try {
+//            System.out.println("2. " + f.isDone());
+//            System.out.println("canceled: " + f.cancel(true));
+//            System.out.println("3. " + f.isCancelled());
+//                if (f.isDone()) {
+//                    try {
+//                        System.out.println(f.get());
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    } catch (ExecutionException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+////                System.out.println("1. " + f.get());
+////            } catch (InterruptedException | ExecutionException e) {
+////                e.printStackTrace();
+////            }
+//
+//        });
+    }
+}
+
+class RunTask implements Callable<Boolean> {
+    private String task;
+
+    public RunTask(String task) {
+        this.task = task;
+    }
+
+    @Override
+    public Boolean call() throws Exception {
+        System.out.println("Start task " + task);
+        for (int i = 0; i < 10; i++) {
+            Thread.sleep(800);
+        }
+        System.out.println("End task " + task);
+        return true;
     }
 }

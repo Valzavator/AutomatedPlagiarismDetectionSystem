@@ -1,8 +1,11 @@
 package com.gmail.maxsvynarchuk.persistence.domain;
 
+import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
 import com.gmail.maxsvynarchuk.persistence.domain.type.Gender;
 import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
+import com.gmail.maxsvynarchuk.persistence.exception.oauth.InvalidVcsUrlException;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
@@ -17,6 +20,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Slf4j
 @NamedEntityGraph(name = "User.detail",
         attributeNodes = @NamedAttributeNode("role"))
 public class User implements Serializable {
@@ -65,4 +69,24 @@ public class User implements Serializable {
             fetch = FetchType.LAZY,
             mappedBy = "user")
     private Set<AccessToken> tokens;
+
+    public AccessToken getAccessTokenForVcs(String vcsRepositoryUrl) {
+        Set<AccessToken> tokens = getTokens();
+        AuthorizationProvider authorizationProvider;
+
+        try {
+            authorizationProvider = AuthorizationProvider.recognizeFromUrl(vcsRepositoryUrl);
+        } catch (InvalidVcsUrlException ex) {
+            log.error(ex.toString());
+            return null;
+        }
+
+        for (AccessToken token : tokens) {
+            if (authorizationProvider == token.getAuthorizationProvider()) {
+                return token;
+            }
+        }
+
+       return null;
+    }
 }

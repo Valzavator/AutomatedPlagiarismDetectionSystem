@@ -9,6 +9,7 @@ public interface VcsDownloadToFileSystemService {
     boolean downloadOneRepository(AccessToken userAccessToken,
                                   String repositoryUrl,
                                   String prefixPath,
-                                  Date lastDateCommit);
+                                  Date lastDateCommit,
+                                  String repositoryDataPath);
 
 }

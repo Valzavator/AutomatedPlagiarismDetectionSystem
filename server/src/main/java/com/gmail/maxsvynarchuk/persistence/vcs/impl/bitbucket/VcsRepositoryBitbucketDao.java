@@ -90,7 +90,7 @@ public class VcsRepositoryBitbucketDao implements VcsRepositoryDao {
         return Unirest.get(apiRepositoryUrl)
                 .header(AUTHORIZATION, accessToken.getAccessToken())
                 .asObject(BitbucketRepositoryInfo.class)
-                .ifFailure(errorHandler())
+                .ifFailure(errorHandler(accessToken))
                 .getBody();
     }
 
@@ -109,7 +109,7 @@ public class VcsRepositoryBitbucketDao implements VcsRepositoryDao {
                     .header(AUTHORIZATION, accessToken.getAccessToken())
                     .asObject(new GenericType<BitbucketPagination<BitbucketCommit>>() {
                     })
-                    .ifFailure(errorHandler())
+                    .ifFailure(errorHandler(accessToken))
                     .getBody();
 
             lastCommit = commits.getValues().stream()
@@ -140,7 +140,7 @@ public class VcsRepositoryBitbucketDao implements VcsRepositoryDao {
                     .header(AUTHORIZATION, accessToken.getAccessToken())
                     .asObject(new GenericType<BitbucketPagination<BitbucketBlob>>() {
                     })
-                    .ifFailure(errorHandler())
+                    .ifFailure(errorHandler(accessToken))
                     .getBody();
             filesInfo.addAll(filesInfoPage.getValues());
         }
@@ -157,7 +157,7 @@ public class VcsRepositoryBitbucketDao implements VcsRepositoryDao {
         return toReturn;
     }
 
-    private <T> Consumer<HttpResponse<T>> errorHandler() {
+    private <T> Consumer<HttpResponse<T>> errorHandler(AccessToken accessToken) {
         return response -> {
             HttpStatus httpStatus = HttpStatus.valueOf(response.getStatus());
             if (httpStatus.is2xxSuccessful()) {
@@ -171,7 +171,7 @@ public class VcsRepositoryBitbucketDao implements VcsRepositoryDao {
                 errorResponse.setStatus(response.getStatus());
                 errorResponse.setStatusText(response.getStatusText());
                 errorResponse.setError("Access denied. You must have write or admin access.");
-                throw new OAuthIllegalTokenException(errorResponse.toString());
+                throw new OAuthIllegalTokenException(errorResponse.toString(), accessToken);
             }
 
             BitbucketErrorResponse errorResponse = response.mapError(BitbucketErrorResponse.class);
@@ -180,7 +180,7 @@ public class VcsRepositoryBitbucketDao implements VcsRepositoryDao {
                 errorResponse.setStatusText(response.getStatusText());
 
                 if (httpStatus == HttpStatus.UNAUTHORIZED) {
-                    throw new OAuthIllegalTokenException(errorResponse.toString());
+                    throw new OAuthIllegalTokenException(errorResponse.toString(), accessToken);
                 }
                 throw new InvalidVcsUrlException(errorResponse.toString());
             }

@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
-public class ProgrammingLanguageImpl implements ProgrammingLanguageDao {
+public class ProgrammingLanguageDaoImpl implements ProgrammingLanguageDao {
     private final ProgrammingLanguageRepository repository;
 
     @Override

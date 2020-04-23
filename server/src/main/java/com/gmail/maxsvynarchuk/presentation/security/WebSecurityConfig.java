@@ -27,6 +27,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtAuthenticationEntryPoint unauthorizedHandler;
     private final String[] patterns = {
             "/",
+            "/oauth2/**/*",
             "/api/v1/test/**",
             "/api/v1/auth/**",
             "/favicon.ico",

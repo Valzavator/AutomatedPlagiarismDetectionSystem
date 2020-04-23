@@ -66,12 +66,12 @@ public class VcsOAuthBitbucketDao implements VcsOAuthDao {
         if (Objects.isNull(accessToken) ||
                 Objects.isNull(accessToken.getAccessToken()) ||
                 Objects.isNull(accessToken.getTokenType())) {
-            throw new OAuthIllegalTokenException();
+            throw new OAuthIllegalTokenException(accessToken);
         }
 
         if (Objects.isNull(accessToken.getScope()) ||
                 !accessToken.getScope().equals(VCS.BITBUCKET_AUTHORIZE_OAUTH_SCOPE)) {
-            throw new OAuthIllegalTokenScopeException(accessToken.getScope());
+            throw new OAuthIllegalTokenScopeException(accessToken);
         }
     }
 

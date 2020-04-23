@@ -42,6 +42,6 @@ public enum AuthorizationProvider {
                 url.startsWith(VCS.BITBUCKET_API_REPOSITORY_PREFIX_ENDPOINT)) {
             return BITBUCKET;
         }
-        throw new IllegalArgumentException(url);
+        throw new InvalidVcsUrlException(url);
     }
 }

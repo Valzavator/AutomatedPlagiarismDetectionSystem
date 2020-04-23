@@ -3,6 +3,7 @@ package com.gmail.maxsvynarchuk.persistence.dao.impl.springdatajpa;
 import com.gmail.maxsvynarchuk.persistence.dao.TaskGroupDao;
 import com.gmail.maxsvynarchuk.persistence.dao.repository.TaskGroupRepository;
 import com.gmail.maxsvynarchuk.persistence.domain.TaskGroup;
+import com.gmail.maxsvynarchuk.persistence.domain.TaskGroupKey;
 import com.gmail.maxsvynarchuk.persistence.domain.type.PlagDetectionStatus;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -13,7 +14,7 @@ import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
-public class TaskGroupImpl implements TaskGroupDao {
+public class TaskGroupDaoImpl implements TaskGroupDao {
     private final TaskGroupRepository repository;
 
     @Override
@@ -24,8 +25,8 @@ public class TaskGroupImpl implements TaskGroupDao {
     }
 
     @Override
-    public Optional<TaskGroup> findOne(Long id) {
-        return repository.findById(id);
+    public Optional<TaskGroup> findOne(TaskGroupKey taskGroupKey) {
+        return repository.findById(taskGroupKey);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class TaskGroupImpl implements TaskGroupDao {
     }
 
     @Override
-    public boolean exist(Long id) {
-        return repository.existsById(id);
+    public boolean exist(TaskGroupKey taskGroupKey) {
+        return repository.existsById(taskGroupKey);
     }
 }

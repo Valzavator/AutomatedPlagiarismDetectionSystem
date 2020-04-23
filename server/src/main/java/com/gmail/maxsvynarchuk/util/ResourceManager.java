@@ -6,7 +6,8 @@ public enum  ResourceManager {
     VCS(ResourceBundle.getBundle("properties.vcs_api")),
     PATH(ResourceBundle.getBundle("properties.path")),
     JPLAG(ResourceBundle.getBundle("properties.jplag")),
-    PAGINATION(ResourceBundle.getBundle("properties.pagination"));
+    PAGINATION(ResourceBundle.getBundle("properties.pagination")),
+    DETECTION(ResourceBundle.getBundle("properties.automated_plagiarism_detection"));
 
     private ResourceBundle resourceBundle;
 
@@ -22,5 +23,9 @@ public enum  ResourceManager {
      */
     public String getProperty(String key) {
         return resourceBundle.getString(key);
+    }
+
+    public int getPropertyAsInt(String key) {
+        return Integer.parseInt(resourceBundle.getString(key));
     }
 }

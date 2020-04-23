@@ -17,6 +17,36 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@NamedEntityGraph(name = "TaskGroup.detail",
+        attributeNodes = {
+                @NamedAttributeNode(value = "group", subgraph = "TaskGroup.Group.detail"),
+                @NamedAttributeNode("task"),
+                @NamedAttributeNode(value = "plagDetectionSetting", subgraph = "TaskGroup.PlagDetectionStatus.detail")
+        },
+        subgraphs = {
+                @NamedSubgraph(name = "TaskGroup.Group.detail",
+                        attributeNodes = {
+                                @NamedAttributeNode("students"),
+                                @NamedAttributeNode(value = "course", subgraph = "TaskGroup.Group.Course.detail")
+                        }
+                ),
+                @NamedSubgraph(name = "TaskGroup.PlagDetectionStatus.detail",
+                        attributeNodes = {
+                                @NamedAttributeNode("programmingLanguage")
+                        }
+                ),
+                @NamedSubgraph(name = "TaskGroup.Group.Course.detail",
+                        attributeNodes = {
+                                @NamedAttributeNode(value = "creator", subgraph = "TaskGroup.Group.Course.User.detail")
+                        }
+                ),
+                @NamedSubgraph(name = "TaskGroup.Group.Course.User.detail",
+                        attributeNodes = {
+                                @NamedAttributeNode("tokens")
+                        }
+                )
+        }
+)
 public class TaskGroup implements Serializable {
     @EmbeddedId
     private TaskGroupKey id;

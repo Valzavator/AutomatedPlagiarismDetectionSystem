@@ -51,6 +51,9 @@ public class FileSystemWriter {
 
     public boolean deleteDirectory(String filePathStr) {
         Path filePath = Path.of(filePathStr);
+        if (!Files.exists(filePath)) {
+            return true;
+        }
         try {
             Files.walk(filePath)
                     .sorted(Comparator.reverseOrder())

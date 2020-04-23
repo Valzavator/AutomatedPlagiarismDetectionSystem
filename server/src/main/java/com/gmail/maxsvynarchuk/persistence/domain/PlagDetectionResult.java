@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -23,10 +24,12 @@ public class PlagDetectionResult implements Serializable {
     @Column(name = "plagiarism_detection_result_id")
     private Long id;
 
+    @Size(max = 255)
+    private String message;
+
     @NotNull
     private Boolean isSuccessful;
 
-    @NotBlank
     private String resultPath;
 
     @NotNull

@@ -2,9 +2,12 @@ package com.gmail.maxsvynarchuk.presentation.controller;
 
 import com.gmail.maxsvynarchuk.persistence.dao.*;
 import com.gmail.maxsvynarchuk.persistence.domain.Task;
+import com.gmail.maxsvynarchuk.persistence.domain.TaskGroup;
+import com.gmail.maxsvynarchuk.persistence.domain.TaskGroupKey;
 import com.gmail.maxsvynarchuk.persistence.domain.User;
 import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
 import com.gmail.maxsvynarchuk.presentation.util.ControllerUtil;
+import com.gmail.maxsvynarchuk.service.PlagiarismDetectionService;
 import com.gmail.maxsvynarchuk.service.vcs.VcsOAuthService;
 import kong.unirest.Unirest;
 import lombok.AllArgsConstructor;
@@ -12,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/oauth2")
@@ -128,9 +133,11 @@ public class VcsOAuthController {
 //        User user = userDao.findOneByEmail("email@email.com").get();
 //        System.out.println("\n" + userDao.findOneByEmail("email@email.com").get());
         //
-        User user = userDao.findByEmail("max@gmail.com").get();
+//        User user = userDao.findByEmail("max@gmail.com").get();
         System.out.println("\n\n\n");
-        System.out.println(user);
+        List<TaskGroup> taskGroups = taskGroupDao.findAllExpiredTaskGroupWithPendingStatus();
+        System.out.println(taskGroups.get(0).getGroup().getCourse().getCreator().getTokens().iterator().next().getUser());
+//        System.out.println(taskGroupDao.findAllExpiredTaskGroupWithPendingStatus());
 //        userDao.delete();
 //
 //        AccessToken accessToken = new AccessToken();
@@ -161,14 +168,16 @@ public class VcsOAuthController {
     private StudentDao studentDao;
     private GroupDao groupDao;
     private TaskDao taskDao;
-    @GetMapping("test1/{id}")
-    public void test1(@PathVariable Long id) {
-        System.out.println(groupDao.findAll());
+    private TaskGroupDao taskGroupDao;
 
-        Task task = taskDao.findOne(id).get();
-        System.out.println(task);
-
-        System.out.println(studentDao.findAllWhoHaveTask(task));
+    private  PlagiarismDetectionService plagiarismDetectionService;
+    @GetMapping("test1/{taskId}/{groupId}")
+    public void test1(@PathVariable Long taskId, @PathVariable Long groupId) {
+//        User user = userDao.findOne(1L).get();
+//        System.out.println(studentDao.findAll());
+        TaskGroupKey taskGroupKey = new TaskGroupKey(taskId, groupId);
+        TaskGroup taskGroup = taskGroupDao.findOne(taskGroupKey).get();
+        System.out.println(plagiarismDetectionService.process(taskGroup));
     }
 
 }

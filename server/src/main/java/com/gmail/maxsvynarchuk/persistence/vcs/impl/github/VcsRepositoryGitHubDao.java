@@ -99,7 +99,7 @@ public class VcsRepositoryGitHubDao implements VcsRepositoryDao {
                 .header(AUTHORIZATION, accessToken.getAccessToken())
                 .header(ACCEPT, VCS.GITHUB_API_JSON_ACCEPT_FORMAT)
                 .asJson()
-                .ifFailure(errorHandler())
+                .ifFailure(errorHandler(accessToken))
                 .getBody()
                 .getArray();
 
@@ -131,12 +131,12 @@ public class VcsRepositoryGitHubDao implements VcsRepositoryDao {
                 .header(AUTHORIZATION, accessToken.getAccessToken())
                 .header(ACCEPT, VCS.GITHUB_API_JSON_ACCEPT_FORMAT)
                 .asObject(entityType)
-                .ifFailure(errorHandler());
+                .ifFailure(errorHandler(accessToken));
 
         return response.getBody();
     }
 
-    private <T> Consumer<HttpResponse<T>> errorHandler() {
+    private <T> Consumer<HttpResponse<T>> errorHandler(AccessToken accessToken) {
         return response -> {
             HttpStatus httpStatus = HttpStatus.valueOf(response.getStatus());
             if (httpStatus.is2xxSuccessful()) {
@@ -151,7 +151,7 @@ public class VcsRepositoryGitHubDao implements VcsRepositoryDao {
                 errorResponse.setStatusText(response.getStatusText());
 
                 if (httpStatus == HttpStatus.UNAUTHORIZED) {
-                    throw new OAuthIllegalTokenException(errorResponse.toString());
+                    throw new OAuthIllegalTokenException(errorResponse.toString(), accessToken);
                 } else {
                     throw new InvalidVcsUrlException(errorResponse.toString());
                 }

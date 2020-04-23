@@ -56,19 +56,19 @@ public class VcsOAuthGitHubDao implements VcsOAuthDao {
      */
     @Override
     public AccessToken getRefreshedOAuthToken(AccessToken expiredAccessToken) {
-        throw new OAuthIllegalTokenException();
+        throw new OAuthIllegalTokenException(expiredAccessToken);
     }
 
     private void validateAccessToken(AccessToken accessToken) {
         if (Objects.isNull(accessToken) ||
                 Objects.isNull(accessToken.getAccessToken()) ||
                 Objects.isNull(accessToken.getTokenType())) {
-            throw new OAuthIllegalTokenException();
+            throw new OAuthIllegalTokenException(accessToken);
         }
 
         if (Objects.isNull(accessToken.getScope()) ||
                 !accessToken.getScope().equals(VCS.GITHUB_AUTHORIZE_OAUTH_SCOPE)) {
-            throw new OAuthIllegalTokenScopeException(accessToken.getScope());
+            throw new OAuthIllegalTokenScopeException(accessToken);
         }
     }
 }

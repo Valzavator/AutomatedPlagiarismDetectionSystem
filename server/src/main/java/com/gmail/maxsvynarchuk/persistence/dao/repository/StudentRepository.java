@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+import java.util.Set;
 
 public interface StudentRepository extends JpaRepository<Student, Long> {
 
@@ -16,6 +16,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
             "JOIN tg.group g " +
             "JOIN g.students s " +
             "WHERE t = :task")
-    List<Student> findAllWhoHaveTask(@Param("task") Task task);
+    Set<Student> findAllWhoHaveTask(@Param("task") Task task);
 
 }

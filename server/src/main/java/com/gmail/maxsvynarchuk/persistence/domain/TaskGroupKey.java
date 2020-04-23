@@ -12,6 +12,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+public
 class TaskGroupKey implements Serializable {
     @Column(name = "task_id")
     private Long taskId;
