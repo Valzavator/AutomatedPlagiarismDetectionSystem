@@ -1,28 +1,37 @@
 package com.gmail.maxsvynarchuk.presentation.controller;
 
+import com.gmail.maxsvynarchuk.persistence.dao.PlagDetectionResultDao;
+import com.gmail.maxsvynarchuk.persistence.dao.StudentDao;
+import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionResult;
+import com.gmail.maxsvynarchuk.persistence.domain.Student;
 import com.gmail.maxsvynarchuk.presentation.security.AuthUser;
 import com.gmail.maxsvynarchuk.presentation.security.serivce.UserPrincipal;
+import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/test")
+@AllArgsConstructor
 public class TestController {
-    @GetMapping("/all")
-    public String allAccess() throws IOException {
-        File file = ResourceUtils.getFile("classpath:");
-        System.out.println(file.isFile());
-        System.out.println(file.exists());
-        System.out.println(file.getPath());
-        System.out.println(file.getCanonicalPath());
-        System.out.println(file.getAbsolutePath());
+    private PlagDetectionResultDao plagDetectionResultDao;
+    private StudentDao studentDao;
+
+    @GetMapping("/all/{id}")
+    public String allAccess(@PathVariable Long id) throws IOException {
+        Optional<PlagDetectionResult> result = plagDetectionResultDao.findOne(id);
+
+        System.out.println(result.get());
+
         return "Public Content.";
     }
 

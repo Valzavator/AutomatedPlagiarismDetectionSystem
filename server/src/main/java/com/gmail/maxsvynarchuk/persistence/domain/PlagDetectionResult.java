@@ -1,16 +1,13 @@
 package com.gmail.maxsvynarchuk.persistence.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "plagiarism_detection_results")
@@ -39,6 +36,13 @@ public class PlagDetectionResult implements Serializable {
 //            mappedBy = "plagDetectionResult")
     //    @ToString.Exclude
 //    private TaskGroup taskGroup;
+
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER,
+            mappedBy = "result")
+//    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<StudentResult> studentResults;
 
     public static PlagDetectionResult failed(String message) {
         return PlagDetectionResult.builder()

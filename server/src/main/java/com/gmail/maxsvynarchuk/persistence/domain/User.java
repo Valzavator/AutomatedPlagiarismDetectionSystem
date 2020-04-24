@@ -68,6 +68,8 @@ public class User implements Serializable {
     @OneToMany(cascade = CascadeType.ALL,
             fetch = FetchType.LAZY,
             mappedBy = "user")
+//    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<AccessToken> tokens;
 
     public AccessToken getAccessTokenForVcs(String vcsRepositoryUrl) {
