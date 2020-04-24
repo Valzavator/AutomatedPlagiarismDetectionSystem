@@ -1,6 +1,7 @@
 package com.gmail.maxsvynarchuk.persistence.plagiarism.jplag;
 
 import com.gmail.maxsvynarchuk.config.constant.JPlag;
+import com.gmail.maxsvynarchuk.config.constant.Paths;
 import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionSetting;
 import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionResult;
 import com.gmail.maxsvynarchuk.persistence.plagiarism.SoftwarePlagDetectionTool;
@@ -8,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,9 +18,14 @@ import java.util.Objects;
 @Slf4j
 @Repository
 public class SoftwarePlagDetectionToolImpl implements SoftwarePlagDetectionTool {
+    public static final String INDEX_FILE = "index.html";
 
     @Override
     public PlagDetectionResult generateHtmlResult(PlagDetectionSetting setting) {
+        if (!validateSettings(setting)) {
+            return PlagDetectionResult.failed("Invalid settings");
+        }
+
         ProcessBuilder processBuilder = configureJplagProcess(setting);
         boolean isSuccessful = false;
         try {
@@ -30,11 +37,11 @@ public class SoftwarePlagDetectionToolImpl implements SoftwarePlagDetectionTool 
 
         PlagDetectionResult result = PlagDetectionResult.builder()
                 .date(new Date())
-//                .taskGroup(configuration.getTaskGroup())
                 .isSuccessful(isSuccessful)
                 .build();
         if (isSuccessful) {
-            result.setResultPath(setting.getResultPath());
+            result.setResultPath(
+                    generateResultPath(setting.getResultPath()));
         } else {
             result.setMessage("Plagiarism detection tool was interrupted!");
         }
@@ -81,6 +88,22 @@ public class SoftwarePlagDetectionToolImpl implements SoftwarePlagDetectionTool 
         }
 
         return builder.command(commands);
+    }
+
+    private boolean validateSettings(PlagDetectionSetting setting) {
+        return Objects.nonNull(setting) &&
+                Objects.nonNull(setting.getDataPath()) &&
+                Objects.nonNull(setting.getResultPath()) &&
+                Objects.nonNull(setting.getProgrammingLanguage());
+    }
+
+    private String generateResultPath(String settingResultPathStr) {
+        Path settingResultPath = Path.of(settingResultPathStr);
+        Path staticFolderPath = Path.of(Paths.STATIC_FOLDER);
+        String urlPath = staticFolderPath.relativize(settingResultPath)
+                .toString()
+                .replace("\\", "/");
+        return "/" + urlPath + "/" + INDEX_FILE;
     }
 
 }

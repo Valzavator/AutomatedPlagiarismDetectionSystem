@@ -1,10 +1,16 @@
 package com.gmail.maxsvynarchuk;
 
-import com.gmail.maxsvynarchuk.config.constant.Path;
 import com.gmail.maxsvynarchuk.persistence.domain.*;
 import com.gmail.maxsvynarchuk.persistence.plagiarism.jplag.SoftwarePlagDetectionToolImpl;
+import com.gmail.maxsvynarchuk.util.preprocessing.NonEnglishRemovalStrategy;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.springframework.util.ResourceUtils;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -19,12 +25,15 @@ public class Runner {
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        try {
-            throw new IllegalArgumentException("qwe");
-        } catch (Exception ex) {
-            System.out.println(ex.toString());
-        }
-//        AccessToken accessToken = new AccessToken();
+        System.out.println(Charset.availableCharsets());
+        System.out.println(Charset.isSupported("ISO-8859-5"));
+//        String st = "/classes/static/jplag-results/2020-04-24/00-09-06\\group1.zip";
+////        String st1 = "C:\\Users\\Valzavator\\IdeaProjects\\AutomatedPlagiarismDetectionSystem\\server\\target\\classes\\static\\jplag-results\\";
+////        Path p = Paths.get(st).normalize();
+////        Path p1 = Paths.get(st1);
+////        System.out.println(p1.getParent().relativize(p).toString());
+//        System.out.println(new File(st).getPath());
+////        AccessToken accessToken = new AccessToken();
 //        accessToken.setAccessTokenString(githubToken);
 //        accessToken.setTokenType("Bearer");
 //        System.out.println(accessToken);
@@ -143,20 +152,20 @@ public class Runner {
     }
 }
 
-class RunTask implements Callable<Boolean> {
-    private String task;
-
-    public RunTask(String task) {
-        this.task = task;
-    }
-
-    @Override
-    public Boolean call() throws Exception {
-        System.out.println("Start task " + task);
-        for (int i = 0; i < 10; i++) {
-            Thread.sleep(800);
-        }
-        System.out.println("End task " + task);
-        return true;
-    }
-}
+//class RunTask implements Callable<Boolean> {
+//    private String task;
+//
+//    public RunTask(String task) {
+//        this.task = task;
+//    }
+//
+//    @Override
+//    public Boolean call() throws Exception {
+//        System.out.println("Start task " + task);
+//        for (int i = 0; i < 10; i++) {
+//            Thread.sleep(800);
+//        }
+//        System.out.println("End task " + task);
+//        return true;
+//    }
+//}

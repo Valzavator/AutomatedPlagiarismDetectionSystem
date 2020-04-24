@@ -36,6 +36,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/**/*.svg",
             "/**/*.jpg",
             "/**/*.html",
+            "/**/*.csv",
             "/**/*.css",
             "/**/*.js"
     };
@@ -67,6 +68,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .cors().and().csrf().disable()
+                .headers()
+                .frameOptions().sameOrigin()
+                .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

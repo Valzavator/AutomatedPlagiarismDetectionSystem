@@ -29,7 +29,7 @@ public class TaskGroupServiceImpl implements TaskGroupService {
 
     @Transactional
     @Override
-    public TaskGroup updateTaskGroup(TaskGroup taskGroup) {
+    public TaskGroup saveTaskGroup(TaskGroup taskGroup) {
         return taskGroupDao.save(taskGroup);
     }
 

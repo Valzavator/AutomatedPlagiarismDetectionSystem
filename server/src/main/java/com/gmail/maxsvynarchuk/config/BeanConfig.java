@@ -2,7 +2,7 @@ package com.gmail.maxsvynarchuk.config;
 
 
 import com.gmail.maxsvynarchuk.util.FileSystemWriter;
-import com.gmail.maxsvynarchuk.util.preprocessing.CyrillicRemovalStrategy;
+import com.gmail.maxsvynarchuk.util.preprocessing.NonEnglishRemovalStrategy;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class BeanConfig {
     @Bean
     public FileSystemWriter fileSystemWriter() {
-        return new FileSystemWriter(new CyrillicRemovalStrategy());
+        return new FileSystemWriter(new NonEnglishRemovalStrategy());
     }
 
     @Bean

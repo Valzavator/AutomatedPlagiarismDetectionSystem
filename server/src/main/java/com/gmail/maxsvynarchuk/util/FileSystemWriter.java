@@ -1,17 +1,17 @@
 package com.gmail.maxsvynarchuk.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 @Slf4j
 public class FileSystemWriter {
@@ -25,7 +25,7 @@ public class FileSystemWriter {
         this.preProcessingStrategy = preProcessingStrategy;
     }
 
-    public void write(String filePathStr, String data) {
+    public void writeStringData(String filePathStr, String data) {
         if (Objects.isNull(filePathStr) || Objects.isNull(data)) {
             throw new IllegalArgumentException(filePathStr + " : " + data);
         }
@@ -49,6 +49,23 @@ public class FileSystemWriter {
         }
     }
 
+    public String writeMultipartFile(String dataPath, MultipartFile file) {
+        if (Objects.isNull(dataPath) || Objects.isNull(file)) {
+            throw new IllegalArgumentException(dataPath + " : " + file);
+        }
+
+        String fileName = file.getOriginalFilename();
+        Path filePath = Paths.get(dataPath + fileName);
+        try {
+            Files.createDirectories(filePath.getParent());
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException ex) {
+            throw new IllegalStateException("Create file " + filePath + " error!", ex);
+        }
+
+        return fileName;
+    }
+
     public boolean deleteDirectory(String filePathStr) {
         Path filePath = Path.of(filePathStr);
         if (!Files.exists(filePath)) {
@@ -66,8 +83,55 @@ public class FileSystemWriter {
         return true;
     }
 
+    public boolean unzipFile(MultipartFile file, String destDirPath) {
+        File destDir = new File(destDirPath);
+        byte[] buffer = new byte[1024];
+        Charset charset = defineCharset();
+        try (ZipInputStream zis = new ZipInputStream(file.getInputStream(), charset)) {
+            ZipEntry zipEntry = zis.getNextEntry();
+            while (zipEntry != null) {
+                StringBuilder strBuffer = new StringBuilder();
+                File newFile = newFile(destDir, zipEntry);
+                if (!zipEntry.isDirectory()) {
+                    int len;
+                    while ((len = zis.read(buffer)) > 0) {
+                        strBuffer.append(new String(buffer, 0, len));
+                    }
+                    writeStringData(newFile.getPath(), strBuffer.toString());
+                }
+                zis.closeEntry();
+                zipEntry = zis.getNextEntry();
+            }
+            zis.closeEntry();
+        } catch (Exception e) {
+            log.error("", e);
+            return false;
+        }
+        return true;
+    }
+
+    private File newFile(File destDir, ZipEntry zipEntry) throws IOException {
+        File destFile = new File(destDir, zipEntry.getName());
+
+        String destDirPath = destDir.getCanonicalPath();
+        String destFilePath = destFile.getCanonicalPath();
+
+        if (!destFilePath.startsWith(destDirPath + File.separator)) {
+            throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
+        }
+        return destFile;
+    }
+
+    private Charset defineCharset() {
+        if (Charset.isSupported("CP866")) {
+            return Charset.forName("CP866");
+        } else if (Charset.isSupported("ISO-8859-5")) {
+            return Charset.forName("ISO-8859-5");
+        }
+        return Charset.defaultCharset();
+    }
+
     public void setPreProcessingStrategy(UnaryOperator<String> preProcessingStrategy) {
         this.preProcessingStrategy = preProcessingStrategy;
     }
-
 }

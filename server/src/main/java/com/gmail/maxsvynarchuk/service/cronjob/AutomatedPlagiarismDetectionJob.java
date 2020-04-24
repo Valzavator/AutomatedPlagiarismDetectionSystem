@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.*;
 
 @Slf4j
@@ -58,12 +59,11 @@ public class AutomatedPlagiarismDetectionJob extends Thread {
                     log.info("Result of plagiarism detection: {}", result.get().toString());
                 } catch (Exception ex) {
                     log.error("Plagiarism detection failed: {}", ex.toString());
-//                    checkTaskGroupStatus(taskGroups);
                 }
             }
         } catch (InterruptedException ex) {
             log.error("AutomatedPlagiarismDetectionJob failed", ex);
-//            checkTaskGroupStatus(taskGroups);
+            checkTaskGroupStatus(taskGroups);
             // (Re-)Cancel if current thread also interrupted
             threadPool.shutdownNow();
             // Preserve interrupt status
@@ -71,24 +71,24 @@ public class AutomatedPlagiarismDetectionJob extends Thread {
         }
     }
 
-//    private void checkTaskGroupStatus(List<TaskGroup> taskGroups) {
-//        for (TaskGroup taskGroup : taskGroups) {
-//            Optional<TaskGroup> completedTaskGroupOpt =
-//                    taskGroupService.findById(taskGroup.getId())
-//                            .filter(tg -> tg.getPlagDetectionStatus() == PlagDetectionStatus.IN_PROCESS);
-//            if (completedTaskGroupOpt.isPresent()) {
-//                TaskGroup completedTaskGroup = completedTaskGroupOpt.get();
-//                PlagDetectionResult result = PlagDetectionResult.builder()
-//                        .isSuccessful(false)
-//                        .date(new Date())
-//                        .message("Failed detect plagiarism for task!")
-//                        .build();
-//                completedTaskGroup.setPlagDetectionResult(result);
-//                completedTaskGroup.setPlagDetectionStatus(PlagDetectionStatus.FAILED);
-//                taskGroupService.updateTaskGroup(taskGroup);
-//            }
-//        }
-//    }
+    private void checkTaskGroupStatus(List<TaskGroup> taskGroups) {
+        for (TaskGroup taskGroup : taskGroups) {
+            Optional<TaskGroup> completedTaskGroupOpt =
+                    taskGroupService.findById(taskGroup.getId())
+                            .filter(tg -> tg.getPlagDetectionStatus() == PlagDetectionStatus.IN_PROCESS);
+            if (completedTaskGroupOpt.isPresent()) {
+                TaskGroup completedTaskGroup = completedTaskGroupOpt.get();
+                PlagDetectionResult result = PlagDetectionResult.builder()
+                        .isSuccessful(false)
+                        .date(new Date())
+                        .message("Failed detect plagiarism for task!")
+                        .build();
+                completedTaskGroup.setPlagDetectionResult(result);
+                completedTaskGroup.setPlagDetectionStatus(PlagDetectionStatus.FAILED);
+                taskGroupService.saveTaskGroup(taskGroup);
+            }
+        }
+    }
 
     static class PlagDetectionResultCallable implements Callable<PlagDetectionResult> {
         private final TaskGroupService taskGroupService;
@@ -107,9 +107,9 @@ public class AutomatedPlagiarismDetectionJob extends Thread {
         public PlagDetectionResult call() {
             try {
                 taskGroup.setPlagDetectionStatus(PlagDetectionStatus.IN_PROCESS);
-                taskGroupService.updateTaskGroup(taskGroup);
+                taskGroupService.saveTaskGroup(taskGroup);
 
-                PlagDetectionResult result = plagiarismDetectionService.process(taskGroup);
+                PlagDetectionResult result = plagiarismDetectionService.processForTaskGroup(taskGroup);
 
                 taskGroup.setPlagDetectionResult(result);
                 taskGroup.setPlagDetectionStatus(
@@ -120,17 +120,14 @@ public class AutomatedPlagiarismDetectionJob extends Thread {
 
                 return result;
             } catch (Exception ex) {
-                PlagDetectionResult result = PlagDetectionResult.builder()
-                        .isSuccessful(false)
-                        .date(new Date())
-                        .message("Failed detect plagiarism for task!")
-                        .build();
+                PlagDetectionResult result = PlagDetectionResult.failed("Failed detect plagiarism for task!");
                 taskGroup.setPlagDetectionStatus(PlagDetectionStatus.FAILED);
                 taskGroup.setPlagDetectionResult(result);
                 throw ex;
             } finally {
-                taskGroupService.updateTaskGroup(taskGroup);
+                taskGroupService.saveTaskGroup(taskGroup);
             }
         }
     }
+
 }

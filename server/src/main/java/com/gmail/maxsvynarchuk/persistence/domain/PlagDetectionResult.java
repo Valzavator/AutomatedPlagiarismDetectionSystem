@@ -39,4 +39,12 @@ public class PlagDetectionResult implements Serializable {
 //            mappedBy = "plagDetectionResult")
     //    @ToString.Exclude
 //    private TaskGroup taskGroup;
+
+    public static PlagDetectionResult failed(String message) {
+        return PlagDetectionResult.builder()
+                .date(new Date())
+                .isSuccessful(false)
+                .message(message)
+                .build();
+    }
 }

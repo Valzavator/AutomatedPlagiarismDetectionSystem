@@ -1,10 +1,8 @@
 package com.gmail.maxsvynarchuk.presentation.controller;
 
 import com.gmail.maxsvynarchuk.persistence.dao.*;
-import com.gmail.maxsvynarchuk.persistence.domain.Task;
 import com.gmail.maxsvynarchuk.persistence.domain.TaskGroup;
 import com.gmail.maxsvynarchuk.persistence.domain.TaskGroupKey;
-import com.gmail.maxsvynarchuk.persistence.domain.User;
 import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
 import com.gmail.maxsvynarchuk.presentation.util.ControllerUtil;
 import com.gmail.maxsvynarchuk.service.PlagiarismDetectionService;
@@ -23,7 +21,6 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 public class VcsOAuthController {
-
     @Qualifier("vcsOAuthBitbucketService")
     private final VcsOAuthService vcsOAuthBitbucketService;
     @Qualifier("vcsOAuthGitHubService")
@@ -170,14 +167,14 @@ public class VcsOAuthController {
     private TaskDao taskDao;
     private TaskGroupDao taskGroupDao;
 
-    private  PlagiarismDetectionService plagiarismDetectionService;
+    private PlagiarismDetectionService plagiarismDetectionService;
     @GetMapping("test1/{taskId}/{groupId}")
     public void test1(@PathVariable Long taskId, @PathVariable Long groupId) {
 //        User user = userDao.findOne(1L).get();
 //        System.out.println(studentDao.findAll());
         TaskGroupKey taskGroupKey = new TaskGroupKey(taskId, groupId);
         TaskGroup taskGroup = taskGroupDao.findOne(taskGroupKey).get();
-        System.out.println(plagiarismDetectionService.process(taskGroup));
+        System.out.println(plagiarismDetectionService.processForTaskGroup(taskGroup));
     }
 
 }

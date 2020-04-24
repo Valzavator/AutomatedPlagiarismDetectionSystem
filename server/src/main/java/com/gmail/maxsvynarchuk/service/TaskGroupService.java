@@ -12,6 +12,6 @@ public interface TaskGroupService {
 
     List<TaskGroup> findAllExpiredTaskGroupWithPendingStatus();
 
-    TaskGroup updateTaskGroup(TaskGroup taskGroup);
+    TaskGroup saveTaskGroup(TaskGroup taskGroup);
 
 }

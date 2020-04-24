@@ -7,7 +7,7 @@ import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
 import com.gmail.maxsvynarchuk.persistence.exception.oauth.InvalidVcsUrlException;
 import com.gmail.maxsvynarchuk.persistence.exception.oauth.OAuthIllegalTokenException;
 import com.gmail.maxsvynarchuk.persistence.vcs.VcsRepositoryDao;
-import com.gmail.maxsvynarchuk.service.vcs.VcsDownloadToFileSystemService;
+import com.gmail.maxsvynarchuk.service.vcs.VcsDownloadService;
 import com.gmail.maxsvynarchuk.service.vcs.VcsOAuthService;
 import com.gmail.maxsvynarchuk.util.FileSystemWriter;
 import lombok.AllArgsConstructor;
@@ -17,11 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 @Slf4j
-public class VcsDownloadToFileSystemServiceImpl implements VcsDownloadToFileSystemService {
+public class VcsDownloadServiceImpl implements VcsDownloadService {
     private final VcsRepositoryDao vcsRepositoryBitbucketDao;
     private final VcsRepositoryDao vcsRepositoryGitHubDao;
     private final VcsOAuthService vcsOAuthBitbucketService;
@@ -30,50 +31,65 @@ public class VcsDownloadToFileSystemServiceImpl implements VcsDownloadToFileSyst
 
     @Transactional
     @Override
-    public boolean downloadOneRepository(AccessToken userAccessToken,
-                                         String repositoryUrl,
-                                         String prefixPath,
-                                         Date lastDateCommit,
-                                         String repositoryDataPath) {
+    public Optional<RepositoryInfo> downloadRepository(AccessToken userAccessToken,
+                                                       String repositoryUrl,
+                                                       String prefixPath,
+                                                       Date lastDateCommit) {
         log.debug("Attempt to download repository ({})", repositoryUrl);
         AuthorizationProvider authorizationProvider = AuthorizationProvider.recognizeFromUrl(repositoryUrl);
-
         if (Objects.isNull(userAccessToken) ||
                 authorizationProvider != userAccessToken.getAuthorizationProvider()) {
             log.debug("Access token is not suitable for this authorization provider!");
-            return false;
+            return Optional.empty();
         }
-
         VcsRepositoryDao vcsRepositoryDao = getVcsRepositoryDaoForAuthorizationProvider(authorizationProvider);
         if (Objects.isNull(vcsRepositoryDao)) {
             log.debug("Such authorization provider doesn't exist!");
-            return false;
+            return Optional.empty();
         }
 
-        RepositoryInfo repositoryInfo;
         try {
-            repositoryInfo = vcsRepositoryDao.getSubDirectoryRepositoryInfo(
+            RepositoryInfo repositoryInfo = vcsRepositoryDao.getSubDirectoryRepositoryInfo(
                     userAccessToken,
                     repositoryUrl,
                     prefixPath,
                     lastDateCommit);
+            log.debug("Attempt to download SUCCESSFUL - repository ({}) ", repositoryUrl);
+            return Optional.of(repositoryInfo);
         } catch (InvalidVcsUrlException ex) {
             // TODO refactor exception handler
             log.error(ex.toString());
-            return false;
+            return Optional.empty();
         } catch (OAuthIllegalTokenException ex) {
-            // TODO implement handler for user info about invalid token
             log.error(ex.toString());
             AccessToken newAccessToken = tryToRefreshToken(userAccessToken);
-            return downloadOneRepository(newAccessToken,
+            return downloadRepository(newAccessToken,
                     repositoryUrl,
                     prefixPath,
-                    lastDateCommit,
-                    repositoryDataPath);
+                    lastDateCommit);
         }
+    }
 
+    @Override
+    public boolean downloadAndSaveRawContentOfFiles(AccessToken userAccessToken,
+                                                    RepositoryInfo repositoryInfo,
+                                                    String repositoryDataPath) {
+        log.debug("Attempt to download raw content of files - repository ({}) ",
+                repositoryInfo.getWebsiteUrl());
+        if (Objects.isNull(userAccessToken) ||
+                repositoryInfo.getAuthorizationProvider() != userAccessToken.getAuthorizationProvider()) {
+            log.debug("Access token is not suitable for this authorization provider!");
+            return false;
+        }
         if (repositoryInfo.isEmptyRepository()) {
-            log.debug("Attempt to download FAILED - empty repository ({}) ", repositoryUrl);
+            log.debug("Attempt to download raw content of files FAILED - empty repository ({}) ",
+                    repositoryInfo.getWebsiteUrl());
+            return false;
+        }
+        VcsRepositoryDao vcsRepositoryDao = getVcsRepositoryDaoForAuthorizationProvider(
+                repositoryInfo.getAuthorizationProvider());
+        if (Objects.isNull(vcsRepositoryDao)) {
+            log.debug("Such authorization provider doesn't exist!");
             return false;
         }
 
@@ -81,7 +97,7 @@ public class VcsDownloadToFileSystemServiceImpl implements VcsDownloadToFileSyst
         for (RepositoryFileInfo fileInfo : repositoryInfo.getFilesInfo()) {
             String fileData = vcsRepositoryDao.getRawFileContent(userAccessToken, fileInfo);
             try {
-                fileSystemWriter.write(
+                fileSystemWriter.writeStringData(
                         repositoryDataPath + fileInfo.getPath(),
                         fileData);
             } catch (Exception ex) {
@@ -91,11 +107,14 @@ public class VcsDownloadToFileSystemServiceImpl implements VcsDownloadToFileSyst
             }
         }
 
-        log.debug("Attempt to download SUCCESSFUL - repository ({}) ", repositoryUrl);
+        log.debug("Attempt to download raw content of files SUCCESSFUL - repository ({}) ",
+                repositoryInfo.getWebsiteUrl());
         return true;
     }
 
-    private VcsRepositoryDao getVcsRepositoryDaoForAuthorizationProvider(AuthorizationProvider authorizationProvider) {
+
+    private VcsRepositoryDao getVcsRepositoryDaoForAuthorizationProvider(AuthorizationProvider
+                                                                                 authorizationProvider) {
         if (authorizationProvider == AuthorizationProvider.GITHUB) {
             return vcsRepositoryGitHubDao;
         } else if (authorizationProvider == AuthorizationProvider.BITBUCKET) {
