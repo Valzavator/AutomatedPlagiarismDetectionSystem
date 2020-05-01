@@ -7,14 +7,14 @@ import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "student_result")
+@Table(name = "result_student")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StudentResult implements Serializable {
+public class ResultStudent implements Serializable {
     @EmbeddedId
-    private StudentResultKey id;
+    private ResultStudentKey id;
 
     @MapsId("plagiarism_detection_result_id")
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
@@ -31,6 +31,6 @@ public class StudentResult implements Serializable {
     private Student student;
 
     @NotBlank
-    private String message;
+    private String logMessage;
 
 }

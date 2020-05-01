@@ -41,7 +41,7 @@ public class AuthController {
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 
-    @PreAuthorize("isAnonymous()")
+//    @PreAuthorize("isAnonymous()")
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpDto signUpDto) {
         boolean isSuccessful = userFacade.registerUser(signUpDto);

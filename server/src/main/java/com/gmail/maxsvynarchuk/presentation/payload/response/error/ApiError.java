@@ -15,7 +15,7 @@ public class ApiError {
     private String message;
     private String debugMessage;
     private String path;
-    private List<ApiSubError> subErrors;
+    private List<? extends ApiSubError> subErrors;
 
     private ApiError() {
         timestamp = new Date();

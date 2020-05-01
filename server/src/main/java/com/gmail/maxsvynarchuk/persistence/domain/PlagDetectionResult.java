@@ -42,7 +42,7 @@ public class PlagDetectionResult implements Serializable {
             mappedBy = "result")
 //    @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private Set<StudentResult> studentResults;
+    private Set<ResultStudent> resultStudents;
 
     public static PlagDetectionResult failed(String message) {
         return PlagDetectionResult.builder()

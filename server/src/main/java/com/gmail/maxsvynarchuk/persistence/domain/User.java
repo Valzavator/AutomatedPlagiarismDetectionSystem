@@ -48,22 +48,16 @@ public class User implements Serializable {
     @Size(min = 6, max = 255)
     private String password;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
-
-    @NotNull
-    private Date dateOfBirth;
+//    @NotNull
+//    @Enumerated(EnumType.STRING)
+//    private Gender gender;
+//
+//    @NotNull
+//    private Date dateOfBirth;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
-
-//    @ManyToMany(fetch = FetchType.LAZY)
-//    @JoinTable(name = "user_role",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "role_id"))
-//    private Set<Role> roles = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL,
             fetch = FetchType.LAZY,

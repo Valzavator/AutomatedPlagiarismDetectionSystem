@@ -13,7 +13,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public
-class StudentResultKey implements Serializable {
+class ResultStudentKey implements Serializable {
     @Column(name = "plagiarism_detection_result_id")
     private Long resultId;
 

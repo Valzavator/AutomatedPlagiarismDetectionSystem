@@ -19,18 +19,18 @@ VALUES (1, 'java19'),
        (10, 'java12'),
        (11, 'java11');
 
-INSERT INTO users(user_id, date_of_birth, email, first_name, last_name, gender, password, role_id)
-VALUES (1, '1998-11-27', 'max@gmail.com', 'Max', 'Svynarchuk', 'MALE', '123456', 1);
+INSERT INTO users(user_id, email, first_name, last_name, password, role_id)
+VALUES (1 , 'max@gmail.com', 'Max', 'Svynarchuk', '123456', 1);
 
-INSERT INTO courses(course_id, name, user_id)
-VALUES (1, 'WEB', 1);
+INSERT INTO courses(course_id, name, user_id, creation_date)
+VALUES (1, 'WEB', 1, '2020-05-01');
 
-INSERT INTO groups(group_id, name, course_id)
-VALUES (1, 'GROUP-1', 1),
-       (2, 'GROUP-2', 1),
-       (3, 'GROUP-3', 1);
+INSERT INTO groups(group_id, name, course_id, creation_date)
+VALUES (1, 'GROUP-1', 1, '2020-05-01'),
+       (2, 'GROUP-2', 1, '2020-05-01'),
+       (3, 'GROUP-3', 1, '2020-05-01');
 
-INSERT INTO students(student_id, full_name, vcs_repository_link, user_id)
+INSERT INTO students(student_id, full_name, vcs_repository_url, user_id)
 VALUES (1, 'STUDENT-1', 'https://github.com', 1),
        (2, 'STUDENT-2', 'https://github.com', 1),
        (3, 'STUDENT-3', 'https://github.com', 1),
