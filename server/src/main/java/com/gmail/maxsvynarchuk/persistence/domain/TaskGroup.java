@@ -26,13 +26,18 @@ import java.util.Date;
         subgraphs = {
                 @NamedSubgraph(name = "TaskGroup.Group.detail",
                         attributeNodes = {
-                                @NamedAttributeNode("students"),
+                                @NamedAttributeNode(value = "studentGroups", subgraph = "TaskGroup.Group.StudentGroup.detail"),
                                 @NamedAttributeNode(value = "course", subgraph = "TaskGroup.Group.Course.detail")
                         }
                 ),
                 @NamedSubgraph(name = "TaskGroup.PlagDetectionStatus.detail",
                         attributeNodes = {
                                 @NamedAttributeNode("programmingLanguage")
+                        }
+                ),
+                @NamedSubgraph(name = "TaskGroup.Group.StudentGroup.detail",
+                        attributeNodes = {
+                                @NamedAttributeNode(value = "student")
                         }
                 ),
                 @NamedSubgraph(name = "TaskGroup.Group.Course.detail",

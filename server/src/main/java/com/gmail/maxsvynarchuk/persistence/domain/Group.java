@@ -36,15 +36,17 @@ public class Group implements Serializable {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Course course;
 
-    @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.MERGE
-            })
-    @JoinTable(name = "student_group",
-            joinColumns = {@JoinColumn(name = "group_id")},
-            inverseJoinColumns = {@JoinColumn(name = "student_id")})
-    private Set<Student> students;
+//    @ManyToMany(fetch = FetchType.LAZY,
+//            cascade = {
+//                    CascadeType.PERSIST,
+//                    CascadeType.MERGE
+//            })
+//    @JoinTable(name = "student_group",
+//            joinColumns = {@JoinColumn(name = "group_id")},
+//            inverseJoinColumns = {@JoinColumn(name = "student_id")})
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "group")
+    @ToString.Exclude
+    private Set<StudentGroup> studentGroups;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "group")
     @ToString.Exclude

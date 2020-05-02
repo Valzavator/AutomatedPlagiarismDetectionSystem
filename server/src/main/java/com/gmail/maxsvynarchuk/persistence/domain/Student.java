@@ -26,14 +26,11 @@ public class Student implements Serializable {
     @Size(max = 255)
     private String fullName;
 
-    @NotBlank
-    @URL
-    private String vcsRepositoryUrl;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private User creator;
+
 }

@@ -10,12 +10,12 @@ import java.util.Set;
 
 public interface StudentRepository extends JpaRepository<Student, Long> {
 
-    @Query("SELECT DISTINCT s " +
-            "FROM Task t " +
-            "JOIN t.taskGroups tg " +
-            "JOIN tg.group g " +
-            "JOIN g.students s " +
-            "WHERE t = :task")
-    Set<Student> findAllWhoHaveTask(@Param("task") Task task);
+//    @Query("SELECT DISTINCT s " +
+//            "FROM Task t " +
+//            "JOIN t.taskGroups tg " +
+//            "JOIN tg.group g " +
+//            "JOIN g.students s " +
+//            "WHERE t = :task")
+//    Set<Student> findAllWhoHaveTask(@Param("task") Task task);
 
 }
