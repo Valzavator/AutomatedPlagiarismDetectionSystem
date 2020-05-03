@@ -1,14 +1,26 @@
 import React from 'react';
 import Header from '../component/Header';
 import Footer from '../component/Footer'
+import Sidebar from "../component/Sidebar";
+import {connect} from "react-redux";
+import NotificationsSystem from 'reapop';
+import theme from 'reapop-theme-bootstrap';
 
 class Layout extends React.Component {
     render() {
         return (
-            <div>
-                <Header/>
-                <div>
-                    {this.props.children}
+            <div className="wrapper-1">
+                <div className="wrapper-2">
+                    <NotificationsSystem theme={theme}/>
+                    <Header/>
+                    <main role="main" className={this.props.isOpenSidebar ? "d-flex " : "d-flex toggled"} id="wrapper">
+                        <Sidebar/>
+                        <div id="page-content-wrapper">
+                            <div className="container-fluid h-100">
+                                {this.props.children}
+                            </div>
+                        </div>
+                    </main>
                 </div>
                 <Footer/>
             </div>
@@ -16,4 +28,10 @@ class Layout extends React.Component {
     }
 }
 
-export default Layout;
+function mapStateToProps(state) {
+    return {
+        isOpenSidebar: state.sidebar.isOpenSidebar
+    };
+}
+
+export default connect(mapStateToProps)(Layout);

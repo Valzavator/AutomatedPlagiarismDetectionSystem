@@ -6,13 +6,13 @@ import Layout from "./container/Layout";
 import HomePage from "./component/HomePage"
 import SignInPage from "./component/SignInPage"
 import SignUpPage from "./component/SignUpPage"
-
 import configureStore from "./store/configureStore";
 
-import "bootstrap/dist/css/bootstrap.min.css";
+// import "bootstrap/dist/css/bootstrap.min.css";
 import "popper.js/dist/umd/popper.min";
 import "bootstrap/dist/js/bootstrap.min";
 import "jquery/dist/jquery.slim.min";
+import "font-awesome/css/font-awesome.min.css";
 import "./App.css";
 
 const store = configureStore();

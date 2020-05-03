@@ -1,3 +1,5 @@
+export const SIDEBAR_CHANGE_STATE = 'SIDEBAR_CHANGE_STATE';
+
 export const SET_SEARCH = 'SET_SEARCH';
 
 export const AUTH_USER = 'AUTH_USER';

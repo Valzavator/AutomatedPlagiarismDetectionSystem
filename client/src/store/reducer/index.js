@@ -1,16 +1,12 @@
 import {combineReducers} from 'redux';
-// import search from './searchReducer';
 import auth from './authReducer';
-// import chat from './chatReducer';
-// import exchange from './exchangeReducer';
-// import error from './errorReducer';
+import sidebar from "./sidebarReducer";
+import {reducer as notificationsReducer} from 'reapop';
 
 const rootReducer = combineReducers({
-    // search,
     auth,
-    // chat,
-    // exchange,
-    // error
+    sidebar,
+    notifications: notificationsReducer()
 });
 
 export default rootReducer;
