@@ -2,11 +2,12 @@ import React from "react";
 import {BrowserRouter, Route, Switch} from "react-router-dom";
 import {Provider} from 'react-redux';
 
-import Layout from "./container/Layout";
-import HomePage from "./component/HomePage"
-import SignInPage from "./component/SignInPage"
-import SignUpPage from "./component/SignUpPage"
+import Layout from "./view/container/Layout";
+import HomePage from "./view/component/HomePage"
+import SignInPage from "./view/component/SignInPage"
+import SignUpPage from "./view/component/SignUpPage"
 import configureStore from "./store/configureStore";
+import Auth from "./view/container/Auth";
 
 // import "bootstrap/dist/css/bootstrap.min.css";
 import "popper.js/dist/umd/popper.min";
@@ -27,8 +28,8 @@ class App extends React.Component {
                     <Layout>
                         <Switch>
                             <Route exact path="/" component={HomePage}/>
-                            <Route exact path="/signin" component={SignInPage}/>
-                            <Route exact path="/signup" component={SignUpPage}/>
+                            <Route exact path="/signin" component={Auth(SignInPage,false)}/>
+                            <Route exact path="/signup" component={Auth(SignUpPage,false)}/>
 
                             {/*<Route exact path="/error" component={ErrorPage}/>*/}
                             {/*<Route component={NotFoundPage}/>*/}

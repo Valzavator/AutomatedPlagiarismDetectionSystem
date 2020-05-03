@@ -1,5 +1,5 @@
 import React from 'react';
-import Header from '../component/Header';
+import Header from './Header';
 import Footer from '../component/Footer'
 import Sidebar from "../component/Sidebar";
 import {connect} from "react-redux";
@@ -13,7 +13,9 @@ class Layout extends React.Component {
                 <div className="wrapper-2">
                     <NotificationsSystem theme={theme}/>
                     <Header/>
-                    <main role="main" className={this.props.isOpenSidebar ? "d-flex " : "d-flex toggled"} id="wrapper">
+                    <main role="main"
+                          className={this.props.isOpenSidebar && this.props.isAuthorized ? "d-flex " : "d-flex toggled"}
+                          id="wrapper">
                         <Sidebar/>
                         <div id="page-content-wrapper">
                             <div className="container-fluid h-100">
@@ -30,7 +32,8 @@ class Layout extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        isOpenSidebar: state.sidebar.isOpenSidebar
+        isOpenSidebar: state.sidebar.isOpenSidebar,
+        isAuthorized: state.auth.isAuthorized
     };
 }
 
