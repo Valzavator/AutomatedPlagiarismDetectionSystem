@@ -1,8 +1,11 @@
 import React from "react";
 import {connect} from "react-redux";
-import {Link, NavLink, Redirect} from "react-router-dom";
 import {notify} from 'reapop';
 import validator from 'email-validator';
+import {bindActionCreators} from "redux";
+
+import * as authActions from '../../store/action/authActions';
+import * as errorActions from '../../store/action/errorActions';
 
 class SignInPage extends React.Component {
     constructor(props) {
@@ -10,7 +13,8 @@ class SignInPage extends React.Component {
 
         this.state = {
             email: '',
-            password: ''
+            password: '',
+            isSubmitted: false,
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -25,25 +29,56 @@ class SignInPage extends React.Component {
         this.setError(fieldName, '', false)
     }
 
-    handleSubmit(e) {
+    async handleSubmit(e) {
         e.preventDefault();
 
-        this.validateForm();
+        let isValid = this.validateForm();
+
+        if (isValid) {
+            this.setState({isSubmitted: true});
+            try {
+                let isSuccessful = await this.props.actions.auth.signInUser({
+                    email: this.state.email,
+                    password: this.state.password
+                });
+                if (isSuccessful === true) {
+                    // await this.props.actions.auth.getUser();
+                } else if (isSuccessful === false) {
+                    const {notify} = this.props;
+                    notify({
+                        title: 'Помилка авторизації',
+                        message: 'Невірний Email або Пароль!',
+                        status: 'error',
+                        position: 'br',
+                        dismissible: true,
+                        dismissAfter: 2000
+                    });
+                }
+            } catch (err) {
+                this.props.actions.error.throwError(err);
+            }
+        }
     }
 
     validateForm() {
         const email = this.state.email;
         const password = this.state.password;
 
+        let isValid = true;
+
         if (!validator.validate(email)) {
             this.setError('email',
                 'Некоректна Email адреса!')
+            isValid = false;
         }
 
         if (!password || password.length === 0) {
             this.setError('password',
                 'Буль-ласка заповніть дане поле!')
+            isValid = false;
         }
+
+        return isValid;
     }
 
     setError(fieldName, errorMessage, isVisible = true) {
@@ -83,7 +118,7 @@ class SignInPage extends React.Component {
                         AutoPlag
                     </div>
                     <div className="card-body mx-auto w-100">
-                        <form acceptCharset="UTF-8" role="form" method="post" onSubmit={this.handleSubmit}>
+                        <form acceptCharset="UTF-8" method="post" onSubmit={this.handleSubmit}>
                             <div className="form-group">
                                 <label htmlFor="email">
                                     Email
@@ -144,4 +179,21 @@ class SignInPage extends React.Component {
     }
 }
 
-export default connect(null, {notify})(SignInPage);
+function mapStateToProps(state) {
+    return {
+        isAuthorized: state.auth.isAuthorized,
+        user: state.auth.user
+    };
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        actions: {
+            auth: bindActionCreators(authActions, dispatch),
+            error: bindActionCreators(errorActions, dispatch)
+        },
+        notify: bindActionCreators(notify, dispatch)
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignInPage);

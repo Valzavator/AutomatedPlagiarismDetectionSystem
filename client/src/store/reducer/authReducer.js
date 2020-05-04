@@ -6,5 +6,24 @@ const INITIAL_STATE = {
 };
 
 export default function authReducer(state = INITIAL_STATE, action) {
-    return state;
+    switch (action.type) {
+        case types.UNAUTH_USER:
+            return Object.assign({}, state,
+                {
+                    // user: {},
+                    isAuthorized: false
+                }
+            );
+        case types.AUTH_USER:
+            return Object.assign({}, state,
+                {
+                    // user: action.user,
+                    isAuthorized: true
+                }
+            );
+        case types.SET_AUTH_USER:
+            return Object.assign({}, state, {user: action.user});
+        default:
+            return state;
+    }
 }

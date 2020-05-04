@@ -1,20 +1,33 @@
 import React from "react";
-import {NavLink} from "react-router-dom";
+import {Link, NavLink, withRouter} from "react-router-dom";
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
 import * as sidebarActions from '../../store/action/sidebarActions';
+import * as authActions from '../../store/action/authActions';
+import {LinkContainer} from 'react-router-bootstrap';
 
 class Header extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.handleLogout = this.handleLogout.bind(this);
+    }
+
+    handleLogout() {
+        this.props.actions.auth.logoutUser();
+        this.props.history.push('/');
+    };
+
     render() {
 
         const renderSidebarButton = () => {
             if (this.props.isAuthorized) {
                 return (
                     <ul className="navbar-nav">
-                        <li className="nav-item" onClick={this.props.actions.sidebarChangeState}>
-                            <NavLink to={"#"} className="nav-link">
+                        <li className="nav-item" onClick={this.props.actions.sidebar.sidebarChangeState}>
+                            <button className="btn btn-link nav-link">
                                 <i className="fa fa-bars fa-lg" aria-hidden="true">&nbsp;&nbsp;&nbsp;&nbsp;</i>
-                            </NavLink>
+                            </button>
                         </li>
                     </ul>
                 )
@@ -28,32 +41,35 @@ class Header extends React.Component {
                         {singleCheckLink}
 
                         <li className="nav-item">
-                            <NavLink to={"/courses"} className="nav-link">
-                                <i className="fa fa-list fa-lg" aria-hidden="true">&nbsp;</i>
-                                Курси
-                            </NavLink>
+                            <LinkContainer to="/courses">
+                                <button className="nav-link btn btn-link">
+                                    <i className="fa fa-list fa-lg" aria-hidden="true">&nbsp;</i>
+                                    Курси
+                                </button>
+                            </LinkContainer>
                         </li>
 
                         <li className="nav-item dropdown">
-                            <NavLink to={"#"}
-                                     className="nav-link dropdown-toggle"
-                                     id="profileDropdownMenuLink"
-                                     role="button"
-                                     data-toggle="dropdown"
-                                     aria-haspopup="true"
-                                     aria-expanded="false">
+                            <button className="btn btn-link nav-link dropdown-toggle"
+                                    id="profileDropdownMenuLink"
+                                    role="button"
+                                    data-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false">
                                 <i className="fa fa-user-circle-o fa-lg" aria-hidden="true">&nbsp;</i>
                                 {this.props.username}
-                            </NavLink>
+                            </button>
                             <div className="dropdown-menu dropdown-menu-right"
                                  aria-labelledby="profileDropdownMenuLink">
-                                <NavLink to={"/profile"} className="dropdown-item">
-                                    Профіль
-                                </NavLink>
+                                <LinkContainer to="/profile">
+                                    <button className="dropdown-item">
+                                        Профіль
+                                    </button>
+                                </LinkContainer>
                                 <div className="dropdown-divider"/>
-                                <NavLink to={"/signout"} className="dropdown-item">
+                                <button className="dropdown-item" onClick={this.handleLogout}>
                                     Вийти
-                                </NavLink>
+                                </button>
                             </div>
                         </li>
 
@@ -65,17 +81,21 @@ class Header extends React.Component {
                         {singleCheckLink}
 
                         <li className="nav-item">
-                            <NavLink to={"/signup"} className="nav-link">
-                                <i className="fa fa-user-plus fa-lg" aria-hidden="true">&nbsp;</i>
-                                Зареєструватися
-                            </NavLink>
+                            <LinkContainer to="/signup">
+                                <button className="nav-link btn btn-link">
+                                    <i className="fa fa-user-plus fa-lg" aria-hidden="true">&nbsp;</i>
+                                    Зареєструватися
+                                </button>
+                            </LinkContainer>
                         </li>
 
                         <li className="nav-item">
-                            <NavLink to={"/signin"} className="nav-link">
-                                <i className="fa fa-sign-in fa-lg" aria-hidden="true">&nbsp;</i>
-                                Увійти
-                            </NavLink>
+                            <LinkContainer to="/signin">
+                                <button className="nav-link btn btn-link">
+                                    <i className="fa fa-sign-in fa-lg" aria-hidden="true">&nbsp;</i>
+                                    Увійти
+                                </button>
+                            </LinkContainer>
                         </li>
 
                     </ul>
@@ -85,10 +105,12 @@ class Header extends React.Component {
 
         const singleCheckLink = (
             <li className="nav-item">
-                <NavLink to={"/1"} className="nav-link">
-                    <i className="fa fa-check-circle-o fa-lg" aria-hidden="true">&nbsp;</i>
-                    Разова перевірка
-                </NavLink>
+                <LinkContainer to="/1">
+                    <button className="nav-link btn btn-link">
+                        <i className="fa fa-check-circle-o fa-lg" aria-hidden="true">&nbsp;</i>
+                        Разова перевірка
+                    </button>
+                </LinkContainer>
             </li>
         )
 
@@ -113,7 +135,10 @@ class Header extends React.Component {
 
 function mapDispatchToProps(dispatch) {
     return {
-        actions: bindActionCreators(sidebarActions, dispatch),
+        actions: {
+            auth: bindActionCreators(authActions, dispatch),
+            sidebar: bindActionCreators(sidebarActions, dispatch),
+        }
     };
 }
 
@@ -124,5 +149,5 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Header);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Header));
 

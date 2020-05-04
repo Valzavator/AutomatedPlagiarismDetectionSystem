@@ -1,8 +1,8 @@
 import axios from 'axios';
-import LocalStorage from '../utils/LocalStorage';
+import LocalStorage from '../util/LocalStorage';
 
 const axiosAPI = axios.create({
-    baseURL: '/api/v2',
+    baseURL: 'http://localhost:8080/api/v1',
     headers: {
         'Accept': 'application/json'
     },
@@ -19,16 +19,39 @@ export const apiRequest = async (method, path, body) => {
         } else {  // POST
             return await axiosAPI.post(path, body);
         }
-    } catch (err) {
-        throw {
-            timestamp: err.response.timestamp,
-            status: err.response.status,
-            error: err.response.error,
-            message: err.response.message,
-            debugMessage: err.response.debugMessage,
-            path: err.response.path
-        };
+    } catch (error) {
+        if (error.response) {
+            throw Exception(error.response.data);
+        } else if (error.request) {
+            // The request was made but no response was received
+            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+            // http.ClientRequest in node.js
+            throw Exception({
+                status: 504,
+                error: 'Gateway Timeout',
+            });
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log('Error', error.message);
+            throw Exception({
+                status: 418,
+                error: ' I’m a teapot ;)',
+                message: error.message,
+            });
+        }
     }
 };
+
+function Exception(data) {
+    const template = {
+        timestamp: Date.now(),
+        status: 200,
+        error: '',
+        message: '',
+        debugMessage: '',
+        path: ''
+    }
+    return Object.assign({}, template, data)
+}
 
 export default apiRequest;

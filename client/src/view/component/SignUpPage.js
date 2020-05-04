@@ -2,6 +2,9 @@ import React from "react";
 import validator from "email-validator";
 import {connect} from "react-redux";
 import {notify} from "reapop";
+import {signUp} from '../../api/auth'
+import {bindActionCreators} from "redux";
+import * as errorActions from "../../store/action/errorActions";
 
 class SignUpPage extends React.Component {
     constructor(props) {
@@ -26,10 +29,40 @@ class SignUpPage extends React.Component {
         this.setError(fieldName, '', false)
     }
 
-    handleSubmit(e) {
+    async handleSubmit(e) {
         e.preventDefault();
+        let isValid = this.validateForm();
 
-        this.validateForm();
+        // this.setState({isLoading: true, submit: true});
+        if (isValid) {
+            try {
+                let response = await signUp({
+                    firstName: this.state.firstName,
+                    lastName: this.state.lastName,
+                    email: this.state.email,
+                    password: this.state.password,
+                });
+                if (response.status === 201) {
+                    return this.props.history.push('/signin');
+                } else if (response.status === 400) {
+                    if (response.data.success === false) {
+                        const {notify} = this.props;
+                        notify({
+                            title: 'Помилка реєстрації',
+                            message: 'Такий email вже існує в системі!',
+                            status: 'error',
+                            position: 'br',
+                            dismissible: true,
+                            dismissAfter: 0
+                        });
+                    } else {
+                        this.props.error.throwError(response.data);
+                    }
+                }
+            } catch (error) {
+                this.props.error.throwError(error);
+            }
+        }
     }
 
     validateForm() {
@@ -38,25 +71,30 @@ class SignUpPage extends React.Component {
         const lastName = this.state.lastName;
         const password = this.state.password;
 
+        let isValid = true;
+
         if (!validator.validate(email)) {
             this.setError('email',
                 'Некоректна Email адреса!')
+            isValid = false;
         }
 
         if (!firstName || firstName.length === 0) {
             this.setError('firstName',
                 'Буль-ласка заповніть дане поле!')
-        } else if ( !/^[A-zА-яЁёІіЇїЄє]+$/.test(firstName)) {
+        } else if (!/^[A-zА-яЁёІіЇїЄє]+$/.test(firstName)) {
             this.setError('firstName',
                 "Ім'я повинно містити лише букви!")
+            isValid = false;
         }
 
         if (!lastName || lastName.length === 0) {
             this.setError('lastName',
                 'Буль-ласка заповніть дане поле!')
-        } else if ( !/^[A-zА-яЁёІіЇїЄє]+$/.test(lastName)) {
+        } else if (!/^[A-zА-яЁёІіЇїЄє]+$/.test(lastName)) {
             this.setError('lastName',
                 "Прізвище повинно містити лише букви!")
+            isValid = false;
         }
 
         if (!password || password.length === 0) {
@@ -65,7 +103,10 @@ class SignUpPage extends React.Component {
         } else if (password.length < 6) {
             this.setError('password',
                 'Пароль повинен містити не менше 6 символів!')
+            isValid = false;
         }
+
+        return isValid;
     }
 
     setError(fieldName, errorMessage, isVisible = true) {
@@ -141,7 +182,7 @@ class SignUpPage extends React.Component {
                                            className={renderFieldStyle('firstName')}
                                            placeholder="Ім'я"
                                            aria-describedby="inputGroupPrepend"
-                                           maxLength="255"/>
+                                           maxLength="32"/>
                                     {renderErrorMessage('firstName')}
                                 </div>
                             </div>
@@ -163,7 +204,7 @@ class SignUpPage extends React.Component {
                                            onChange={this.handleChange}
                                            className={renderFieldStyle('lastName')}
                                            placeholder="Прізвище"
-                                           maxLength="255"
+                                           maxLength="32"
                                            aria-describedby="inputGroupPrepend"/>
                                     {renderErrorMessage('lastName')}
                                 </div>
@@ -205,4 +246,14 @@ class SignUpPage extends React.Component {
     }
 }
 
-export default connect(null, {notify})(SignUpPage);
+function mapDispatchToProps(dispatch) {
+    return {
+        error: bindActionCreators(errorActions, dispatch),
+        notify: bindActionCreators(notify, dispatch)
+    };
+}
+
+export default connect(null, mapDispatchToProps)(SignUpPage);
+
+
+// export default connect(null, {notify})(SignUpPage);

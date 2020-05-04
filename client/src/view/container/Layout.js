@@ -5,8 +5,23 @@ import Sidebar from "../component/Sidebar";
 import {connect} from "react-redux";
 import NotificationsSystem from 'reapop';
 import theme from 'reapop-theme-bootstrap';
+import {withRouter} from "react-router-dom";
 
 class Layout extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {};
+    };
+
+    static getDerivedStateFromProps(props, state) {
+        if (props.errorStatus >= 300 &&
+            props.location.pathname !== '/error') {
+            props.history.push('/error');
+            return null;
+        }
+        return state;
+    };
+
     render() {
         return (
             <div className="wrapper-1">
@@ -16,7 +31,7 @@ class Layout extends React.Component {
                     <main role="main"
                           className={this.props.isOpenSidebar && this.props.isAuthorized ? "d-flex " : "d-flex toggled"}
                           id="wrapper">
-                        <Sidebar/>
+                        {this.props.isAuthorized ? <Sidebar/> : null}
                         <div id="page-content-wrapper">
                             <div className="container-fluid h-100">
                                 {this.props.children}
@@ -33,8 +48,9 @@ class Layout extends React.Component {
 function mapStateToProps(state) {
     return {
         isOpenSidebar: state.sidebar.isOpenSidebar,
-        isAuthorized: state.auth.isAuthorized
+        isAuthorized: state.auth.isAuthorized,
+        errorStatus: state.error.status
     };
 }
 
-export default connect(mapStateToProps)(Layout);
+export default withRouter(connect(mapStateToProps)(Layout));
