@@ -1,13 +1,15 @@
 import axios from 'axios';
 import LocalStorage from '../util/LocalStorage';
+import {SERVER_BASE_URL} from "../util/constants";
 
 const axiosAPI = axios.create({
-    baseURL: 'http://localhost:8080/api/v1',
+    baseURL: SERVER_BASE_URL,
     headers: {
         'Accept': 'application/json'
     },
     validateStatus: function (status) {
-        return status < 500 && status !== 413 && status !== 401;
+        // return status < 500 && status !== 413 && status !== 401;
+        return status < 300;
     }
 });
 

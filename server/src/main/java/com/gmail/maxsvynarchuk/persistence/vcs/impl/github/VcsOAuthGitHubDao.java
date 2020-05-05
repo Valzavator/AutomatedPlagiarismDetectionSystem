@@ -3,6 +3,7 @@ package com.gmail.maxsvynarchuk.persistence.vcs.impl.github;
 import com.gmail.maxsvynarchuk.config.constant.VCS;
 import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
 import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
+import com.gmail.maxsvynarchuk.persistence.exception.oauth.InvalidVcsUrlException;
 import com.gmail.maxsvynarchuk.persistence.exception.oauth.OAuthIllegalAuthorizeStateException;
 import com.gmail.maxsvynarchuk.persistence.exception.oauth.OAuthIllegalTokenException;
 import com.gmail.maxsvynarchuk.persistence.exception.oauth.OAuthIllegalTokenScopeException;
@@ -19,13 +20,23 @@ public class VcsOAuthGitHubDao implements VcsOAuthDao {
     private static final String SCOPE = "scope";
     private static final String STATE = "state";
     private static final String CODE = "code";
+    private static final String REDIRECT_URI = "redirect_uri";
 
     @Override
-    public String getAuthorizeOAuthUrl() {
+    public String getAuthorizeOAuthUrl(String redirectUrl) {
+        String redirectParameter = null;
+        if (Objects.nonNull(redirectUrl) && redirectUrl.length() > 0) {
+            if (!redirectUrl.startsWith(VCS.GITHUB_AUTHORIZE_OAUTH_CALLBACK_URL)) {
+                throw new InvalidVcsUrlException(redirectUrl);
+            }
+            redirectParameter = REDIRECT_URI + "=" + redirectUrl;
+        }
+
         return VCS.GITHUB_AUTHORIZE_OAUTH_URL +
                 "?" + CLIENT_ID + "=" + VCS.GITHUB_AUTHORIZE_OAUTH_CLIENT_ID +
                 "&" + SCOPE + "=" + VCS.GITHUB_AUTHORIZE_OAUTH_SCOPE +
-                "&" + STATE + "=" + VCS.GITHUB_AUTHORIZE_OAUTH_STATE;
+                "&" + STATE + "=" + VCS.GITHUB_AUTHORIZE_OAUTH_STATE +
+                (Objects.nonNull(redirectParameter) ? "&" + redirectParameter : "");
     }
 
     @Override

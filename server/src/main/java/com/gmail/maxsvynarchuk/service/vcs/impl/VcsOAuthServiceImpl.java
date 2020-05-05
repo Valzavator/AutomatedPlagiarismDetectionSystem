@@ -12,13 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor
 public abstract class VcsOAuthServiceImpl implements VcsOAuthService {
-    private final VcsOAuthDao vcsAuthorizingOAuthDao;
-    private final AccessTokenDao accessTokenDao;
-
-    @Override
-    public String getAuthorizeOAuthUrl() {
-        return vcsAuthorizingOAuthDao.getAuthorizeOAuthUrl();
-    }
+    protected final VcsOAuthDao vcsAuthorizingOAuthDao;
+    protected final AccessTokenDao accessTokenDao;
 
     @Override
     public AccessToken getAuthorizeOAuthToken(String code, String returnedState) {

@@ -31,36 +31,29 @@ class SignUpPage extends React.Component {
 
     async handleSubmit(e) {
         e.preventDefault();
-        let isValid = this.validateForm();
-
-        // this.setState({isLoading: true, submit: true});
-        if (isValid) {
+        if (this.validateForm()) {
             try {
-                let response = await signUp({
+                await signUp({
                     firstName: this.state.firstName,
                     lastName: this.state.lastName,
                     email: this.state.email,
                     password: this.state.password,
                 });
-                if (response.status === 201) {
-                    return this.props.history.push('/signin');
-                } else if (response.status === 400) {
-                    if (response.data.success === false) {
-                        const {notify} = this.props;
-                        notify({
-                            title: 'Помилка реєстрації',
-                            message: 'Такий email вже існує в системі!',
-                            status: 'error',
-                            position: 'br',
-                            dismissible: true,
-                            dismissAfter: 0
-                        });
-                    } else {
-                        this.props.error.throwError(response.data);
-                    }
-                }
+                return this.props.history.push('/signin');
             } catch (error) {
-                this.props.error.throwError(error);
+                if (error.status === 400 && error.success === false) {
+                    const {notify} = this.props;
+                    notify({
+                        title: 'Помилка реєстрації',
+                        message: 'Такий email вже існує в системі!',
+                        status: 'error',
+                        position: 'br',
+                        dismissible: true,
+                        dismissAfter: 3000
+                    });
+                } else {
+                    this.props.error.throwError(error);
+                }
             }
         }
     }
@@ -114,7 +107,8 @@ class SignUpPage extends React.Component {
             [fieldName + 'VisibleError']: isVisible,
             [fieldName + 'MessageError']: errorMessage
         });
-    };
+    }
+    ;
 
     render() {
         const renderErrorMessage = (fieldName) => {
@@ -149,9 +143,9 @@ class SignUpPage extends React.Component {
                                 </label>
                                 <div className="input-group">
                                     <div className="input-group-prepend">
-                                <span className="input-group-text" id="inputGroupPrepend0">
-                                    <i className="fa fa-envelope fa-lg" aria-hidden="true"/>
-                                </span>
+                                        <span className="input-group-text" id="inputGroupPrepend0">
+                                            <i className="fa fa-envelope fa-lg" aria-hidden="true"/>
+                                        </span>
                                     </div>
                                     <input type="text"
                                            id="email"
@@ -216,9 +210,9 @@ class SignUpPage extends React.Component {
                                 </label>
                                 <div className="input-group">
                                     <div className="input-group-prepend">
-                                <span className="input-group-text" id="inputGroupPrepend3">
-                                    <i className="fa fa-lock fa-2x" aria-hidden="true"/>
-                                </span>
+                                        <span className="input-group-text" id="inputGroupPrepend3">
+                                            <i className="fa fa-lock fa-2x" aria-hidden="true"/>
+                                        </span>
                                     </div>
                                     <input type="password"
                                            id="password"

@@ -4,9 +4,10 @@ import com.gmail.maxsvynarchuk.facade.UserFacade;
 import com.gmail.maxsvynarchuk.presentation.security.jwt.JwtTokenProvider;
 import com.gmail.maxsvynarchuk.presentation.payload.request.LoginDto;
 import com.gmail.maxsvynarchuk.presentation.payload.request.SignUpDto;
-import com.gmail.maxsvynarchuk.presentation.payload.response.JwtAuthenticationResponse;
-import com.gmail.maxsvynarchuk.presentation.payload.response.ApiResponse;
+import com.gmail.maxsvynarchuk.presentation.payload.response.JwtAuthenticationDto;
+import com.gmail.maxsvynarchuk.presentation.payload.response.ApiSignUpDto;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,6 +29,7 @@ public class AuthController {
     private final JwtTokenProvider tokenProvider;
 
     @PostMapping("/signin")
+    @PreAuthorize("isAnonymous()")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -38,11 +40,11 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = tokenProvider.generateJwtToken(authentication);
-        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
+        return ResponseEntity.ok(new JwtAuthenticationDto(jwt));
     }
 
-//    @PreAuthorize("isAnonymous()")
     @PostMapping("/signup")
+    @PreAuthorize("isAnonymous()")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpDto signUpDto) {
         boolean isSuccessful = userFacade.registerUser(signUpDto);
         if (isSuccessful) {
@@ -50,10 +52,16 @@ public class AuthController {
                     .fromCurrentContextPath().path("/api/v1/user")
                     .buildAndExpand()
                     .toUri();
-            return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully!"));
+            return ResponseEntity.created(location).body(new ApiSignUpDto(
+                    HttpStatus.CREATED.value(),
+                    true,
+                    "User registered successfully!"));
         } else {
             return ResponseEntity.badRequest()
-                    .body(new ApiResponse(false, "Email is already taken!"));
+                    .body(new ApiSignUpDto(
+                            HttpStatus.BAD_REQUEST.value(),
+                            false,
+                            "Email is already taken!"));
         }
     }
 }

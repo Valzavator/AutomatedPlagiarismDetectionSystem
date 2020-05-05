@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ApiResponse {
-    private Boolean success;
-    private String message;
+public class BasicUserDto {
+    private String username;
+    private String email;
 }

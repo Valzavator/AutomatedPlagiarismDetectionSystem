@@ -4,7 +4,7 @@ import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
 
 public interface VcsOAuthService {
 
-    String getAuthorizeOAuthUrl();
+    String getAuthorizeOAuthUrl(Long userId);
 
     AccessToken getAuthorizeOAuthToken(String code, String returnedState);
 

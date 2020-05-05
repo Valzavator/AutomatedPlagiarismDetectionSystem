@@ -3,6 +3,7 @@ package com.gmail.maxsvynarchuk.persistence.vcs.impl.bitbucket;
 import com.gmail.maxsvynarchuk.config.constant.VCS;
 import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
 import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
+import com.gmail.maxsvynarchuk.persistence.exception.oauth.InvalidVcsUrlException;
 import com.gmail.maxsvynarchuk.persistence.exception.oauth.OAuthIllegalTokenException;
 import com.gmail.maxsvynarchuk.persistence.exception.oauth.OAuthIllegalTokenScopeException;
 import com.gmail.maxsvynarchuk.persistence.vcs.VcsOAuthDao;
@@ -20,12 +21,22 @@ public class VcsOAuthBitbucketDao implements VcsOAuthDao {
     private static final String AUTHORIZATION_CODE = "authorization_code";
     private static final String REFRESH_TOKEN = "refresh_token";
     private static final String CODE = "code";
+    public static final String REDIRECT_URI = "redirect_uri";
 
     @Override
-    public String getAuthorizeOAuthUrl() {
+    public String getAuthorizeOAuthUrl(String redirectUrl) {
+        String redirectParameter = null;
+        if (Objects.nonNull(redirectUrl) && redirectUrl.length() > 0) {
+            if (!redirectUrl.startsWith(VCS.BITBUCKET_AUTHORIZE_OAUTH_CALLBACK_URL)) {
+                throw new InvalidVcsUrlException(redirectUrl);
+            }
+            redirectParameter = REDIRECT_URI + "=" + redirectUrl;
+        }
+
         return VCS.BITBUCKET_AUTHORIZE_OAUTH_URL +
                 "?" + CLIENT_ID + "=" + VCS.BITBUCKET_AUTHORIZE_OAUTH_CLIENT_ID +
-                "&" + RESPONSE_TYPE_PARAM;
+                "&" + RESPONSE_TYPE_PARAM +
+                (Objects.nonNull(redirectParameter) ? "&" + redirectParameter : "");
     }
 
     @Override
@@ -35,6 +46,7 @@ public class VcsOAuthBitbucketDao implements VcsOAuthDao {
                 .field(CLIENT_SECRET, VCS.BITBUCKET_AUTHORIZE_OAUTH_CLIENT_SECRET)
                 .field(GRANT_TYPE, AUTHORIZATION_CODE)
                 .field(CODE, code)
+                .field(REDIRECT_URI, returnedState)
                 .asObject(AccessToken.class)
                 .getBody();
         return processAccessToken(accessToken);
@@ -54,11 +66,11 @@ public class VcsOAuthBitbucketDao implements VcsOAuthDao {
 
     private AccessToken processAccessToken(AccessToken accessToken) {
         accessToken.setAuthorizationProvider(AuthorizationProvider.BITBUCKET);
+        validateAccessToken(accessToken);
+
         // TODO - refactor: capitalize first letter in another way
         accessToken.setTokenType(
                 capitalizeFirstLetter(accessToken.getTokenType()));
-
-        validateAccessToken(accessToken);
         return accessToken;
     }
 

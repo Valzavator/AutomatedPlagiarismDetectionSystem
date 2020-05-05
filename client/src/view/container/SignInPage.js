@@ -42,7 +42,7 @@ class SignInPage extends React.Component {
                     password: this.state.password
                 });
                 if (isSuccessful === true) {
-                    // await this.props.actions.auth.getUser();
+                    await this.props.actions.auth.getBasicUser();
                 } else if (isSuccessful === false) {
                     const {notify} = this.props;
                     notify({
@@ -125,9 +125,9 @@ class SignInPage extends React.Component {
                                 </label>
                                 <div className="input-group">
                                     <div className="input-group-prepend">
-                        <span className="input-group-text" id="inputGroupPrepend">
-                            <i className="fa fa-envelope fa-lg" aria-hidden="true"/>
-                        </span>
+                                        <span className="input-group-text" id="inputGroupPrepend">
+                                            <i className="fa fa-envelope fa-lg" aria-hidden="true"/>
+                                        </span>
                                     </div>
                                     <input type="text"
                                            id="email"

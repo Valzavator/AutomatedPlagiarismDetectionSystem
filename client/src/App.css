@@ -38,7 +38,7 @@ body,
 }
 
 main  {
-  min-height: calc(100vh - 124px);
+  min-height: calc(100vh - 126px);
 }
 
 
@@ -105,3 +105,10 @@ body {
     font-weight: 500;
 }
 
+#deleteVcsBtn {
+    color: #ff0000;
+}
+
+#deleteVcsBtn:hover {
+    color: #cb0000;
+}

@@ -1,9 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
-export default function (ComposedComponent, isMustAuthorized) {
-    isMustAuthorized = isMustAuthorized === undefined ? true : isMustAuthorized;
-
+export default function (ComposedComponent, isMustAuthorized = true) {
     class Authentication extends React.Component {
         constructor(props) {
             super(props);
@@ -20,20 +18,6 @@ export default function (ComposedComponent, isMustAuthorized) {
             }
             return state;
         };
-
-        // componentDidMount() {
-        //     if (!this.props.isAuthorized && isMustAuthorized)
-        //         this.props.history.push('/signin');
-        //     else if (this.props.isAuthorized && !isMustAuthorized)
-        //         this.props.history.push('/');
-        // }
-        //
-        // componentDidUpdate(prevProps, prevState, snapshot) {
-        //     if (!this.props.isAuthorized && isMustAuthorized)
-        //         this.props.history.push('/signin');
-        //     else if (this.props.isAuthorized && !isMustAuthorized)
-        //         this.props.history.push('/');
-        // }
 
         render() {
             return <ComposedComponent {...this.props} />

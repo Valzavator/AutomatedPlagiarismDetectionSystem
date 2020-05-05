@@ -8,12 +8,14 @@ import com.gmail.maxsvynarchuk.persistence.domain.type.RoleType;
 import com.gmail.maxsvynarchuk.presentation.exception.AppException;
 import com.gmail.maxsvynarchuk.service.UserService;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -46,6 +48,12 @@ public class UserServiceImpl implements UserService {
         userDao.save(user);
 
         return true;
+    }
+
+    @Transactional
+    @Override
+    public Optional<User> getUserById(Long userId) {
+        return userDao.findOne(userId);
     }
 
 }

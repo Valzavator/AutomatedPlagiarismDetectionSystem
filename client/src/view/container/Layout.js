@@ -10,28 +10,47 @@ import {withRouter} from "react-router-dom";
 class Layout extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            renderSidebar: false,
+        };
     };
 
-    static getDerivedStateFromProps(props, state) {
-        if (props.errorStatus >= 300 &&
-            props.location.pathname !== '/error') {
-            props.history.push('/error');
-            return null;
+    // static getDerivedStateFromProps(props, state) {
+    //     if (props.errorStatus >= 300 &&
+    //         props.location.pathname !== '/error') {
+    //         props.history.push('/error');
+    //         return null;
+    //     }
+    //     return state;
+    // };
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.props.errorStatus >= 300 &&
+            this.props.location.pathname !== '/error') {
+            this.props.history.push('/error');
         }
-        return state;
-    };
+
+        if (this.props.isAuthorized !== prevProps.isAuthorized ||
+            this.props.location.pathname !== prevProps.location.pathname) {
+            if (this.props.isAuthorized &&
+                this.props.location.pathname !== '/profile') {
+                this.setState({renderSidebar: true});
+            } else {
+                this.setState({renderSidebar: false});
+            }
+        }
+    }
 
     render() {
         return (
             <div className="wrapper-1">
                 <div className="wrapper-2">
                     <NotificationsSystem theme={theme}/>
-                    <Header/>
+                    <Header sidebarButton={this.state.renderSidebar}/>
                     <main role="main"
                           className={this.props.isOpenSidebar && this.props.isAuthorized ? "d-flex " : "d-flex toggled"}
                           id="wrapper">
-                        {this.props.isAuthorized ? <Sidebar/> : null}
+                        {this.state.renderSidebar ? <Sidebar/> : null}
                         <div id="page-content-wrapper">
                             <div className="container-fluid h-100">
                                 {this.props.children}

@@ -21,7 +21,7 @@ class Header extends React.Component {
     render() {
 
         const renderSidebarButton = () => {
-            if (this.props.isAuthorized) {
+            if (this.props.sidebarButton) {
                 return (
                     <ul className="navbar-nav">
                         <li className="nav-item" onClick={this.props.actions.sidebar.sidebarChangeState}>
@@ -57,7 +57,7 @@ class Header extends React.Component {
                                     aria-haspopup="true"
                                     aria-expanded="false">
                                 <i className="fa fa-user-circle-o fa-lg" aria-hidden="true">&nbsp;</i>
-                                {this.props.username}
+                                {this.props.userInfo ? this.props.userInfo.username : ''}
                             </button>
                             <div className="dropdown-menu dropdown-menu-right"
                                  aria-labelledby="profileDropdownMenuLink">
@@ -145,7 +145,7 @@ function mapDispatchToProps(dispatch) {
 function mapStateToProps(state) {
     return {
         isAuthorized: state.auth.isAuthorized,
-        username: state.auth.username,
+        userInfo: state.auth.userInfo,
     };
 }
 
