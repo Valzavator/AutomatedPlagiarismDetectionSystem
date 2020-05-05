@@ -1,92 +1,77 @@
 package com.gmail.maxsvynarchuk.presentation.controller;
 
+import com.gmail.maxsvynarchuk.persistence.domain.User;
+import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
 import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
+import com.gmail.maxsvynarchuk.presentation.payload.response.error.ApiError;
+import com.gmail.maxsvynarchuk.presentation.security.AuthUser;
+import com.gmail.maxsvynarchuk.presentation.security.serivce.UserPrincipal;
 import com.gmail.maxsvynarchuk.presentation.util.ControllerUtil;
+import com.gmail.maxsvynarchuk.service.UserService;
 import com.gmail.maxsvynarchuk.service.vcs.VcsOAuthService;
-import kong.unirest.Unirest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
-@RequestMapping("/api/v1/oauth2")
+@RequestMapping("/api/v1/vcs")
 @AllArgsConstructor
 @Slf4j
 public class VcsOAuthController {
+    private final UserService userService;
     @Qualifier("vcsOAuthBitbucketService")
     private final VcsOAuthService vcsOAuthBitbucketService;
     @Qualifier("vcsOAuthGitHubService")
     private final VcsOAuthService vcsOAuthGitHubService;
 
-//    @GetMapping("/github/authorize")
-//    @PreAuthorize()
-//    public String getGitHubAuthorizeUrl() {
-//        return ControllerUtil.redirectTo(
-//                vcsOAuthGitHubService.getAuthorizeOAuthUrl());
-//    }
-
     @GetMapping("/code/github/{userId}")
-    public String getGitHubToken(@PathVariable("userId") Long userId,
+    public String addGitHubToken(@PathVariable("userId") Long userId,
                                  @RequestParam String code,
                                  @RequestParam String state) {
+        User user = userService.getRequiredUserById(userId);
+        if (!user.isAccessTokenPresented(AuthorizationProvider.GITHUB)) {
+            AccessToken accessToken = vcsOAuthGitHubService.getAuthorizeOAuthToken(code, state);
+            userService.addAccessTokenToUser(user, accessToken);
+        } else {
+            log.error("User already have access token for GitHub service!");
+            throw new IllegalStateException("User already have access token for GitHub service!");
+        }
 
-        //TODO - check token in user before request
-
-
-        System.out.println("\n\n\n");
-        System.out.println("\tCODE: " + code);
-        System.out.println(userId);
-//        System.out.println(accessToken);
-        System.out.println("\n\n\n");
-
-        AccessToken accessToken = vcsOAuthGitHubService.getAuthorizeOAuthToken(code, state);
-
-
-        String res = Unirest.get("https://api.github.com/user/repos?affiliation=collaborator")
-                .header("Authorization", accessToken.getAccessToken())
-                .header("Accept", "application/vnd.github.v3+json")
-                .asString()
-                .getBody();
-
-        System.out.println(res);
-
-        return ControllerUtil.redirectTo("/");
+        return ControllerUtil.redirectTo("http://localhost:8081/close");
     }
 
-//    @GetMapping("/bitbucket/authorize")
-//    public String getBitbucketAuthorizeUrl() {
-//        return ControllerUtil.redirectTo(
-//                vcsOAuthBitbucketService.getAuthorizeOAuthUrl());
-//    }
-
     @GetMapping("/code/bitbucket/{userId}")
-    public String getBitbucketToken(@PathVariable("userId") Long userId,
-                                    @RequestParam String code,
-                                    HttpServletRequest request) {
+    public String saveBitbucketToken(@PathVariable("userId") Long userId,
+                                     @RequestParam String code,
+                                     HttpServletRequest request) {
+        User user = userService.getRequiredUserById(userId);
+        if (!user.isAccessTokenPresented(AuthorizationProvider.BITBUCKET)) {
+            AccessToken accessToken = vcsOAuthBitbucketService.getAuthorizeOAuthToken(
+                    code, request.getRequestURL().toString());
+            System.out.println(userService.addAccessTokenToUser(user, accessToken));
+        } else {
+            log.error("User already have access token for Bitbucket service!");
+        }
 
-        System.out.println(request.getRequestURI());
-        System.out.println(request.getRequestURL().toString());
-        //TODO - check token in user before request
+        return ControllerUtil.redirectTo("http://localhost:8081/close");
+    }
 
-
-        AccessToken accessToken = vcsOAuthBitbucketService.getAuthorizeOAuthToken(
-                code, request.getRequestURL().toString());
-
-        System.out.println(accessToken);
-
-        String res1 = Unirest.get("https://api.bitbucket.org/2.0/repositories/Muguvara/test_api_oauth")
-                .header("Authorization", accessToken.getAccessToken())
-                .asString()
-                .getBody();
-
-        System.out.println(res1);
-        System.out.println("\n\n\n");
-
-        return ControllerUtil.redirectTo("/");
+    @PostMapping("/delete/{authorizationProvider}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<Object> deleteToken(@AuthUser UserPrincipal currentUser,
+                                              @PathVariable("authorizationProvider") AuthorizationProvider authorizationProvider) {
+        User user = userService.getRequiredUserById(currentUser.getId());
+        boolean isSuccess = userService.deleteAccessTokenToUser(user, authorizationProvider);
+        return isSuccess
+                ? ResponseEntity.noContent().build()
+                : new ResponseEntity<>(new ApiError(HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
     }
 
 }

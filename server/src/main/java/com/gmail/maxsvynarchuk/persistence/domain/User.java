@@ -1,7 +1,6 @@
 package com.gmail.maxsvynarchuk.persistence.domain;
 
 import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
-import com.gmail.maxsvynarchuk.persistence.domain.type.Gender;
 import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
 import com.gmail.maxsvynarchuk.persistence.exception.oauth.InvalidVcsUrlException;
 import lombok.*;
@@ -11,7 +10,7 @@ import org.hibernate.annotations.NaturalId;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.util.Collection;
 import java.util.Set;
 
 @Entity
@@ -61,28 +60,53 @@ public class User implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL,
             fetch = FetchType.LAZY,
-            mappedBy = "user")
+            mappedBy = "user",
+            orphanRemoval = true)
 //    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<AccessToken> tokens;
 
-    public AccessToken getAccessTokenForVcs(String vcsRepositoryUrl) {
-        Set<AccessToken> tokens = getTokens();
-        AuthorizationProvider authorizationProvider;
 
+    public boolean addAccessToken(AccessToken accessToken) {
+        if (tokens.add(accessToken)) {
+            accessToken.setUser(this);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removeAccessToken(AccessToken accessToken) {
+        if (tokens.remove(accessToken)) {
+            accessToken.setUser(null);
+            return true;
+        }
+        return false;
+    }
+
+    public AccessToken getAccessToken(String vcsRepositoryUrl) {
         try {
-            authorizationProvider = AuthorizationProvider.recognizeFromUrl(vcsRepositoryUrl);
+            AuthorizationProvider authorizationProvider =
+                    AuthorizationProvider.recognizeFromUrl(vcsRepositoryUrl);
+            return getAccessToken(authorizationProvider);
         } catch (InvalidVcsUrlException ex) {
             log.error(ex.toString());
             return null;
         }
+    }
 
+    public AccessToken getAccessToken(AuthorizationProvider authorizationProvider) {
+        Set<AccessToken> tokens = getTokens();
         for (AccessToken token : tokens) {
             if (authorizationProvider == token.getAuthorizationProvider()) {
                 return token;
             }
         }
-
-       return null;
+        return null;
     }
+
+    public boolean isAccessTokenPresented(AuthorizationProvider provider) {
+        return getTokens().stream()
+                .anyMatch(token -> provider == token.getAuthorizationProvider());
+    }
+
 }

@@ -5,24 +5,26 @@ import com.gmail.maxsvynarchuk.persistence.domain.User;
 import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
 import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
 import com.gmail.maxsvynarchuk.presentation.payload.response.UserProfileDto;
+import com.gmail.maxsvynarchuk.presentation.payload.response.UserProfileVcsDto;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 
 @Component
+@AllArgsConstructor
 public class UserToUserProfileDtoConverter implements Converter<User, UserProfileDto> {
+    private final Converter<User, UserProfileVcsDto> userToUserProfileVcsDto;
 
     @Override
     public UserProfileDto convert(User user) {
-        boolean isAuthorizedGitHub = isTokenPresented(user.getTokens(), AuthorizationProvider.GITHUB);
-        boolean isAuthorizedBitbucket =isTokenPresented(user.getTokens(), AuthorizationProvider.BITBUCKET);
+        UserProfileVcsDto userProfileVcsDto =  userToUserProfileVcsDto.convert(user);
 
         return UserProfileDto.builder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
-                .isAuthorizedGitHub(isAuthorizedGitHub)
-                .isAuthorizedBitbucket(isAuthorizedBitbucket)
+                .userProfileVcs(userProfileVcsDto)
                 .build();
     }
 

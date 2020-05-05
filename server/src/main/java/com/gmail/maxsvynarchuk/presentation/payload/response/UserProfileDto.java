@@ -10,12 +10,7 @@ public class UserProfileDto {
     private String lastName;
     private String email;
 
-    // VCS info
-    private Boolean isAuthorizedGitHub;
-    private String gitHubAuthorizationLink;
-    private Boolean isAuthorizedBitbucket;
-    private String bitbucketAuthorizationLink;
-
+    UserProfileVcsDto userProfileVcs;
 
     // statistic
     private Integer coursesCount;

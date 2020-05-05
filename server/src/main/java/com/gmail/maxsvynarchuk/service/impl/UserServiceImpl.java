@@ -4,11 +4,12 @@ import com.gmail.maxsvynarchuk.persistence.dao.RoleDao;
 import com.gmail.maxsvynarchuk.persistence.dao.UserDao;
 import com.gmail.maxsvynarchuk.persistence.domain.Role;
 import com.gmail.maxsvynarchuk.persistence.domain.User;
+import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
 import com.gmail.maxsvynarchuk.persistence.domain.type.RoleType;
+import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
 import com.gmail.maxsvynarchuk.presentation.exception.AppException;
 import com.gmail.maxsvynarchuk.service.UserService;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,27 @@ public class UserServiceImpl implements UserService {
     private final UserDao userDao;
     private final RoleDao roleDao;
     private final PasswordEncoder passwordEncoder;
+
+    @Override
+    public User updateUser(User user) {
+        return userDao.save(user);
+    }
+
+    @Override
+    public User addAccessTokenToUser(User user, AccessToken accessToken) {
+        user.addAccessToken(accessToken);
+        return userDao.save(user);
+    }
+
+    @Override
+    public boolean deleteAccessTokenToUser(User user, AuthorizationProvider authorizationProvider) {
+        AccessToken accessToken = user.getAccessToken(authorizationProvider);
+        if (user.removeAccessToken(accessToken)) {
+            userDao.save(user);
+            return true;
+        }
+        return false;
+    }
 
     @Transactional
     @Override
@@ -54,6 +76,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> getUserById(Long userId) {
         return userDao.findOne(userId);
+    }
+
+    @Transactional
+    @Override
+    public User getRequiredUserById(Long userId) {
+        return userDao.findOne(userId)
+                .orElseThrow();
     }
 
 }

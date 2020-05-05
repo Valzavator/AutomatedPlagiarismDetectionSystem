@@ -3,7 +3,9 @@ import {bindActionCreators} from "redux";
 import * as errorActions from "../../store/action/errorActions";
 import {notify} from "reapop";
 import {connect} from "react-redux";
-import {getUserProfileInfo} from "../../api/user";
+import {getUserProfileInfo, getUserProfileVcsInfo} from "../../api/user";
+import {VCS_SERVICE_BITBUCKET, VCS_SERVICE_GITHUB} from "../../util/constants";
+import {deleteVcs} from "../../api/vcs";
 
 class ProfilePage extends React.Component {
     constructor(props) {
@@ -14,22 +16,53 @@ class ProfilePage extends React.Component {
                 firstName: 'NOT_LOADED',
                 lastName: 'NOT_LOADED',
                 email: 'NOT_LOADED',
-                isAuthorizedGitHub: false,
-                gitHubAuthorizationLink: '#',
-                isAuthorizedBitbucket: false,
-                bitbucketAuthorizationLink: '#',
                 coursesCount: -1,
                 groupsCount: -1,
                 tasksCount: -1,
                 studentsCount: -1,
                 studentsRepositoriesCount: -1
-            }
+            },
+            vcs: {
+                isAuthorizedGitHub: false,
+                gitHubAuthorizationLink: '#',
+                isAuthorizedBitbucket: false,
+                bitbucketAuthorizationLink: '#',
+            },
+            updateVcsInfo: false
         }
-        this.handleClick = this.handleClick.bind(this);
+        this.handleDeleteVcsBtnClick = this.handleDeleteVcsBtnClick.bind(this);
+        this.handleAuthorizeVcsBtnClick = this.handleAuthorizeVcsBtnClick.bind(this);
+        this.handleDeleteVcsModalBtnClick = this.handleDeleteVcsModalBtnClick.bind(this);
     }
 
     componentDidMount() {
         this.setState({}, () => this.loadUserProfileInfo());
+        this.timerID = setInterval(
+            () => this.loadUserProfileVcsInfo(),
+            1000
+        );
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.state.vcs.isAuthorizedGitHub !== prevState.vcs.isAuthorizedGitHub ||
+            this.state.vcs.isAuthorizedBitbucket !== prevState.vcs.isAuthorizedBitbucket) {
+            this.setState({
+                updateVcsInfo: false
+            });
+        }
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timerID);
+    }
+
+    async loadUserProfileVcsInfo() {
+        if (this.state.updateVcsInfo) {
+            let response = await getUserProfileVcsInfo();
+            await this.setState({
+                vcs: response.data
+            });
+        }
     }
 
     async loadUserProfileInfo() {
@@ -37,16 +70,46 @@ class ProfilePage extends React.Component {
             let response = await getUserProfileInfo();
             this.setState({
                 userProfile: response.data,
+                vcs: response.data.userProfileVcs
             });
         } catch (err) {
             this.props.error.throwError(err);
         }
     }
 
-    handleClick(e) {
+    handleAuthorizeVcsBtnClick(e) {
         e.preventDefault();
+        window.open(e.target.authorizationLink.value, "_blank")
+        this.setState({
+            updateVcsInfo: true
+        });
+    }
 
-        // console.log(e.target.delete.value);
+    handleDeleteVcsBtnClick(e) {
+        e.preventDefault();
+        const vcsType = e.target.vcsType.value;
+        this.setState({
+            vcsToDelete: vcsType
+        });
+    }
+
+    async handleDeleteVcsModalBtnClick(e) {
+        e.preventDefault();
+        try {
+            const vcsType = this.state.vcsToDelete;
+            await deleteVcs(vcsType);
+            if (vcsType === VCS_SERVICE_GITHUB) {
+                this.setState({
+                    vcs: {...this.state.vcs, isAuthorizedGitHub: false}
+                });
+            } else if (vcsType === VCS_SERVICE_BITBUCKET) {
+                this.setState({
+                    vcs: {...this.state.vcs, isAuthorizedBitbucket: false}
+                });
+            }
+        } catch (err) {
+            this.props.error.throwError(err);
+        }
     }
 
     render() {
@@ -63,6 +126,31 @@ class ProfilePage extends React.Component {
                     </span>
                 )
         };
+
+        const renderVcsControlBtn = (isAuthorized, authorizationLink, serviceType) => {
+            return isAuthorized
+                ? (
+                    <form onSubmit={this.handleDeleteVcsBtnClick}>
+                        <input name="vcsType" value={serviceType} hidden readOnly/>
+                        <button type="submit" className="btn btn-link"
+                                data-toggle="modal"
+                                data-target="#deleteVcsModal"
+                                id="deleteVcsBtn">
+                            <i className="fa fa-times fa-2x"
+                               aria-hidden="true"/>
+                        </button>
+                    </form>
+                )
+                : (
+                    <form onSubmit={this.handleAuthorizeVcsBtnClick}>
+                        <input name="authorizationLink" value={authorizationLink} hidden readOnly/>
+                        <button className="btn btn-link">
+                            <i className="fa fa-plus fa-2x"
+                               aria-hidden="true"/>
+                        </button>
+                    </form>
+                )
+        }
 
         return (
             <div className="row justify-content-center align-items-center mt-5">
@@ -194,28 +282,14 @@ class ProfilePage extends React.Component {
                                                     </a>
                                                 </td>
                                                 <td className="align-middle">
-                                                    {renderVcsStatus(this.state.userProfile.isAuthorizedGitHub)}
+                                                    {renderVcsStatus(this.state.vcs.isAuthorizedGitHub)}
                                                 </td>
                                                 <td className="align-middle text-right" style={{width: '20px'}}>
-                                                    {this.state.userProfile.isAuthorizedGitHub
-                                                        ? (
-                                                            <form onSubmit={this.handleClick}>
-                                                                <input name="delete" value={123} hidden/>
-                                                                <button type="submit" className="btn btn-link"
-                                                                        data-toggle="modal"
-                                                                        data-target="#deleteVcsModal"
-                                                                        id="deleteVcsBtn">
-                                                                    <i className="fa fa-times fa-2x"
-                                                                       aria-hidden="true"/>
-                                                                </button>
-                                                            </form>)
-                                                        : (
-                                                            <a href={this.state.userProfile.gitHubAuthorizationLink} className="btn btn-link">
-                                                                <i className="fa fa-plus fa-2x"
-                                                                   aria-hidden="true"/>
-                                                            </a>
-                                                        )
-                                                    }
+                                                    {renderVcsControlBtn(
+                                                        this.state.vcs.isAuthorizedGitHub,
+                                                        this.state.vcs.gitHubAuthorizationLink,
+                                                        VCS_SERVICE_GITHUB
+                                                    )}
                                                 </td>
                                             </tr>
 
@@ -232,16 +306,14 @@ class ProfilePage extends React.Component {
                                                     </a>
                                                 </td>
                                                 <td className="align-middle">
-                                                    {renderVcsStatus(this.state.userProfile.isAuthorizedBitbucket)}
+                                                    {renderVcsStatus(this.state.vcs.isAuthorizedBitbucket)}
                                                 </td>
                                                 <td className="align-middle text-right" style={{width: '20px'}}>
-                                                    <form onSubmit={this.handleClick}>
-                                                        <input name="delete" value={123} hidden/>
-                                                        <button type="submit" className="btn btn-link">
-                                                            <i className="fa fa-plus fa-2x"
-                                                               aria-hidden="true"/>
-                                                        </button>
-                                                    </form>
+                                                    {renderVcsControlBtn(
+                                                        this.state.vcs.isAuthorizedBitbucket,
+                                                        this.state.vcs.bitbucketAuthorizationLink,
+                                                        VCS_SERVICE_BITBUCKET
+                                                    )}
                                                 </td>
                                             </tr>
 
@@ -264,7 +336,7 @@ class ProfilePage extends React.Component {
                                                 </td>
                                                 <td className="align-middle text-right" style={{width: '20px'}}>
                                                     <form onSubmit={this.handleClick}>
-                                                        <input name="delete" value={123} hidden/>
+                                                        <input name="delete" value={"???"} hidden readOnly/>
                                                         <button type="submit" className="btn btn-link" disabled>
                                                             <i className="fa fa-plus fa-2x"
                                                                aria-hidden="true"/>
@@ -281,7 +353,7 @@ class ProfilePage extends React.Component {
                                                 <div className="modal-content">
                                                     <div className="modal-header">
                                                         <h5 className="modal-title" id="deleteVcsModalTitle">
-                                                            Видалення авторизації сервісу GitHub
+                                                            Видалення авторизації сервісу {this.state.vcsToDelete}
                                                         </h5>
                                                         <button type="button" className="close" data-dismiss="modal"
                                                                 aria-label="Close">
@@ -295,7 +367,9 @@ class ProfilePage extends React.Component {
                                                         <button type="button" className="btn btn-secondary"
                                                                 data-dismiss="modal">Повернутися
                                                         </button>
-                                                        <button type="button" className="btn btn-danger">
+                                                        <button type="button" className="btn btn-danger"
+                                                                onClick={this.handleDeleteVcsModalBtnClick}
+                                                                data-dismiss="modal">
                                                             Видалити
                                                         </button>
                                                     </div>
@@ -325,7 +399,7 @@ class ProfilePage extends React.Component {
                                                         // className={renderFieldStyle('firstName')}
                                                            placeholder="Ім'я"
                                                            aria-describedby="inputGroupPrepend"
-                                                           maxLength="32"/>
+                                                           maxLength="32" readOnly/>
                                                     {/*{renderErrorMessage('firstName')}*/}
                                                 </div>
 
@@ -350,7 +424,7 @@ class ProfilePage extends React.Component {
                                                            className="form-control"
                                                            placeholder="Прізвище"
                                                            maxLength="32"
-                                                           aria-describedby="inputGroupPrepend"/>
+                                                           aria-describedby="inputGroupPrepend" readOnly/>
                                                     {/*{renderErrorMessage('lastName')}*/}
                                                 </div>
                                             </div>
@@ -373,7 +447,7 @@ class ProfilePage extends React.Component {
                                                         // className={renderFieldStyle('email')}
                                                            aria-describedby="emailHelp"
                                                            placeholder="Email"
-                                                           maxLength="255"/>
+                                                           maxLength="255" readOnly/>
                                                     {/*{renderErrorMessage('email')}*/}
                                                 </div>
                                             </div>
@@ -395,7 +469,7 @@ class ProfilePage extends React.Component {
                                                         // className={renderFieldStyle('password')}
                                                            className="form-control"
                                                            placeholder="Пароль"
-                                                           maxLength="255"/>
+                                                           maxLength="255" readOnly/>
                                                     {/*{renderErrorMessage('password')}*/}
                                                 </div>
                                             </div>
@@ -417,17 +491,19 @@ class ProfilePage extends React.Component {
                                                         // className={renderFieldStyle('password')}
                                                            className="form-control"
                                                            placeholder="Підтвердіть пароль"
-                                                           maxLength="255"/>
+                                                           maxLength="255" readOnly/>
                                                     {/*{renderErrorMessage('password')}*/}
                                                 </div>
                                             </div>
                                             <div className="form-group row">
                                                 <label className="col-lg-3 col-form-label form-control-label"/>
                                                 <div className="col-lg-9">
-                                                    <input type="button" className="btn btn-primary mr-1"
-                                                           value="Зберегти зміни"/>
-                                                    <input type="reset" className="btn btn-secondary ml-1"
-                                                           value="Відмінити"/>
+                                                    <button type="submit" className="btn btn-primary mr-1" disabled>
+                                                        Зберегти зміни
+                                                    </button>
+                                                    <button type="reset" className="btn btn-secondary ml-1">
+                                                        Відмінити
+                                                    </button>
                                                 </div>
                                             </div>
                                         </form>

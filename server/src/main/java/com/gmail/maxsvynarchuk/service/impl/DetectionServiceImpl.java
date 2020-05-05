@@ -39,7 +39,7 @@ public class DetectionServiceImpl implements PlagiarismDetectionService {
             String studentFullName = studentGroup.getStudent().getFullName();
             String repositoryDataPath = setting.getDataPath() + studentFullName + "/";
             String vcsRepositoryUrl = studentGroup.getVcsRepositoryUrl();
-            AccessToken accessToken = user.getAccessTokenForVcs(vcsRepositoryUrl);
+            AccessToken accessToken = user.getAccessToken(vcsRepositoryUrl);
             if (Objects.isNull(accessToken)) {
                 // TODO save some message to PlagDetectionResult
                 continue;

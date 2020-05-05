@@ -3,6 +3,7 @@ package com.gmail.maxsvynarchuk.presentation.controller;
 import com.gmail.maxsvynarchuk.facade.UserFacade;
 import com.gmail.maxsvynarchuk.presentation.payload.response.BasicUserDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.UserProfileDto;
+import com.gmail.maxsvynarchuk.presentation.payload.response.UserProfileVcsDto;
 import com.gmail.maxsvynarchuk.presentation.security.AuthUser;
 import com.gmail.maxsvynarchuk.presentation.security.serivce.UserPrincipal;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,14 @@ public class UserController {
         UserProfileDto userProfileDto = userFacade.getUserProfile(currentUser.getId());
         return ResponseEntity.ok()
                 .body(userProfileDto);
+    }
+
+    @GetMapping("/profile/vcs")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<UserProfileVcsDto> getUserProfileVcsInfo(@AuthUser UserPrincipal currentUser) {
+        UserProfileVcsDto userProfileVcsDto = userFacade.getUserProfileVcs(currentUser.getId());
+        return ResponseEntity.ok()
+                .body(userProfileVcsDto);
     }
 
 }

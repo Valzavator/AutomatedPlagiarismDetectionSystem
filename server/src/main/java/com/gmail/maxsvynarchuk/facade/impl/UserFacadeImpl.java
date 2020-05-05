@@ -6,22 +6,18 @@ import com.gmail.maxsvynarchuk.facade.converter.Converter;
 import com.gmail.maxsvynarchuk.persistence.domain.User;
 import com.gmail.maxsvynarchuk.presentation.payload.request.SignUpDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.UserProfileDto;
+import com.gmail.maxsvynarchuk.presentation.payload.response.UserProfileVcsDto;
 import com.gmail.maxsvynarchuk.service.UserService;
-import com.gmail.maxsvynarchuk.service.vcs.VcsOAuthService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 @Facade
 @AllArgsConstructor
 public class UserFacadeImpl implements UserFacade {
     private final UserService userService;
-    @Qualifier("vcsOAuthBitbucketService")
-    private final VcsOAuthService vcsOAuthBitbucketService;
-    @Qualifier("vcsOAuthGitHubService")
-    private final VcsOAuthService vcsOAuthGitHubService;
 
     private final Converter<SignUpDto, User> signUpDtoToUser;
     private final Converter<User, UserProfileDto> userToUserProfileDto;
+    private final Converter<User, UserProfileVcsDto> userToUserProfileVcsDto;
 
     @Override
     public boolean registerUser(SignUpDto signUpDto) {
@@ -31,11 +27,9 @@ public class UserFacadeImpl implements UserFacade {
 
     @Override
     public UserProfileDto getUserProfile(Long userId) {
-        User user = userService.getUserById(userId)
-                .orElseThrow();
-        UserProfileDto userProfileDto =  userToUserProfileDto.convert(user);
-        userProfileDto.setGitHubAuthorizationLink(vcsOAuthGitHubService.getAuthorizeOAuthUrl(userId));
-        userProfileDto.setBitbucketAuthorizationLink(vcsOAuthBitbucketService.getAuthorizeOAuthUrl(userId));
+        User user = userService.getRequiredUserById(userId);
+        UserProfileDto userProfileDto = userToUserProfileDto.convert(user);
+
         //TODO - calculate real statistic
         userProfileDto.setCoursesCount(1);
         userProfileDto.setGroupsCount(2);
@@ -44,6 +38,12 @@ public class UserFacadeImpl implements UserFacade {
         userProfileDto.setStudentsRepositoriesCount(5);
 
         return userProfileDto;
+    }
+
+    @Override
+    public UserProfileVcsDto getUserProfileVcs(Long userId) {
+        User user = userService.getRequiredUserById(userId);
+        return userToUserProfileVcsDto.convert(user);
     }
 
 }

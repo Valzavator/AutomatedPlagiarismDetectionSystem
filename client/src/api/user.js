@@ -9,4 +9,8 @@ export const getBasicUserInfo = async () => {
 
 export const getUserProfileInfo = async () => await apiRequest('GET', '/user/profile');
 
+export const getUserProfileVcsInfo = async () => await apiRequest('GET', '/user/profile/vcs');
+
+
+
 

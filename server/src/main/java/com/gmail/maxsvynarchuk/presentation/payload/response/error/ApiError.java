@@ -9,23 +9,21 @@ import java.util.List;
 
 @Data
 public class ApiError {
-    private Date timestamp;
+    private Date timestamp = new Date();;
     private Integer status;
     private String error;
     private String message;
     private String debugMessage;
     private String path;
-    private List<? extends ApiSubError> subErrors;
+    private List<? extends ApiSubError> subErrors = new ArrayList<>();
 
-    private ApiError() {
-        timestamp = new Date();
-        subErrors = new ArrayList<>();
+    public ApiError(HttpStatus status) {
+        this.status = status.value();
+        this.error = status.name();
     }
 
     public ApiError(HttpStatus status, String path) {
-        this();
-        this.status = status.value();
-        this.error = status.name();
+        this(status);
         this.path = path;
     }
 
