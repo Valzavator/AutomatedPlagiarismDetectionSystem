@@ -7,6 +7,8 @@ import NotificationsSystem from 'reapop';
 import theme from 'reapop-theme-bootstrap';
 import {withRouter} from "react-router-dom";
 
+const pagesPathsWithoutSidebar = ['/profile', '/single-check']
+
 class Layout extends React.Component {
     constructor(props) {
         super(props);
@@ -25,15 +27,15 @@ class Layout extends React.Component {
     // };
 
     componentDidUpdate(prevProps, prevState, snapshot) {
+        const currLocation = this.props.location.pathname;
+
         if (this.props.errorStatus >= 300 &&
-            this.props.location.pathname !== '/error') {
+            currLocation !== '/error') {
             this.props.history.push('/error');
         }
-
         if (this.props.isAuthorized !== prevProps.isAuthorized ||
-            this.props.location.pathname !== prevProps.location.pathname) {
-            if (this.props.isAuthorized &&
-                this.props.location.pathname !== '/profile') {
+            currLocation !== prevProps.location.pathname) {
+            if (this.props.isAuthorized && !pagesPathsWithoutSidebar.includes(currLocation)) {
                 this.setState({renderSidebar: true});
             } else {
                 this.setState({renderSidebar: false});

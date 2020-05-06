@@ -1,8 +1,10 @@
 import React from "react";
+import Load from "./Load";
 
-class HomePage extends React.Component {
+class CoursesPage extends React.Component {
     render() {
         return (
+            // <Load/>
             <div>
                 <div className="row justify-content-center">
                     <img src={require('../../images/logo.png')} alt="Logo"/>
@@ -25,4 +27,4 @@ class HomePage extends React.Component {
     }
 }
 
-export default HomePage;
+export default CoursesPage;

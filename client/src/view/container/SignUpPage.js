@@ -133,13 +133,13 @@ class SignUpPage extends React.Component {
             <div className="row h-100 justify-content-md-center align-items-center">
                 <div className="card w-50 mx-auto">
                     <div className="card-header h2 text-center">
-                        Форма реєстрації
+                        Форма реєстрації:
                     </div>
                     <div className="card-body mx-auto w-100">
                         <form acceptCharset="UTF-8" onSubmit={this.handleSubmit} method="post">
                             <div className="form-group">
                                 <label htmlFor="email">
-                                    Email
+                                    Email:
                                 </label>
                                 <div className="input-group">
                                     <div className="input-group-prepend">
@@ -160,7 +160,7 @@ class SignUpPage extends React.Component {
                             </div>
                             <div className="form-group">
                                 <label htmlFor="firstName">
-                                    Ім'я
+                                    Ім'я:
                                 </label>
                                 <div className="input-group">
                                     <div className="input-group-prepend">
@@ -183,7 +183,7 @@ class SignUpPage extends React.Component {
 
                             <div className="form-group">
                                 <label htmlFor="lastName">
-                                    Прізвище
+                                    Прізвище:
                                 </label>
                                 <div className="input-group">
                                     <div className="input-group-prepend">
@@ -206,7 +206,7 @@ class SignUpPage extends React.Component {
 
                             <div className="form-group">
                                 <label htmlFor="password">
-                                    Пароль
+                                    Пароль:
                                 </label>
                                 <div className="input-group">
                                     <div className="input-group-prepend">

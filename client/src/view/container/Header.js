@@ -52,7 +52,6 @@ class Header extends React.Component {
                         <li className="nav-item dropdown">
                             <button className="btn btn-link nav-link dropdown-toggle"
                                     id="profileDropdownMenuLink"
-                                    role="button"
                                     data-toggle="dropdown"
                                     aria-haspopup="true"
                                     aria-expanded="false">
@@ -105,7 +104,7 @@ class Header extends React.Component {
 
         const singleCheckLink = (
             <li className="nav-item">
-                <LinkContainer to="/1">
+                <LinkContainer to="/single-check">
                     <button className="nav-link btn btn-link">
                         <i className="fa fa-check-circle-o fa-lg" aria-hidden="true">&nbsp;</i>
                         Разова перевірка
@@ -117,8 +116,9 @@ class Header extends React.Component {
         return (
             <nav className="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
                 {renderSidebarButton()}
-                <NavLink to={"/"} className="navbar-brand">
-                    AutoPlag
+                <NavLink to={"/"} className="navbar-brand" style={{marginBottom: '-10px'}}>
+                    AutoPlag&nbsp;&nbsp;&nbsp;
+                    <img src={require('../../images/navbar-brand.png')} alt="Logo" style={{width:'40px'}}/>
                 </NavLink>
                 <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
                         aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">

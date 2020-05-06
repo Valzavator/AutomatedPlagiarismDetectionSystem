@@ -3,7 +3,7 @@ import "popper.js/dist/umd/popper.min";
 import "bootstrap/dist/js/bootstrap.min";
 import "jquery/dist/jquery.slim.min";
 import "font-awesome/css/font-awesome.min.css";
-import "./App.css";
+import "./stylesheet/App.css";
 
 import React from "react";
 import {BrowserRouter, Route, Switch} from "react-router-dom";
@@ -20,12 +20,13 @@ import NotFoundPage from "./view/component/NotFoundPage";
 import configureStore from "./store/configureStore";
 import Auth from "./view/container/Auth";
 import AutocloseablePage from "./view/component/AutocloseablePage";
+import SingleCheckPage from "./view/component/SingleCheckPage";
 
 import {checkAuth, getBasicUser} from "./store/action/authActions";
 
 const store = configureStore();
 store.dispatch(checkAuth());
-store.dispatch(getBasicUser());
+// store.dispatch(getBasicUser());
 
 class App extends React.Component {
     render() {
@@ -37,6 +38,7 @@ class App extends React.Component {
                             <Route exact path="/" component={HomePage}/>
                             <Route exact path="/signin" component={Auth(SignInPage,false)}/>
                             <Route exact path="/signup" component={Auth(SignUpPage,false)}/>
+                            <Route exact path="/single-check" component={SingleCheckPage}/>
 
                             <Route exact path="/profile" component={Auth(ProfilePage, true)}/>
                             <Route exact path="/courses" component={Auth(CoursesPage)}/>

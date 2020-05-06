@@ -118,10 +118,10 @@ class SignInPage extends React.Component {
                         AutoPlag
                     </div>
                     <div className="card-body mx-auto w-100">
-                        <form acceptCharset="UTF-8" method="post" onSubmit={this.handleSubmit}>
+                        <form onSubmit={this.handleSubmit}>
                             <div className="form-group">
                                 <label htmlFor="email">
-                                    Email
+                                    Email:
                                 </label>
                                 <div className="input-group">
                                     <div className="input-group-prepend">
@@ -144,7 +144,7 @@ class SignInPage extends React.Component {
 
                             <div className="form-group">
                                 <label htmlFor="password">
-                                    Пароль
+                                    Пароль:
                                 </label>
                                 <div className="input-group">
                                     <div className="input-group-prepend">

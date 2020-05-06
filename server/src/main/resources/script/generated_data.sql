@@ -6,18 +6,18 @@ INSERT INTO roles(role_id, name)
 VALUES (1, 'ROLE_USER'),
        (2, 'ROLE_ADMIN');
 
-INSERT INTO programming_languages(programming_language_id, name)
-VALUES (1, 'java19'),
-       (2, 'python3'),
-       (3, 'c/c++'),
-       (4, 'c#-1.2'),
-       (5, 'char'),
-       (6, 'text'),
-       (7, 'scheme'),
-       (8, 'java17'),
-       (9, 'java15'),
-       (10, 'java12'),
-       (11, 'java11');
+INSERT INTO programming_languages(programming_language_id, name, default_comparison_sensitivity)
+VALUES (1, 'java19', 9),
+       (2, 'python3', 12),
+       (3, 'c/c++', 12),
+       (4, 'c#-1.2', 8),
+       (5, 'char', 10),
+       (6, 'text', 5),
+       (7, 'scheme', 13),
+       (8, 'java17', 9),
+       (9, 'java15', 8),
+       (10, 'java12', 9),
+       (11, 'java11', 9);
 
 INSERT INTO users(user_id, email, first_name, last_name, password, role_id)
 VALUES (1, 'max@gmail.com', 'Max', 'Svynarchuk', '123456', 1);
