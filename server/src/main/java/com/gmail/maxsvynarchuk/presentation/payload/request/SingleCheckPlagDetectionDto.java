@@ -7,7 +7,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class SingleCheckPlagDetectionSettingsDto {
+public class SingleCheckPlagDetectionDto {
     @NotNull
     private Integer programmingLanguageId;
 
@@ -18,6 +18,9 @@ public class SingleCheckPlagDetectionSettingsDto {
     @NotNull
     @Min(1)
     private Integer minimumSimilarityPercent;
+
+    @NotNull
+    private Boolean saveLog;
 
     @NotNull
     private MultipartFile codeToPlagDetectionZip;

@@ -22,7 +22,10 @@ public class PlagDetectionResult implements Serializable {
     private Long id;
 
     @Size(max = 255)
-    private String message;
+    private String resultMessage;
+
+    @Lob
+    private String log;
 
     @NotNull
     private Boolean isSuccessful;
@@ -44,11 +47,11 @@ public class PlagDetectionResult implements Serializable {
     @EqualsAndHashCode.Exclude
     private Set<ResultStudent> resultStudents;
 
-    public static PlagDetectionResult failed(String message) {
+    public static PlagDetectionResult failed(String resultMessage) {
         return PlagDetectionResult.builder()
                 .date(new Date())
                 .isSuccessful(false)
-                .message(message)
+                .resultMessage(resultMessage)
                 .build();
     }
 }

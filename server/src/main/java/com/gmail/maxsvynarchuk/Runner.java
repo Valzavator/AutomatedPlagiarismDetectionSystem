@@ -8,6 +8,8 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,8 +27,15 @@ public class Runner {
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        System.out.println(Charset.availableCharsets());
-        System.out.println(Charset.isSupported("ISO-8859-5"));
+        String str = "Language accepted: Javac 1.9+ based AST plugin\nCommand line: -s C:\\Users\\Valzavator\\IdeaProjects\\AutomatedPlagiarismDetectionSystem\\server\\target\\classes\\data\\zip\\2020-05-07\\19-49-15\\source.zip -r C:\\Users\\Valzavator\\IdeaProjects\\AutomatedPlagiarismDetectionSystem\\server\\target\\classes\\static\\jplag-results\\2020-05-07\\19-49-15\\source.zip -l java19 -t 12 -m 10% \r\ninitialize ok\r\n0 submissions\r\n\n0 submissions parsed successfully!\n0 parser errors!\n\n\nError: Not enough valid submissions! (only 0 are valid):\n\r\n" +
+                 "Comparing progbase_sr3_sverhrazum.c-progbase_sr3_zverevfpm.c: 0.0\r\nComparing progbase_sr3_tiwatit.c-progbase_sr3_valerystudent.c: 0.0\r\nComparing progbase_sr3_tiwatit.c-progbase_sr3_wmdanor.c: 0.0\r\nComparing progbase_sr3_tiwatit.c-progbase_sr3_yehorf.c: 0.0\r\nComparing progbase_sr3_tiwatit.c-progbase_sr3_zverevfpm.c: 0.0\r\nComparing progbase_sr3_valerystudent.c-progbase_sr3_wmdanor.c: 23.030304\r\nComparing progbase_sr3_valerystudent.c-progbase_sr3_yehorf.c: 24.358974\r\nComparing progbase_sr3_valerystudent.c-progbase_sr3_zverevfpm.c: 0.0\r\nComparing progbase_sr3_wmdanor.c-progbase_sr3_yehorf.c: 30.76923\r\nComparing progbase_sr3_wmdanor.c-progbase_sr3_zverevfpm.c: 0.0\r\nComparing progbase_sr3_yehorf.c-progbase_sr3_zverevfpm.c: 0.0\r\n\nWriting results to: C:\\Users\\Valzavator\\IdeaProjects\\AutomatedPlagiarismDetectionSystem\\server\\target\\classes\\static\\jplag-results\\2020-05-07\\19-57-42\\source.zip\n";
+
+        int startIndex = str.indexOf("initialize ok");
+        int endIndex = str.indexOf("Writing results to:");
+        System.out.println(str.substring(startIndex, endIndex));
+
+//        System.out.println(Charset.availableCharsets());
+//        System.out.println(Charset.isSupported("ISO-8859-5"));
 //        String st = "/classes/static/jplag-results/2020-04-24/00-09-06\\group1.zip";
 ////        String st1 = "C:\\Users\\Valzavator\\IdeaProjects\\AutomatedPlagiarismDetectionSystem\\server\\target\\classes\\static\\jplag-results\\";
 ////        Path p = Paths.get(st).normalize();
@@ -67,7 +76,7 @@ public class Runner {
 //        System.out.println(System.getProperty("java.version"));
 //        System.out.println(System.getenv("JAVA_HOME"));
 //        File file = new File("jplag");
-//        ProcessBuilder builder = new ProcessBuilder( "\"C:\\Program Files\\Java\\jdk-12\\bin\\java\"", "", "--version");
+        ProcessBuilder builder = new ProcessBuilder( "\"C:\\Program Files\\Java\\jdk-12\\bin\\java\"", "", "--version");
 //        ProcessBuilder builder = new ProcessBuilder("C:/Program Files/Java/jdk-12/bin/java",
 ////                System.getenv("JAVA_HOME") + "\\bin\\java",
 //                "-jar",
@@ -76,10 +85,21 @@ public class Runner {
 //                "-r", Path.ANALYSIS_RESULT_FOLDER,
 //                "-l", "java19"
 //        );
+        Process process = builder.start();
+        process.waitFor();
 
-//        Process process = builder.inheritIO().start();
+        final int bufferSize = 1024;
+        final char[] buffer = new char[bufferSize];
+        final StringBuilder out = new StringBuilder();
+        Reader in = new InputStreamReader(process.getInputStream());
+        int charsRead;
+        while((charsRead = in.read(buffer, 0, buffer.length)) > 0) {
+            out.append(buffer, 0, charsRead);
+        }
+//        System.out.println(out.toString());
 
-        //        process.waitFor();
+
+
 //        System.out.println(process.waitFor());
 //        System.out.println(process.exitValue());
 //        // Then retreive the process output

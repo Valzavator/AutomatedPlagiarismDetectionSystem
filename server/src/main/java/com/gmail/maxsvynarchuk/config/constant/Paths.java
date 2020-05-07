@@ -9,6 +9,7 @@ import java.nio.file.Path;
 
 @Slf4j
 public final class Paths {
+    public static final String URL_HOST;
     public static final String REPOSITORIES_DATA_FOLDER;
     public static final String ZIP_DATA_FOLDER;
     public static final String STATIC_FOLDER;
@@ -22,6 +23,7 @@ public final class Paths {
             log.error("", e);
         }
 
+        URL_HOST = ResourceManager.PATH.getProperty("url.host");
         REPOSITORIES_DATA_FOLDER = Path.of(classpath, ResourceManager.PATH.getProperty("data.repositories.folder")).toString();
         ZIP_DATA_FOLDER = Path.of(classpath, ResourceManager.PATH.getProperty("data.zip.folder")).toString();
         STATIC_FOLDER = Path.of(classpath, ResourceManager.PATH.getProperty("static.folder")).toString();

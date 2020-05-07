@@ -80,7 +80,7 @@ public class AutomatedPlagiarismDetectionJob extends Thread {
                 PlagDetectionResult result = PlagDetectionResult.builder()
                         .isSuccessful(false)
                         .date(new Date())
-                        .message("Failed detect plagiarism for task!")
+                        .resultMessage("Failed detect plagiarism for task!")
                         .build();
                 completedTaskGroup.setPlagDetectionResult(result);
                 completedTaskGroup.setPlagDetectionStatus(PlagDetectionStatus.FAILED);

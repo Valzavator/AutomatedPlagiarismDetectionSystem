@@ -8,7 +8,8 @@ import com.gmail.maxsvynarchuk.persistence.plagiarism.SoftwarePlagDetectionTool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.LinkedList;
@@ -21,31 +22,37 @@ public class SoftwarePlagDetectionToolImpl implements SoftwarePlagDetectionTool 
     public static final String INDEX_FILE = "index.html";
 
     @Override
-    public PlagDetectionResult generateHtmlResult(PlagDetectionSettings setting) {
-        if (!validateSettings(setting)) {
+    public PlagDetectionResult generateHtmlResult(PlagDetectionSettings settings) {
+        if (!validateSettings(settings)) {
             return PlagDetectionResult.failed("Invalid settings");
         }
-
-        ProcessBuilder processBuilder = configureJplagProcess(setting);
+        String jplagLog = null;
+        ProcessBuilder processBuilder = configureJplagProcess(settings);
         boolean isSuccessful = false;
         try {
-            Process process = processBuilder.inheritIO().start();
+            Process process;
+            if (settings.getSaveLog()) {
+                process = processBuilder.start();
+                jplagLog = getJPlagLog(process.getInputStream());
+            } else {
+                process = processBuilder.inheritIO().start();
+            }
             isSuccessful = process.waitFor() == 0;
         } catch (IOException | InterruptedException ex) {
             log.error(ex.toString());
         }
-
         PlagDetectionResult result = PlagDetectionResult.builder()
                 .date(new Date())
                 .isSuccessful(isSuccessful)
+                .log(jplagLog)
                 .build();
         if (isSuccessful) {
+            result.setResultMessage("Plagiarism detection tool successfully done analysis!");
             result.setResultPath(
-                    generateResultPath(setting.getResultPath()));
+                    generateResultPath(settings.getResultPath()));
         } else {
-            result.setMessage("Plagiarism detection tool was interrupted!");
+            result.setResultMessage("Plagiarism detection tool was interrupted (see logs)!");
         }
-
         return result;
     }
 
@@ -84,7 +91,7 @@ public class SoftwarePlagDetectionToolImpl implements SoftwarePlagDetectionTool 
         // base code directory path
         if (Objects.nonNull(setting.getBaseCodePath())) {
             commands.add("-bc");
-            commands.add(setting.getBaseCodePath());
+            commands.add(JPlag.BASE_CODE_DIRECTORY);
         }
 
         return builder.command(commands);
@@ -103,7 +110,29 @@ public class SoftwarePlagDetectionToolImpl implements SoftwarePlagDetectionTool 
         String urlPath = staticFolderPath.relativize(settingResultPath)
                 .toString()
                 .replace("\\", "/");
-        return "/" + urlPath + "/" + INDEX_FILE;
+        return Paths.URL_HOST + "/" + urlPath + "/" + INDEX_FILE;
+    }
+
+    private String getJPlagLog(InputStream stream) throws IOException {
+        byte[] buffer = new byte[1024];
+        int length;
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        while ((length = stream.read(buffer)) != -1) {
+            result.write(buffer, 0, length);
+        }
+        return removeSensitiveData(result.toString(StandardCharsets.UTF_8));
+    }
+
+    private String removeSensitiveData(String data) {
+        int startIndex = data.indexOf("initialize ok");
+        int endIndex = data.indexOf("Writing results to:");
+        if (startIndex == -1) {
+            return data;
+        }
+        if (endIndex == -1) {
+            return data.substring(startIndex);
+        }
+        return data.substring(startIndex, endIndex);
     }
 
 }

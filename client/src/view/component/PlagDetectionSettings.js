@@ -18,6 +18,7 @@ class PlagDetectionSettings extends React.Component {
         defaultState.detectionType = getOr(defaultState.detectionType, 'GROUP');
         defaultState.comparisonSensitivity = getOr(defaultState.comparisonSensitivity, 9);
         defaultState.minimumSimilarityPercent = getOr(defaultState.minimumSimilarityPercent, 1);
+        defaultState.saveLog = getOr(defaultState.saveLog, false);
         defaultState.baseCodeZip = getOr(defaultState.baseCodeZip, null);
         defaultState.codeToPlagDetectionZip = getOr(defaultState.codeToPlagDetectionZip, null);
 
@@ -40,6 +41,7 @@ class PlagDetectionSettings extends React.Component {
         this.handleChangeComparisonSensitivity = this.handleChangeComparisonSensitivity.bind(this);
         this.handleChangeLanguage = this.handleChangeLanguage.bind(this);
         this.handleChangeTypeDetection = this.handleChangeTypeDetection.bind(this);
+        this.handleChangeSaveLog = this.handleChangeSaveLog.bind(this);
         this.handleUploadBaseCodeFile = this.handleUploadBaseCodeFile.bind(this);
         this.handleUploadToPlagDetectionFile = this.handleUploadToPlagDetectionFile.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -83,6 +85,15 @@ class PlagDetectionSettings extends React.Component {
         });
         this.props.onSettingsChange({
             detectionType: activeDetectionType,
+        });
+    }
+
+    handleChangeSaveLog(e) {
+        this.setState({
+            saveLog: e.target.checked,
+        });
+        this.props.onSettingsChange({
+            saveLog: e.target.checked,
         });
     }
 
@@ -199,6 +210,7 @@ class PlagDetectionSettings extends React.Component {
             programmingLanguageId: this.state.programmingLanguageId,
             comparisonSensitivity: this.state.comparisonSensitivity,
             minimumSimilarityPercent: this.state.minimumSimilarityPercent,
+            saveLog: this.state.saveLog,
             baseCodeZip: this.state.baseCodeZip,
             invalidBaseCodeFile: this.state.invalidBaseCodeFile
         };
@@ -361,6 +373,17 @@ class PlagDetectionSettings extends React.Component {
                         <ReactTooltip id='selectPercent' place="top" type='info' effect="float">
                             {this.state.minimumSimilarityPercent}
                         </ReactTooltip>
+                    </div>
+                </div>
+
+                <div className="form-group mt-4">
+                    <div className="custom-control custom-switch">
+                        <input type="checkbox" className="custom-control-input " id="customSwitch1"
+                               checked={this.state.saveLog}
+                               onChange={this.handleChangeSaveLog}/>
+                        <label className="custom-control-label " htmlFor="customSwitch1">
+                            Зберігати журнал виконання?
+                        </label>
                     </div>
                 </div>
 

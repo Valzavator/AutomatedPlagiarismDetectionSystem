@@ -14,16 +14,16 @@ import java.util.List;
 @Facade
 @AllArgsConstructor
 public class PlagiarismDetectionFacadeImpl implements PlagiarismDetectionFacade {
-    private final ProgrammingLanguageService programmingLanguageService;
-
-    private final Converter<ProgrammingLanguage, ProgrammingLanguageDto> converter;
-
-
-    @Override
-    public OptionsForSingleCheckSettingsDto getOptionsForSingleCheckSettings() {
-        List<ProgrammingLanguage> languages = programmingLanguageService.getAllProgrammingLanguages();
-        List<ProgrammingLanguageDto> languagesDto = List.copyOf(converter.convertAll(languages));
-        return new OptionsForSingleCheckSettingsDto(languagesDto);
-    }
+//    private final ProgrammingLanguageService programmingLanguageService;
+//
+//    private final Converter<ProgrammingLanguage, ProgrammingLanguageDto> converter;
+//
+//
+//    @Override
+//    public OptionsForSingleCheckSettingsDto getOptionsForSingleCheckSettings() {
+//        List<ProgrammingLanguage> languages = programmingLanguageService.getAllProgrammingLanguages();
+//        List<ProgrammingLanguageDto> languagesDto = List.copyOf(converter.convertAll(languages));
+//        return new OptionsForSingleCheckSettingsDto(languagesDto);
+//    }
 
 }

@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.util.CollectionUtils;
+import org.springframework.validation.BindException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -68,10 +69,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   HttpHeaders headers,
                                                                   HttpStatus status,
                                                                   WebRequest request) {
-        log.debug(ex.toString());
-        String path = ((ServletWebRequest) request).getRequest().getRequestURI();
-        return buildResponseEntity(
-                new ApiError(status, path, ex));
+        return delegateTemplateResponse(ex, headers, status, request);
     }
 
     @Override
@@ -79,10 +77,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                         HttpHeaders headers,
                                                         HttpStatus status,
                                                         WebRequest request) {
-        log.debug(ex.toString());
-        String path = ((ServletWebRequest) request).getRequest().getRequestURI();
-        return buildResponseEntity(
-                new ApiError(status, path, ex));
+        return delegateTemplateResponse(ex, headers, status, request);
     }
 
     @Override
@@ -90,6 +85,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                      HttpHeaders headers,
                                                                      HttpStatus status,
                                                                      WebRequest request) {
+        return delegateTemplateResponse(ex, headers, status, request);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleBindException(BindException ex,
+                                                         HttpHeaders headers,
+                                                         HttpStatus status,
+                                                         WebRequest request) {
+        return delegateTemplateResponse(ex, headers, status, request);
+    }
+
+    private ResponseEntity<Object> delegateTemplateResponse(Exception ex,
+                                                            HttpHeaders headers,
+                                                            HttpStatus status,
+                                                            WebRequest request) {
         log.debug(ex.toString());
         String path = ((ServletWebRequest) request).getRequest().getRequestURI();
         return buildResponseEntity(

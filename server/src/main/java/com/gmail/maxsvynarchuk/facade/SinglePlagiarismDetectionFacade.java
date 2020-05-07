@@ -1,11 +1,13 @@
 package com.gmail.maxsvynarchuk.facade;
 
-import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionResult;
-import com.gmail.maxsvynarchuk.presentation.payload.request.SingleCheckPlagDetectionSettingsDto;
-import org.springframework.web.multipart.MultipartFile;
+import com.gmail.maxsvynarchuk.presentation.payload.request.SingleCheckPlagDetectionDto;
+import com.gmail.maxsvynarchuk.presentation.payload.request.SingleCheckPlagDetectionResultDto;
+import com.gmail.maxsvynarchuk.presentation.payload.response.OptionsForSingleCheckSettingsDto;
 
 public interface SinglePlagiarismDetectionFacade {
 
-    PlagDetectionResult processForZipFile(SingleCheckPlagDetectionSettingsDto settingDto, MultipartFile multipartFile);
+    OptionsForSingleCheckSettingsDto getOptionsForSingleCheckSettings();
+
+    SingleCheckPlagDetectionResultDto processSingleCheck(SingleCheckPlagDetectionDto dto);
 
 }

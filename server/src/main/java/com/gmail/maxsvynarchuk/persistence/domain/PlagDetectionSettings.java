@@ -41,6 +41,9 @@ public class PlagDetectionSettings implements Serializable {
     @NotBlank
     private String resultPath;
 
+    @NotNull
+    private Boolean saveLog;
+
 //    @OneToOne(fetch = FetchType.LAZY,
 //            mappedBy = "plagDetectionSetting")
 //    @ToString.Exclude

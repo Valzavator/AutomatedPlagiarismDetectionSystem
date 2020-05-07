@@ -12,6 +12,7 @@ import java.nio.file.Path;
 public final class JPlag {
     public static final String JAVA_PATH;
     public static final String JPlAG_PATH;
+    public static final String BASE_CODE_DIRECTORY;
 
     static {
         String classpath = "";
@@ -21,6 +22,7 @@ public final class JPlag {
             log.error("", e);
         }
         JPlAG_PATH = Path.of(classpath, ResourceManager.JPLAG.getProperty("jplag.jar.path")).toString();
+        BASE_CODE_DIRECTORY = ResourceManager.JPLAG.getProperty("jplag.base.path");
 
         String javaPathFromProperties = ResourceManager.JPLAG.getProperty("java.executable.path");
         String javaPathFromEnv = System.getenv("JAVA_HOME");

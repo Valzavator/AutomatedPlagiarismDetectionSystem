@@ -55,11 +55,11 @@ VALUES (1, 'TAKS-1', 'common/exceptions/', 1),
        (2, 'TAKS-2', 'common/exceptions/security/', 1);
 
 INSERT INTO plagiarism_detection_settings(plagiarism_detection_setting_id, base_code_path, comparison_sensitivity,
-                                          data_path, minimum_similarity_percent, result_path, type_detection,
-                                          programming_language_id)
-VALUES (1, null, 1, 'target/classes/data/repositories/Max/Course-1/course/task-1/', 1, 'target/classes/static/jplag-results/Max/Course-1/course/task-1/', 'COURSE', 1),
-       (2, null, 1, 'target/classes/data/repositories/Max/Course-1/group-1/task-1/', 1, 'target/classes/static/jplag-results/Max/Course-1/group-1/task-1/', 'GROUP', 2),
-       (3, null, 1, 'target/classes/data/repositories/Max/Course-1/group-1/task-2/', 1, 'target/classes/static/jplag-results/Max/Course-1/group-1/task-2/', 'GROUP', 3);
+                                          data_path, minimum_similarity_percent, result_path, detection_type,
+                                          programming_language_id, save_log)
+VALUES (1, null, 1, 'target/classes/data/repositories/Max/Course-1/course/task-1/', 1, 'target/classes/static/jplag-results/Max/Course-1/course/task-1/', 'COURSE', 1, false),
+       (2, null, 1, 'target/classes/data/repositories/Max/Course-1/group-1/task-1/', 1, 'target/classes/static/jplag-results/Max/Course-1/group-1/task-1/', 'GROUP', 2, false),
+       (3, null, 1, 'target/classes/data/repositories/Max/Course-1/group-1/task-2/', 1, 'target/classes/static/jplag-results/Max/Course-1/group-1/task-2/', 'GROUP', 3, false);
 
 INSERT INTO task_group(group_id, task_id, creation_date, expiry_date, plag_detection_status,
                        plagiarism_detection_result_id, plagiarism_detection_setting_id)

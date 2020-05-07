@@ -4,6 +4,6 @@ import com.gmail.maxsvynarchuk.presentation.payload.response.OptionsForSingleChe
 
 public interface PlagiarismDetectionFacade {
 
-    OptionsForSingleCheckSettingsDto getOptionsForSingleCheckSettings();
+//    OptionsForSingleCheckSettingsDto getOptionsForSingleCheckSettings();
 
 }
