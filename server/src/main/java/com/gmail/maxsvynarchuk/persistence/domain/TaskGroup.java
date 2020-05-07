@@ -21,7 +21,7 @@ import java.util.Date;
         attributeNodes = {
                 @NamedAttributeNode(value = "group", subgraph = "TaskGroup.Group.detail"),
                 @NamedAttributeNode("task"),
-                @NamedAttributeNode(value = "plagDetectionSetting", subgraph = "TaskGroup.PlagDetectionStatus.detail")
+                @NamedAttributeNode(value = "plagDetectionSettings", subgraph = "TaskGroup.PlagDetectionStatus.detail")
         },
         subgraphs = {
                 @NamedSubgraph(name = "TaskGroup.Group.detail",
@@ -78,7 +78,7 @@ public class TaskGroup implements Serializable {
 
     @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "plagiarism_detection_setting_id", nullable = false)
-    private PlagDetectionSetting plagDetectionSetting;
+    private PlagDetectionSettings plagDetectionSettings;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "plagiarism_detection_result_id")

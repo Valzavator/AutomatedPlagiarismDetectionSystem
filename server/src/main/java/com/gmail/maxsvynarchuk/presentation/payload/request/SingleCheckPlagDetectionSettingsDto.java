@@ -1,13 +1,15 @@
 package com.gmail.maxsvynarchuk.presentation.payload.request;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class PlagDetectionSettingDto {
-    private Long id;
+public class SingleCheckPlagDetectionSettingsDto {
+    @NotNull
+    private Integer programmingLanguageId;
 
     @NotNull
     @Min(1)
@@ -17,8 +19,8 @@ public class PlagDetectionSettingDto {
     @Min(1)
     private Integer minimumSimilarityPercent;
 
-    private String baseCodePath;
-
     @NotNull
-    private ProgrammingLanguageDto programmingLanguage;
+    private MultipartFile codeToPlagDetectionZip;
+
+    private MultipartFile baseCodeZip;
 }

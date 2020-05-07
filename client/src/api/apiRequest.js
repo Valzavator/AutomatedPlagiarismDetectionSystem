@@ -23,7 +23,12 @@ export const apiRequest = async (method, path, body) => {
         }
     } catch (error) {
         if (error.response) {
-            throw Exception(error.response.data);
+            console.log(error.response.data)
+            if (error.response.data) {
+                throw Exception(error.response.data);
+            } else {
+                throw Exception(error.response);
+            }
         } else if (error.request) {
             // The request was made but no response was received
             // `error.request` is an instance of XMLHttpRequest in the browser and an instance of

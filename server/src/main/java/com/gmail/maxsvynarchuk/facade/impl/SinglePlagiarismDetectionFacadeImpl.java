@@ -5,10 +5,12 @@ import com.gmail.maxsvynarchuk.facade.Facade;
 import com.gmail.maxsvynarchuk.facade.SinglePlagiarismDetectionFacade;
 import com.gmail.maxsvynarchuk.facade.converter.Converter;
 import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionResult;
-import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionSetting;
-import com.gmail.maxsvynarchuk.presentation.payload.request.PlagDetectionSettingDto;
+import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionSettings;
+import com.gmail.maxsvynarchuk.persistence.domain.ProgrammingLanguage;
+import com.gmail.maxsvynarchuk.presentation.payload.request.SingleCheckPlagDetectionSettingsDto;
 import com.gmail.maxsvynarchuk.service.PlagDetectionResultService;
 import com.gmail.maxsvynarchuk.service.PlagiarismDetectionService;
+import com.gmail.maxsvynarchuk.service.ProgrammingLanguageService;
 import com.gmail.maxsvynarchuk.util.FileSystemWriter;
 import lombok.AllArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,15 +23,22 @@ import java.util.Date;
 @Facade
 @AllArgsConstructor
 public class SinglePlagiarismDetectionFacadeImpl implements SinglePlagiarismDetectionFacade {
-    private final Converter<PlagDetectionSettingDto, PlagDetectionSetting> converter;
+    private final ProgrammingLanguageService programmingLanguageService;
     private final PlagiarismDetectionService plagiarismDetectionService;
     private final PlagDetectionResultService plagDetectionResultService;
+
     private final FileSystemWriter fileSystemWriter;
+    private final Converter<SingleCheckPlagDetectionSettingsDto, PlagDetectionSettings> converter;
 
     @Override
-    public PlagDetectionResult processForZipFile(PlagDetectionSettingDto settingDto, MultipartFile multipartFile) {
-        PlagDetectionSetting setting = converter.convert(settingDto);
+    public PlagDetectionResult processForZipFile(SingleCheckPlagDetectionSettingsDto settingDto, MultipartFile multipartFile) {
+        ProgrammingLanguage programmingLanguage = programmingLanguageService
+                .getProgrammingLanguageById(settingDto.getProgrammingLanguageId())
+                .orElseThrow();
+        PlagDetectionSettings setting = converter.convert(settingDto);
+        setting.setProgrammingLanguage(programmingLanguage);
         generatePaths(setting, multipartFile);
+
         if (!fileSystemWriter.unzipFile(multipartFile, setting.getDataPath())) {
             return PlagDetectionResult.failed("Unable to unpack archive!");
         }
@@ -37,7 +46,7 @@ public class SinglePlagiarismDetectionFacadeImpl implements SinglePlagiarismDete
         return plagDetectionResultService.savePlagDetectionResult(result);
     }
 
-    private void generatePaths(PlagDetectionSetting setting, MultipartFile multipartFile) {
+    private void generatePaths(PlagDetectionSettings setting, MultipartFile multipartFile) {
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd" + File.separator + "HH-mm-ss");
         setting.setDataPath(

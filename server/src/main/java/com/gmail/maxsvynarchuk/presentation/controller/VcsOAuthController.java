@@ -65,7 +65,7 @@ public class VcsOAuthController {
 
     @PostMapping("/delete/{authorizationProvider}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<Object> deleteToken(@AuthUser UserPrincipal currentUser,
+    public ResponseEntity<?> deleteToken(@AuthUser UserPrincipal currentUser,
                                               @PathVariable("authorizationProvider") AuthorizationProvider authorizationProvider) {
         User user = userService.getRequiredUserById(currentUser.getId());
         boolean isSuccess = userService.deleteAccessTokenToUser(user, authorizationProvider);

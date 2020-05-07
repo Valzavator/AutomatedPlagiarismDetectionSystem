@@ -58,10 +58,14 @@ class ProfilePage extends React.Component {
 
     async loadUserProfileVcsInfo() {
         if (this.state.updateVcsInfo) {
-            let response = await getUserProfileVcsInfo();
-            await this.setState({
-                vcs: response.data
-            });
+            try {
+                let response = await getUserProfileVcsInfo();
+                await this.setState({
+                    vcs: response.data
+                });
+            } catch (err) {
+                this.props.error.throwError(err);
+            }
         }
     }
 

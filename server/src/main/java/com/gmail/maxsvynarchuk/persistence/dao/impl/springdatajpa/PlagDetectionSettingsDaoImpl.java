@@ -1,8 +1,8 @@
 package com.gmail.maxsvynarchuk.persistence.dao.impl.springdatajpa;
 
 import com.gmail.maxsvynarchuk.persistence.dao.PlagDetectionSettingDao;
-import com.gmail.maxsvynarchuk.persistence.dao.repository.PlagDetectionSettingRepository;
-import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionSetting;
+import com.gmail.maxsvynarchuk.persistence.dao.repository.PlagDetectionSettingsRepository;
+import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionSettings;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -11,26 +11,26 @@ import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
-public class PlagDetectionSettingDaoImpl implements PlagDetectionSettingDao {
-    private final PlagDetectionSettingRepository repository;
+public class PlagDetectionSettingsDaoImpl implements PlagDetectionSettingDao {
+    private final PlagDetectionSettingsRepository repository;
 
     @Override
-    public Optional<PlagDetectionSetting> findOne(Long id) {
+    public Optional<PlagDetectionSettings> findOne(Long id) {
         return repository.findById(id);
     }
 
     @Override
-    public List<PlagDetectionSetting> findAll() {
+    public List<PlagDetectionSettings> findAll() {
         return repository.findAll();
     }
 
     @Override
-    public PlagDetectionSetting save(PlagDetectionSetting obj) {
+    public PlagDetectionSettings save(PlagDetectionSettings obj) {
         return repository.save(obj);
     }
 
     @Override
-    public void delete(PlagDetectionSetting obj) {
+    public void delete(PlagDetectionSettings obj) {
         repository.delete(obj);
     }
 

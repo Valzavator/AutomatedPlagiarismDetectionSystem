@@ -20,7 +20,7 @@ import NotFoundPage from "./view/component/NotFoundPage";
 import configureStore from "./store/configureStore";
 import Auth from "./view/container/Auth";
 import AutocloseablePage from "./view/component/AutocloseablePage";
-import SingleCheckPage from "./view/component/SingleCheckPage";
+import SingleCheckPage from "./view/container/SingleCheckPage";
 
 import {checkAuth, getBasicUser} from "./store/action/authActions";
 

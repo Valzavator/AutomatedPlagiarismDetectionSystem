@@ -38,8 +38,7 @@ public class AutomatedPlagiarismDetectionJob extends Thread {
         for (TaskGroup taskGroup : taskGroups) {
             PlagDetectionResultCallable callable = new PlagDetectionResultCallable(
                     taskGroupService, plagiarismDetectionService, taskGroup);
-            results.add(
-                    threadPool.submit(callable));
+            results.add(threadPool.submit(callable));
         }
         threadPool.shutdown(); // Disable new tasks from being submitted
         try {

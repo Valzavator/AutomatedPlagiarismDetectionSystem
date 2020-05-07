@@ -28,6 +28,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final String[] patterns = {
             "/",
             "/api/v1/vcs/**/*",
+            "/api/v1/single-check/**/*",
             "/api/v1/test/**",
             "/api/v1/auth/**",
             "/favicon.ico",

@@ -1,6 +1,6 @@
 package com.gmail.maxsvynarchuk.persistence.domain;
 
-import com.gmail.maxsvynarchuk.persistence.domain.type.TypeDetection;
+import com.gmail.maxsvynarchuk.persistence.domain.type.DetectionType;
 import lombok.*;
 
 import javax.persistence.*;
@@ -15,7 +15,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PlagDetectionSetting implements Serializable {
+public class PlagDetectionSettings implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "plagiarism_detection_setting_id")
@@ -33,7 +33,7 @@ public class PlagDetectionSetting implements Serializable {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private TypeDetection typeDetection;
+    private DetectionType detectionType;
 
     @NotBlank
     private String dataPath;

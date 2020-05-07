@@ -6,8 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -68,7 +71,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.debug(ex.toString());
         String path = ((ServletWebRequest) request).getRequest().getRequestURI();
         return buildResponseEntity(
-                new ApiError(HttpStatus.BAD_REQUEST, path, ex));
+                new ApiError(status, path, ex));
     }
 
     @Override
@@ -79,7 +82,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.debug(ex.toString());
         String path = ((ServletWebRequest) request).getRequest().getRequestURI();
         return buildResponseEntity(
-                new ApiError(HttpStatus.BAD_REQUEST, path, ex));
+                new ApiError(status, path, ex));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex,
+                                                                     HttpHeaders headers,
+                                                                     HttpStatus status,
+                                                                     WebRequest request) {
+        log.debug(ex.toString());
+        String path = ((ServletWebRequest) request).getRequest().getRequestURI();
+        return buildResponseEntity(
+                new ApiError(status, path, ex));
     }
 
     private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {

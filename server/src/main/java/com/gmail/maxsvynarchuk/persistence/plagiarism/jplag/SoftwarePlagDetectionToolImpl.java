@@ -2,7 +2,7 @@ package com.gmail.maxsvynarchuk.persistence.plagiarism.jplag;
 
 import com.gmail.maxsvynarchuk.config.constant.JPlag;
 import com.gmail.maxsvynarchuk.config.constant.Paths;
-import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionSetting;
+import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionSettings;
 import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionResult;
 import com.gmail.maxsvynarchuk.persistence.plagiarism.SoftwarePlagDetectionTool;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ public class SoftwarePlagDetectionToolImpl implements SoftwarePlagDetectionTool 
     public static final String INDEX_FILE = "index.html";
 
     @Override
-    public PlagDetectionResult generateHtmlResult(PlagDetectionSetting setting) {
+    public PlagDetectionResult generateHtmlResult(PlagDetectionSettings setting) {
         if (!validateSettings(setting)) {
             return PlagDetectionResult.failed("Invalid settings");
         }
@@ -49,7 +49,7 @@ public class SoftwarePlagDetectionToolImpl implements SoftwarePlagDetectionTool 
         return result;
     }
 
-    private ProcessBuilder configureJplagProcess(PlagDetectionSetting setting) {
+    private ProcessBuilder configureJplagProcess(PlagDetectionSettings setting) {
         ProcessBuilder builder = new ProcessBuilder();
         List<String> commands = new LinkedList<>();
         // execute jar file
@@ -90,7 +90,7 @@ public class SoftwarePlagDetectionToolImpl implements SoftwarePlagDetectionTool 
         return builder.command(commands);
     }
 
-    private boolean validateSettings(PlagDetectionSetting setting) {
+    private boolean validateSettings(PlagDetectionSettings setting) {
         return Objects.nonNull(setting) &&
                 Objects.nonNull(setting.getDataPath()) &&
                 Objects.nonNull(setting.getResultPath()) &&
