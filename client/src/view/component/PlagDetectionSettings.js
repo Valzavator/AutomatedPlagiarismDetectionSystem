@@ -55,9 +55,11 @@ class PlagDetectionSettings extends React.Component {
         try {
             const response = await this.props.loadSettings();
             const languages = response.data.languages;
+            let activeLanguage = languages.find(l => l.id === this.state.programmingLanguageId);
             await this.setState({
                 languages: languages,
                 isLoading: false,
+                fileTypesSupport: activeLanguage.fileTypesSupport
             }, () => this.setAllChanges());
         } catch (err) {
             this.props.error.throwError(err);
@@ -68,10 +70,11 @@ class PlagDetectionSettings extends React.Component {
         let activeLanguage = this.state.languages.find(l => l.id === parseInt(e.target.value));
         const newState = {
             programmingLanguageId: activeLanguage.id,
-            comparisonSensitivity: activeLanguage.defaultComparisonSensitivity
+            comparisonSensitivity: activeLanguage.defaultComparisonSensitivity,
         };
         this.setState({
-            ...newState
+            ...newState,
+            fileTypesSupport: activeLanguage.fileTypesSupport
         });
         this.props.onSettingsChange({
             ...newState
@@ -261,13 +264,18 @@ class PlagDetectionSettings extends React.Component {
                             );
                             return (
                                 <select className="form-control form-control-lg"
-                                        id="selectLanguage"
+                                        id="selectLanguage" data-for='fileTypesFAQ' data-tip
                                         value={this.state.programmingLanguageId}
                                         onChange={this.handleChangeLanguage}>
                                     {options}
                                 </select>
                             );
                         })()}
+                        <ReactTooltip id='fileTypesFAQ' place="right" type='info'
+                                      multiline={true}
+                                      effect="solid">
+                            {this.state.fileTypesSupport}
+                        </ReactTooltip>
                     </div>
                 </div>
 

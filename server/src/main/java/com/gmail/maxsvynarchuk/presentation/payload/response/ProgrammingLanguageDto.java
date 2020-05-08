@@ -11,4 +11,5 @@ public class ProgrammingLanguageDto {
     private Integer id;
     private String name;
     private Integer defaultComparisonSensitivity;
+    private String fileTypesSupport;
 }

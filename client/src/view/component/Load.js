@@ -1,5 +1,4 @@
 import React from 'react';
-// import ReactLoading from 'react-loading';
 
 const Load = (props) => (
     <div className={props.page ?  'load-page' : 'load-content'}>

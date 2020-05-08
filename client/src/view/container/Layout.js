@@ -7,24 +7,16 @@ import NotificationsSystem from 'reapop';
 import theme from 'reapop-theme-bootstrap';
 import {withRouter} from "react-router-dom";
 
-const pagesPathsWithoutSidebar = ['/profile', '/single-check']
+const pagesPathsWithoutSidebar = ['/', '/profile', '/single-check']
 
 class Layout extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            renderSidebar: false,
+            renderSidebar: true,
+            // renderSidebar: false,
         };
     };
-
-    // static getDerivedStateFromProps(props, state) {
-    //     if (props.errorStatus >= 300 &&
-    //         props.location.pathname !== '/error') {
-    //         props.history.push('/error');
-    //         return null;
-    //     }
-    //     return state;
-    // };
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         const currLocation = this.props.location.pathname;
@@ -38,7 +30,8 @@ class Layout extends React.Component {
             if (this.props.isAuthorized && !pagesPathsWithoutSidebar.includes(currLocation)) {
                 this.setState({renderSidebar: true});
             } else {
-                this.setState({renderSidebar: false});
+                this.setState({renderSidebar: true});
+                // this.setState({renderSidebar: false});
             }
         }
     }
@@ -50,7 +43,8 @@ class Layout extends React.Component {
                     <NotificationsSystem theme={theme}/>
                     <Header sidebarButton={this.state.renderSidebar}/>
                     <main role="main"
-                          className={this.props.isOpenSidebar && this.props.isAuthorized ? "d-flex " : "d-flex toggled"}
+                          // className={this.props.isOpenSidebar && this.props.isAuthorized ? "d-flex " : "d-flex toggled"}
+                          className={this.props.isOpenSidebar  ? "d-flex " : "d-flex toggled"}
                           id="wrapper">
                         {this.state.renderSidebar ? <Sidebar/> : null}
                         <div id="page-content-wrapper">

@@ -29,4 +29,7 @@ public class ProgrammingLanguage implements Serializable {
     @NotNull
     @Min(1)
     private Integer defaultComparisonSensitivity;
+
+    @NotNull
+    String fileTypesSupport;
 }

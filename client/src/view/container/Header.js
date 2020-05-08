@@ -1,5 +1,5 @@
 import React from "react";
-import {Link, NavLink, withRouter} from "react-router-dom";
+import {NavLink, withRouter} from "react-router-dom";
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
 import * as sidebarActions from '../../store/action/sidebarActions';
@@ -78,6 +78,15 @@ class Header extends React.Component {
                 return (
                     <ul className="navbar-nav ml-auto">
                         {singleCheckLink}
+
+                        <li className="nav-item">
+                            <LinkContainer to="/courses">
+                                <button className="nav-link btn btn-link">
+                                    <i className="fa fa-list fa-lg" aria-hidden="true">&nbsp;</i>
+                                    Курси
+                                </button>
+                            </LinkContainer>
+                        </li>
 
                         <li className="nav-item">
                             <LinkContainer to="/signup">

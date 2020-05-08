@@ -41,7 +41,8 @@ class App extends React.Component {
                             <Route exact path="/single-check" component={SingleCheckPage}/>
 
                             <Route exact path="/profile" component={Auth(ProfilePage, true)}/>
-                            <Route exact path="/courses" component={Auth(CoursesPage)}/>
+                            <Route exact path="/courses" component={(CoursesPage)}/>
+                            {/*<Route exact path="/courses" component={Auth(CoursesPage)}/>*/}
 
                             <Route exact path="/close" component={AutocloseablePage}/>
                             <Route exact path="/error" component={ErrorPage}/>

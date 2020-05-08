@@ -18,7 +18,7 @@ class SingleCheckPage extends React.Component {
 
             programmingLanguageId: 1,
             comparisonSensitivity: 9,
-            minimumSimilarityPercent: 1,
+            minimumSimilarityPercent: 20,
             saveLog: true,
             baseCodeZip: null,
             codeToPlagDetectionZip: null,
@@ -91,7 +91,8 @@ class SingleCheckPage extends React.Component {
             isSettings: true,
             programmingLanguageId: 1,
             comparisonSensitivity: 9,
-            minimumSimilarityPercent: 1,
+            minimumSimilarityPercent: 20,
+            saveLog: true,
             baseCodeZip: null,
             codeToPlagDetectionZip: null,
         })

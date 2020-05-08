@@ -46,10 +46,10 @@ body {
     overflow-x: hidden;
 }
 
-/*.sidebar-sticky {*/
-/*    position: sticky;*/
-/*    top: 70px;*/
-/*}*/
+.sidebar-sticky {
+    position: sticky;
+    top: 72px;
+}
 
 #sidebar-wrapper {
     margin-left: -15rem;

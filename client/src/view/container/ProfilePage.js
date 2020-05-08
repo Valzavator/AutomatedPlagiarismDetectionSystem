@@ -383,7 +383,7 @@ class ProfilePage extends React.Component {
 
                                     </div>
                                     <div className="tab-pane" id="edit">
-                                        <form role="form">
+                                        <form>
                                             <div className="form-group row">
                                                 <label className="col-lg-3 col-form-label form-control-label">
                                                     Ім'я:
