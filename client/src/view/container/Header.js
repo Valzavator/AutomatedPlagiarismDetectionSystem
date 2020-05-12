@@ -49,6 +49,15 @@ class Header extends React.Component {
                             </LinkContainer>
                         </li>
 
+                        <li className="nav-item">
+                            <LinkContainer to="/courses">
+                                <button className="nav-link btn btn-link">
+                                    <i className="fa fa-users fa-lg" aria-hidden="true">&nbsp;</i>
+                                    Студенти
+                                </button>
+                            </LinkContainer>
+                        </li>
+
                         <li className="nav-item dropdown">
                             <button className="btn btn-link nav-link dropdown-toggle"
                                     id="profileDropdownMenuLink"
@@ -79,14 +88,14 @@ class Header extends React.Component {
                     <ul className="navbar-nav ml-auto">
                         {singleCheckLink}
 
-                        <li className="nav-item">
-                            <LinkContainer to="/courses">
-                                <button className="nav-link btn btn-link">
-                                    <i className="fa fa-list fa-lg" aria-hidden="true">&nbsp;</i>
-                                    Курси
-                                </button>
-                            </LinkContainer>
-                        </li>
+                        {/*<li className="nav-item">*/}
+                        {/*    <LinkContainer to="/courses">*/}
+                        {/*        <button className="nav-link btn btn-link">*/}
+                        {/*            <i className="fa fa-list fa-lg" aria-hidden="true">&nbsp;</i>*/}
+                        {/*            Курси*/}
+                        {/*        </button>*/}
+                        {/*    </LinkContainer>*/}
+                        {/*</li>*/}
 
                         <li className="nav-item">
                             <LinkContainer to="/signup">

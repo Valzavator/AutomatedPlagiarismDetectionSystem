@@ -13,8 +13,8 @@ class Layout extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            renderSidebar: true,
-            // renderSidebar: false,
+            // renderSidebar: true,
+            renderSidebar: false,
         };
     };
 
@@ -30,8 +30,8 @@ class Layout extends React.Component {
             if (this.props.isAuthorized && !pagesPathsWithoutSidebar.includes(currLocation)) {
                 this.setState({renderSidebar: true});
             } else {
-                this.setState({renderSidebar: true});
-                // this.setState({renderSidebar: false});
+                // this.setState({renderSidebar: true});
+                this.setState({renderSidebar: false});
             }
         }
     }

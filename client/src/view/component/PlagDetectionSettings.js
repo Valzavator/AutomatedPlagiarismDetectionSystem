@@ -1,5 +1,6 @@
 import React from "react";
 import ReactTooltip from "react-tooltip";
+import Datetime from "react-datetime";
 import {bindActionCreators} from "redux";
 import * as errorActions from "../../store/action/errorActions";
 import {connect} from "react-redux";
@@ -25,13 +26,13 @@ class PlagDetectionSettings extends React.Component {
         this.state = {
             isLoading: true,
             languages: [],
-            detectionTypes: ['a', 'b'],
+            detectionTypes: ['Група', 'Курс'],
 
             ...defaultState,
 
             invalidBaseCodeFile: false,
             invalidBaseCodeMessage: "",
-            baseCodeLabel:  defaultState.baseCodeZip ? defaultState.baseCodeZip.name : "Обрати файл...",
+            baseCodeLabel: defaultState.baseCodeZip ? defaultState.baseCodeZip.name : "Обрати файл...",
             invalidCodeToPlagDetectionFile: !defaultState.codeToPlagDetectionZip,
             invalidCodeToPlagDetectionFileMessage: "Архів обов'язковий до завантаження!",
             codeToPlagDetectionLabel: defaultState.codeToPlagDetectionZip ? defaultState.codeToPlagDetectionZip.name : "Обрати файл..."
@@ -231,10 +232,66 @@ class PlagDetectionSettings extends React.Component {
         }
     }
 
+
     render() {
+
+        const renderInput = (props, openCalendar, closeCalendar) => {
+            function clear(e) {
+                e.preventDefault();
+                props.onChange({target: {value: ''}});
+            }
+
+            return (
+                <div className="input-group">
+                    <div className="input-group-prepend">
+                                <span className="input-group-text" id="selectTypeComparing">
+                                    <i className="fa fa-users fa-lg" aria-hidden="true"/>
+                                </span>
+                    </div>
+                    <input {...props} className="form-control form-control-lg"/>
+                    <div className="input-group-append">
+                        <button className="btn btn-secondary" id="selectTypeComparing" onClick={clear}>
+                            <i className="fa fa-times fa-lg" aria-hidden="true"/>
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
         return (
             <form onSubmit={this.handleSubmit}>
                 {this.state.isLoading ? <Load/> : null}
+
+                {!this.props.singleCheck
+                    ? (
+                        <div className="form-group">
+                            <label htmlFor="selectTypeComparing">
+                        <span className="" id="selectTypeComparing" data-tip
+                              data-for='selectTypeComparingFAQ'>
+                                <i className="fa fa-question-circle-o fa-lg"
+                                   aria-hidden="true"/>
+                        </span>
+                                &nbsp;Тип порівняння:
+                            </label>
+                            <ReactTooltip id='selectTypeComparingFAQ' place="left" type='info'
+                                          multiline={true}
+                                          effect="solid">
+                                <p>Множина студентів, серед яких буде проводитися порівняння:</p>
+                                <ul>
+                                    <li>Група - серед студентів даної групи</li>
+                                    <li>Курс - серед усіх студентів даного курса, які виконали завдання</li>
+                                </ul>
+                            </ReactTooltip>
+                            <Datetime
+                                renderInput={renderInput}
+                                dateFormat="dddd(DD)-MMM-YYYY /"
+                                timeFormat="HH:mm"
+                            />
+                        </div>
+                    )
+                    : null
+                }
+
                 <div className="form-group">
                     <label htmlFor="selectLanguage">
                         <span className="" id="selectLanguage" data-tip

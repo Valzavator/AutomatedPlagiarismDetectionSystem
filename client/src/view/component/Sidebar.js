@@ -9,11 +9,11 @@ class Sidebar extends React.Component {
             // } else {
             //     return specificCourseBtns;
             // }
-            return specificGroupBtns;
+            return allCursesBtns;
         }
 
         const allCursesBtns = [
-            <button className="list-group-item list-group-item-action">
+            <button className="list-group-item list-group-item-action bg-success">
                 <i className="fa fa-users" aria-hidden="true"/>&nbsp;&nbsp;
                 Створити новий курс
             </button>
@@ -27,6 +27,10 @@ class Sidebar extends React.Component {
             <button className="list-group-item list-group-item-action">
                 <i className="fa fa-plus-circle" aria-hidden="true"/>&nbsp;&nbsp;
                  Створити нову групу
+            </button>,
+            <button className="list-group-item list-group-item-action bg-warning">
+                <i className="fa fa-pencil-square" aria-hidden="true"/>&nbsp;&nbsp;
+                Редагувати даний курс
             </button>,
             <button className="list-group-item list-group-item-action bg-danger">
                 <i className="fa fa-trash" aria-hidden="true"/>&nbsp;&nbsp;
@@ -46,6 +50,10 @@ class Sidebar extends React.Component {
             <button className="list-group-item list-group-item-action">
                 <i className="fa fa-thumb-tack" aria-hidden="true"/>&nbsp;&nbsp;
                 Назначити завдання
+            </button>,
+            <button className="list-group-item list-group-item-action bg-warning">
+                <i className="fa fa-pencil-square" aria-hidden="true"/>&nbsp;&nbsp;
+                Редагувати дану групу
             </button>,
             <button className="list-group-item list-group-item-action bg-danger">
                 <i className="fa fa-trash" aria-hidden="true"/>&nbsp;&nbsp;

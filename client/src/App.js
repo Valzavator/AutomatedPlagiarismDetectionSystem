@@ -4,6 +4,7 @@ import "bootstrap/dist/js/bootstrap.min";
 import "jquery/dist/jquery.slim.min";
 import "font-awesome/css/font-awesome.min.css";
 import "./stylesheet/App.css";
+import "./stylesheet/react-datetime.css";
 
 import React from "react";
 import {BrowserRouter, Route, Switch} from "react-router-dom";
@@ -26,7 +27,7 @@ import {checkAuth, getBasicUser} from "./store/action/authActions";
 
 const store = configureStore();
 store.dispatch(checkAuth());
-// store.dispatch(getBasicUser());
+store.dispatch(getBasicUser());
 
 class App extends React.Component {
     render() {
