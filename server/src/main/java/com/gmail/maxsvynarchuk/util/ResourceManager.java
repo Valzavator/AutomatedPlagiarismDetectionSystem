@@ -6,7 +6,6 @@ public enum  ResourceManager {
     VCS(ResourceBundle.getBundle("properties.vcs_api")),
     PATH(ResourceBundle.getBundle("properties.path")),
     JPLAG(ResourceBundle.getBundle("properties.jplag")),
-    PAGINATION(ResourceBundle.getBundle("properties.pagination")),
     DETECTION(ResourceBundle.getBundle("properties.automated_plagiarism_detection"));
 
     private ResourceBundle resourceBundle;

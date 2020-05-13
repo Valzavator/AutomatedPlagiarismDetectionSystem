@@ -7,7 +7,7 @@ import NotificationsSystem from 'reapop';
 import theme from 'reapop-theme-bootstrap';
 import {withRouter} from "react-router-dom";
 
-const pagesPathsWithoutSidebar = ['/', '/profile', '/single-check']
+// const pagesPathsWithoutSidebar = ['/', '/profile', '/single-check']
 
 class Layout extends React.Component {
     constructor(props) {
@@ -18,19 +18,26 @@ class Layout extends React.Component {
         };
     };
 
+    componentDidMount() {
+        if (this.props.isAuthorized) {
+            this.setState({renderSidebar: true});
+        } else {
+            this.setState({renderSidebar: false});
+        }
+    }
+
     componentDidUpdate(prevProps, prevState, snapshot) {
         const currLocation = this.props.location.pathname;
-
         if (this.props.errorStatus >= 300 &&
             currLocation !== '/error') {
             this.props.history.push('/error');
         }
         if (this.props.isAuthorized !== prevProps.isAuthorized ||
             currLocation !== prevProps.location.pathname) {
-            if (this.props.isAuthorized && !pagesPathsWithoutSidebar.includes(currLocation)) {
+            // if (this.props.isAuthorized && !pagesPathsWithoutSidebar.includes(currLocation)) {
+            if (this.props.isAuthorized) {
                 this.setState({renderSidebar: true});
             } else {
-                // this.setState({renderSidebar: true});
                 this.setState({renderSidebar: false});
             }
         }
@@ -43,8 +50,8 @@ class Layout extends React.Component {
                     <NotificationsSystem theme={theme}/>
                     <Header sidebarButton={this.state.renderSidebar}/>
                     <main role="main"
-                          // className={this.props.isOpenSidebar && this.props.isAuthorized ? "d-flex " : "d-flex toggled"}
-                          className={this.props.isOpenSidebar  ? "d-flex " : "d-flex toggled"}
+                        // className={this.props.isOpenSidebar && this.props.isAuthorized ? "d-flex " : "d-flex toggled"}
+                          className={this.props.isOpenSidebar ? "d-flex " : "d-flex toggled"}
                           id="wrapper">
                         {this.state.renderSidebar ? <Sidebar/> : null}
                         <div id="page-content-wrapper">

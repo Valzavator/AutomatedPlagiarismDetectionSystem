@@ -42,8 +42,8 @@ public class SinglePlagiarismDetectionFacadeImpl implements SinglePlagiarismDete
     @Override
     public OptionsForSingleCheckSettingsDto getOptionsForSingleCheckSettings() {
         List<ProgrammingLanguage> languages = programmingLanguageService.getAllProgrammingLanguages();
-        List<ProgrammingLanguageDto> languagesDto = List.copyOf(languageConverter.convertAll(languages));
-        return new OptionsForSingleCheckSettingsDto(languagesDto);
+        List<ProgrammingLanguageDto> languageDtos = languageConverter.convertAll(languages);
+        return new OptionsForSingleCheckSettingsDto(languageDtos);
     }
 
     @Override

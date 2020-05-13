@@ -4,6 +4,8 @@ import com.gmail.maxsvynarchuk.persistence.dao.CourseDao;
 import com.gmail.maxsvynarchuk.persistence.dao.repository.CourseRepository;
 import com.gmail.maxsvynarchuk.persistence.domain.Course;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,6 +15,16 @@ import java.util.Optional;
 @AllArgsConstructor
 public class CourseDaoImpl implements CourseDao {
     private final CourseRepository repository;
+
+    @Override
+    public Page<Course> findByCreatorId(Long creatorId, Pageable pageable) {
+        return repository.findByCreatorId(creatorId, pageable);
+    }
+
+    @Override
+    public Optional<Course> findByIdAndCreatorId(Long courseId, Long creatorId) {
+        return repository.findByIdAndCreatorId(courseId, creatorId);
+    }
 
     @Override
     public Optional<Course> findOne(Long id) {

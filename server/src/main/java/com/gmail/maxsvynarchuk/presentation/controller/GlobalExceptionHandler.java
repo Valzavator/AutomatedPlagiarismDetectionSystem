@@ -37,6 +37,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 new ApiError(HttpStatus.PAYLOAD_TOO_LARGE, request.getRequestURI(), ex));
     }
 
+    @ExceptionHandler({IllegalArgumentException.class})
+    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex,
+                                                                   HttpServletRequest request) {
+        log.debug(ex.toString());
+        return buildResponseEntity(
+                new ApiError(HttpStatus.BAD_REQUEST, request.getRequestURI(), ex));
+    }
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers,
@@ -47,14 +55,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         List<ApiValidationError> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(fieldError -> {
-                    return ApiValidationError.builder()
-                            .object(fieldError.getObjectName())
-                            .field(fieldError.getField())
-                            .rejectedValue(fieldError.getRejectedValue())
-                            .message(fieldError.getDefaultMessage())
-                            .build();
-                })
+                .map(fieldError -> ApiValidationError.builder()
+                        .object(fieldError.getObjectName())
+                        .field(fieldError.getField())
+                        .rejectedValue(fieldError.getRejectedValue())
+                        .message(fieldError.getDefaultMessage())
+                        .build())
                 .collect(Collectors.toList());
         String path = ((ServletWebRequest) request).getRequest().getRequestURI();
 

@@ -49,7 +49,7 @@ class PlagDetectionSettings extends React.Component {
     }
 
     componentDidMount() {
-        this.setState({}, () => this.loadSettings())
+        this.loadSettings();
     }
 
     async loadSettings() {

@@ -4,6 +4,8 @@ import com.gmail.maxsvynarchuk.persistence.dao.GroupDao;
 import com.gmail.maxsvynarchuk.persistence.dao.repository.GroupRepository;
 import com.gmail.maxsvynarchuk.persistence.domain.Group;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,6 +15,11 @@ import java.util.Optional;
 @AllArgsConstructor
 public class GroupDaoImpl implements GroupDao {
     private final GroupRepository repository;
+
+    @Override
+    public Page<Group> findByCourseId(Long courseId, Pageable pageable) {
+        return repository.findByCourseId(courseId, pageable);
+    }
 
     @Override
     public Optional<Group> findOne(Long id) {
@@ -38,4 +45,5 @@ public class GroupDaoImpl implements GroupDao {
     public boolean exist(Long id) {
         return repository.existsById(id);
     }
+
 }

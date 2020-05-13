@@ -24,7 +24,7 @@ class Header extends React.Component {
             if (this.props.sidebarButton) {
                 return (
                     <ul className="navbar-nav">
-                        <li className="nav-item" onClick={this.props.actions.sidebar.sidebarChangeState}>
+                        <li className="nav-item" onClick={this.props.actions.sidebar.toggleSidebar}>
                             <button className="btn btn-link nav-link">
                                 <i className="fa fa-bars fa-lg" aria-hidden="true">&nbsp;&nbsp;&nbsp;&nbsp;</i>
                             </button>
@@ -50,7 +50,7 @@ class Header extends React.Component {
                         </li>
 
                         <li className="nav-item">
-                            <LinkContainer to="/courses">
+                            <LinkContainer to="/students">
                                 <button className="nav-link btn btn-link">
                                     <i className="fa fa-users fa-lg" aria-hidden="true">&nbsp;</i>
                                     Студенти
@@ -87,15 +87,6 @@ class Header extends React.Component {
                 return (
                     <ul className="navbar-nav ml-auto">
                         {singleCheckLink}
-
-                        {/*<li className="nav-item">*/}
-                        {/*    <LinkContainer to="/courses">*/}
-                        {/*        <button className="nav-link btn btn-link">*/}
-                        {/*            <i className="fa fa-list fa-lg" aria-hidden="true">&nbsp;</i>*/}
-                        {/*            Курси*/}
-                        {/*        </button>*/}
-                        {/*    </LinkContainer>*/}
-                        {/*</li>*/}
 
                         <li className="nav-item">
                             <LinkContainer to="/signup">

@@ -15,13 +15,14 @@ import HomePage from "./view/component/HomePage"
 import SignInPage from "./view/container/SignInPage"
 import SignUpPage from "./view/container/SignUpPage"
 import ProfilePage from "./view/container/ProfilePage"
-import CoursesPage from "./view/component/CoursesPage"
+import CourseCatalogPage from "./view/container/CourseCatalogPage"
 import ErrorPage from "./view/container/ErrorPage";
 import NotFoundPage from "./view/component/NotFoundPage";
 import configureStore from "./store/configureStore";
 import Auth from "./view/container/Auth";
 import AutocloseablePage from "./view/component/AutocloseablePage";
 import SingleCheckPage from "./view/container/SingleCheckPage";
+import CoursePage from "./view/container/CoursePage";
 
 import {checkAuth, getBasicUser} from "./store/action/authActions";
 
@@ -42,8 +43,8 @@ class App extends React.Component {
                             <Route exact path="/single-check" component={SingleCheckPage}/>
 
                             <Route exact path="/profile" component={Auth(ProfilePage, true)}/>
-                            <Route exact path="/courses" component={(CoursesPage)}/>
-                            {/*<Route exact path="/courses" component={Auth(CoursesPage)}/>*/}
+                            <Route exact path="/courses" component={Auth(CourseCatalogPage)}/>
+                            <Route exact path="/courses/:courseId" component={Auth(CoursePage)}/>
 
                             <Route exact path="/close" component={AutocloseablePage}/>
                             <Route exact path="/error" component={ErrorPage}/>

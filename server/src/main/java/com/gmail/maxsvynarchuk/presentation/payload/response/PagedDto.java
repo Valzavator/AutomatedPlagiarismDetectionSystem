@@ -17,5 +17,4 @@ public class PagedDto<T> {
     private int size;
     private long totalElements;
     private int totalPages;
-    private boolean last;
 }
