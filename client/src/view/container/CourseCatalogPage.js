@@ -1,9 +1,9 @@
 import React from "react";
 import Load from "../component/Load";
-import {getAllCourses} from "../../api/course";
 import {bindActionCreators} from "redux";
 import * as errorActions from "../../store/action/errorActions";
 import * as sidebarActions from "../../store/action/sidebarActions";
+import * as workflowActions from "../../store/action/workflowActions";
 import {connect} from "react-redux";
 import moment from "moment";
 import PagePagination from "../component/PagePagination";
@@ -13,40 +13,28 @@ class CourseCatalogPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            pageDto: {
-                content: [],
-                page: 0,
-                totalPages: 0
-            },
             isLoading: true
         }
 
         this.handlePaginationClick = this.handlePaginationClick.bind(this);
     }
 
-    componentDidMount() {
-        this.props.sidebar.changeSidebarState("courseCatalog")
-        this.loadAllCourses();
+    async componentDidMount() {
+        await this.props.sidebar.changeSidebarState("courseCatalog")
+        await this.props.workflow.loadAllCourses();
+        await this.setState({
+            isLoading: false
+        });
     }
 
-    async loadAllCourses(page = 0, size = 5) {
-        try {
-            const response = await getAllCourses(page, size);
-            await this.setState({
-                pageDto: {
-                    ...this.state.pageDto,
-                    ...response.data
-                },
-                isLoading: false,
-            });
-            console.log(this.state.pageDto)
-        } catch (err) {
-            this.props.error.throwError(err);
-        }
-    }
-
-    handlePaginationClick(page) {
-        this.loadCourses(page);
+    async handlePaginationClick(page) {
+        await this.setState({
+            isLoading: true
+        });
+        await this.props.workflow.loadAllCourses(page);
+        await this.setState({
+            isLoading: false
+        });
     }
 
     render() {
@@ -69,7 +57,7 @@ class CourseCatalogPage extends React.Component {
                                     </h4>
 
                                     <p className="card-text">
-                                        {course.description}
+                                        {course.description ? course.description : 'Опис курсу відсутній...'}
                                     </p>
                                     <p className="card-text">
                                         <small className="text-muted">
@@ -96,16 +84,26 @@ class CourseCatalogPage extends React.Component {
                 {this.state.isLoading
                     ? (<Load/>)
                     : (
-                        <div className="container my-5">
+                        <div className="container my-5 w-75">
 
-                            {renderCourses(this.state.pageDto.content)}
+                            {this.props.courses.content.length > 0
+                                ? renderCourses(this.props.courses.content)
+                                : (
+                                    <div className="row align-items-center h-100 justify-content-center">
+                                        <div className="alert alert-primary" role="alert">
+                                            <h2>
+                                                Ви поки що не створили жодного курсу
+                                            </h2>
+                                        </div>
+                                    </div>
+                                )
+                            }
 
-
-                                <PagePagination
-                                    page={this.state.pageDto.page}
-                                    totalPages={this.state.pageDto.totalPages}
-                                    onClick={this.handlePaginationClick}
-                                />
+                            <PagePagination
+                                page={this.props.courses.page}
+                                totalPages={this.props.courses.totalPages}
+                                onClick={this.handlePaginationClick}
+                            />
                         </div>
                     )
                 }
@@ -114,11 +112,18 @@ class CourseCatalogPage extends React.Component {
     }
 }
 
+function mapStateToProps(state) {
+    return {
+        courses: state.workflow.courses
+    };
+}
+
 function mapDispatchToProps(dispatch) {
     return {
         error: bindActionCreators(errorActions, dispatch),
         sidebar: bindActionCreators(sidebarActions, dispatch),
+        workflow: bindActionCreators(workflowActions, dispatch),
     };
 }
 
-export default connect(null, mapDispatchToProps)(CourseCatalogPage);
+export default connect(mapStateToProps, mapDispatchToProps)(CourseCatalogPage);

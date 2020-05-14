@@ -39,5 +39,6 @@ public class Task implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "task")
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<TaskGroup> taskGroups;
 }

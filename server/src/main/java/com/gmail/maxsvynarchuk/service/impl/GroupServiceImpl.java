@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -17,6 +18,7 @@ import java.util.Optional;
 public class GroupServiceImpl implements GroupService {
     private final GroupDao groupDao;
 
+    @Transactional(readOnly = true)
     @Override
     public Page<Group> getGroupsByCourseId(Long courseId,
                                            int page,
@@ -26,6 +28,7 @@ public class GroupServiceImpl implements GroupService {
         return groupDao.findByCourseId(courseId, pageable);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<Group> getGroupById(Long groupId) {
         return groupDao.findOne(groupId);

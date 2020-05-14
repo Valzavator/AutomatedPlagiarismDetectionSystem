@@ -17,8 +17,7 @@ export default function authReducer(state = INITIAL_STATE, action) {
                 {
                     userInfo: action.userInfo,
                     isAuthorized: true
-                }
-            );
+                });
         case types.SET_BASIC_USER_INFO:
             return Object.assign({}, state, {userInfo: action.userInfo});
         default:

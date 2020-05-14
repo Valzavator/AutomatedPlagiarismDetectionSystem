@@ -8,9 +8,9 @@ import java.util.Optional;
 
 public interface TaskGroupService {
 
-    Optional<TaskGroup> findById(TaskGroupKey id);
+    Optional<TaskGroup> getTaskGroupById(TaskGroupKey id);
 
-    List<TaskGroup> findAllExpiredTaskGroupWithPendingStatus();
+    List<TaskGroup> getAllExpiredTaskGroupWithPendingStatus();
 
     TaskGroup saveTaskGroup(TaskGroup taskGroup);
 

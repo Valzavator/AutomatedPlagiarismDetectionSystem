@@ -4,11 +4,12 @@ import {connect} from "react-redux";
 class Sidebar extends React.Component {
     render() {
         const renderBtnsForPage = () => {
-            console.log(this.props.sidebarState);
             if (this.props.sidebarState === 'courseCatalog')    {
                 return allCursesBtns;
             } else  if (this.props.sidebarState === 'course')  {
                 return specificCourseBtns;
+            } else  if (this.props.sidebarState === 'group')  {
+                return specificGroupBtns;
             }
             return allCursesBtns;
         }
@@ -21,13 +22,13 @@ class Sidebar extends React.Component {
         ]
 
         const specificCourseBtns = [
-            <button className="list-group-item list-group-item-action bg-success" key={3}>
-                <i className="fa fa-book" aria-hidden="true"/>&nbsp;&nbsp;
-                Створити нове завдання
-            </button>,
             <button className="list-group-item list-group-item-action bg-success" key={4}>
                 <i className="fa fa-plus-circle" aria-hidden="true"/>&nbsp;&nbsp;
                  Створити нову групу
+            </button>,
+            <button className="list-group-item list-group-item-action bg-primary" key={3}>
+                <i className="fa fa-book" aria-hidden="true"/>&nbsp;&nbsp;
+                Завдання курсу
             </button>,
             <button className="list-group-item list-group-item-action bg-warning" key={5}>
                 <i className="fa fa-pencil-square" aria-hidden="true"/>&nbsp;&nbsp;
@@ -40,15 +41,15 @@ class Sidebar extends React.Component {
         ]
 
         const specificGroupBtns = [
-            <button className="list-group-item list-group-item-action" key={3}>
+            <button className="list-group-item list-group-item-action bg-info" key={3}>
                 <i className="fa fa-book" aria-hidden="true"/>&nbsp;&nbsp;
                 Створити нове завдання
             </button>,
-            <button className="list-group-item list-group-item-action" key={7}>
+            <button className="list-group-item list-group-item-action bg-success" key={7}>
                 <i className="fa fa-id-card" aria-hidden="true"/>&nbsp;&nbsp;
                 Додати студента до групи
             </button>,
-            <button className="list-group-item list-group-item-action" key={8}>
+            <button className="list-group-item list-group-item-action bg-success" key={8}>
                 <i className="fa fa-thumb-tack" aria-hidden="true"/>&nbsp;&nbsp;
                 Назначити завдання
             </button>,
@@ -70,7 +71,7 @@ class Sidebar extends React.Component {
                     </div>
                     <div className="dropdown-divider"/>
                     <div className="list-group list-group-flush">
-                        <button className="list-group-item list-group-item-action bg-success" key={1}>
+                        <button className="list-group-item list-group-item-action bg-info" key={1}>
                             <i className="fa fa-user-plus" aria-hidden="true"/>&nbsp;&nbsp;
                             Додати нового студента
                         </button>

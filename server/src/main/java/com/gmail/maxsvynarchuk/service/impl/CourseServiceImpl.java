@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -17,6 +18,7 @@ import java.util.Optional;
 public class CourseServiceImpl implements CourseService {
     private final CourseDao courseDao;
 
+    @Transactional(readOnly = true)
     @Override
     public Page<Course> getCoursesByCreatorId(Long userId,
                                               int page,
@@ -26,6 +28,7 @@ public class CourseServiceImpl implements CourseService {
         return courseDao.findByCreatorId(userId, pageable);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<Course> getCourseById(Long creatorId, Long courseId) {
         return courseDao.findByIdAndCreatorId(courseId, creatorId);

@@ -16,14 +16,15 @@ import java.util.Optional;
 public class TaskGroupServiceImpl implements TaskGroupService {
     private final TaskGroupDao taskGroupDao;
 
+    @Transactional(readOnly = true)
     @Override
-    public Optional<TaskGroup> findById(TaskGroupKey id) {
+    public Optional<TaskGroup> getTaskGroupById(TaskGroupKey id) {
         return taskGroupDao.findOne(id);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<TaskGroup> findAllExpiredTaskGroupWithPendingStatus() {
+    public List<TaskGroup> getAllExpiredTaskGroupWithPendingStatus() {
         return taskGroupDao.findAllExpiredTaskGroupWithPendingStatus();
     }
 

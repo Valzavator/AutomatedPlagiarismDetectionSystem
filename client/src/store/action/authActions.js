@@ -3,8 +3,6 @@ import * as types from './actionTypes';
 import {signIn} from '../../api/auth'
 import {getBasicUserInfo} from "../../api/user";
 
-// import {getUserInfo} from '../../api/user'
-
 export function signInUser({email, password}) {
     return async function (dispatch) {
         try {
@@ -15,12 +13,12 @@ export function signInUser({email, password}) {
                 return true;
             }
         } catch (error) {
-            if (error.status === 401) {
-                dispatch({type: types.UNAUTH_USER});
-                return false;
-            } else {
+            // if (error.status === 401) {
+            //     dispatch({type: types.UNAUTH_USER});
+            //     return false;
+            // } else {
                 dispatch({type: types.THROW_ERROR, error});
-            }
+            // }
         }
     };
 }

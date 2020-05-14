@@ -139,7 +139,7 @@ class ProfilePage extends React.Component {
                         <button type="submit" className="btn btn-link"
                                 data-toggle="modal"
                                 data-target="#deleteVcsModal"
-                                id="deleteVcsBtn">
+                                id="deleteLinkBtn">
                             <i className="fa fa-times fa-2x"
                                aria-hidden="true"/>
                         </button>
@@ -165,11 +165,6 @@ class ProfilePage extends React.Component {
                                 <img src={require('../../images/male.png')}
                                      className="mx-auto img-fluid img-circle d-block"
                                      alt="avatar"/>
-                                {/*<h6 className="mt-2">Upload a different photo</h6>*/}
-                                {/*<label className="custom-file">*/}
-                                {/*    <input type="file" id="file" className="custom-file-input"/>*/}
-                                {/*    <span className="custom-file-control">Choose file</span>*/}
-                                {/*</label>*/}
                             </div>
                             <div className="col-lg-9 order-lg-2">
                                 <ul className="nav nav-tabs justify-content-center">

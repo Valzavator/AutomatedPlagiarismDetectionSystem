@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import * as errorActions from '../../store/action/errorActions';
+import * as authActions from '../../store/action/authActions';
 import {Link} from 'react-router-dom';
 
 class ErrorPage extends React.Component {
@@ -18,8 +19,15 @@ class ErrorPage extends React.Component {
         return state;
     };
 
+    componentDidMount() {
+        if (this.props.error.status === 401) {
+            this.props.actions.auth.logoutUser();
+            this.props.history.push("/signin")
+        }
+    }
+
     componentWillUnmount() {
-        this.props.actions.resetError();
+        this.props.actions.error.resetError();
     }
 
     render() {
@@ -46,7 +54,10 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        actions: bindActionCreators(errorActions, dispatch)
+        actions: {
+            error: bindActionCreators(errorActions, dispatch),
+            auth: bindActionCreators(authActions, dispatch)
+        }
     };
 }
 

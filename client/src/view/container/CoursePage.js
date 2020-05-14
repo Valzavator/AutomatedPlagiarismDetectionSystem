@@ -1,114 +1,79 @@
 import React from "react";
 import Load from "../component/Load";
-import {getCourse} from "../../api/course";
 import {bindActionCreators} from "redux";
 import * as errorActions from "../../store/action/errorActions";
 import * as sidebarActions from "../../store/action/sidebarActions";
+import * as workflowActions from "../../store/action/workflowActions";
 import {connect} from "react-redux";
 import moment from "moment";
 import PagePagination from "../component/PagePagination";
+import {LinkContainer} from "react-router-bootstrap";
 
 class CourseCatalogPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            pageDto: {
-                content: [],
-                page: 0,
-                totalPages: 0
-            },
-            isLoading: true
+            isLoading: false
         }
 
         this.handlePaginationClick = this.handlePaginationClick.bind(this);
     }
 
-    componentDidMount() {
-        this.props.sidebar.changeSidebarState("course")
-        console.log(this.props.match.params.courseId)
-        this.loadCourse();
+    async componentDidMount() {
+        await this.props.workflow.loadSpecificCourse(this.props.match.params.courseId);
+        await this.props.sidebar.changeSidebarState("course", "Керування курсом:");
+        await this.props.workflow.loadAllGroups(this.props.match.params.courseId);
+        await this.setState({
+            isLoading: false
+        });
     }
 
     componentWillUnmount() {
         this.props.sidebar.changeSidebarState("courseCatalog")
     }
 
-    async loadCourse(page = 0, size = 5) {
-        try {
-            // const response = await getCourse(page, size);
-            await this.setState({
-                // course: {
-                //         ...this.state.course,
-                //         ...response.data
-                //     },
-                isLoading: false,
-            });
-            // console.log(this.state.course)
-        } catch (err) {
-            this.props.error.throwError(err);
-        }
-    }
-
-    handlePaginationClick(page) {
-        this.loadCourses(page);
+    async handlePaginationClick(page) {
+        await this.setState({
+            isLoading: true
+        });
+        await this.props.workflow.loadAllGroups(this.props.match.params.courseId, page);
+        await this.setState({
+            isLoading: false
+        });
     }
 
     render() {
 
         const renderGroups = (groups) => {
             return groups.map(
-                course =>
-                    <div className="card mb-5" key={course.name}>
-                        <div className="row no-gutters">
-                            <div className="col-md-2 text-center">
-                                <div className="row align-content-center h-100 no-gutters">
+                group =>
+                    <div className="col mb-4" key={group.id}>
+                        <div className="card h-100">
+                            <div className="card-body">
+                                <h5 className="card-title text-center">{group.name}</h5>
+                                <div className="row justify-content-center no-gutters">
                                     <img src={require('../../images/logo.png')} className="card-img"
-                                         style={{maxWidth: '200px'}}/>
+                                         style={{maxWidth: '200px'}} alt="logo"/>
                                 </div>
-                            </div>
-                            <div className="col-md-10">
-                                <div className="card-body" style={{height: 'calc(100% - 36px)'}}>
-                                    <h4 className="card-title text-center">
-                                        {course.name}
-                                    </h4>
-
-                                    <p className="card-text">
-                                        {course.description}
-                                    </p>
-                                    <p className="card-text">
-                                        <small className="text-muted">
-                                            Дата створення: {moment(course.creationDate).format('DD.MM.YYYY HH:mm')}
-                                        </small>
-                                    </p>
-                                </div>
-                                <div className="text-md-right text-sm-center text-center" style={{height: '36px'}}>
-                                    <button className="stretched-link btn btn-primary">
-                                        Перейти до курсу&nbsp;&nbsp;
-                                        <i className="fa fa-chevron-circle-right fa-lg" aria-hidden="true"/>
-                                    </button>
+                                <p className="card-text text-center">
+                                    <small className="text-muted">
+                                        Дата створення: {moment(group.creationDate).format('DD.MM.YYYY HH:mm')}
+                                    </small>
+                                </p>
+                                <div className="text-sm-center text-center">
+                                    <LinkContainer
+                                        to={"/courses/" + this.props.match.params.courseId + "/groups/" + group.id}>
+                                        <button className="stretched-link btn btn-primary">
+                                            Перейти до групи&nbsp;&nbsp;
+                                            <i className="fa fa-chevron-circle-right fa-lg" aria-hidden="true"/>
+                                        </button>
+                                    </LinkContainer>
                                 </div>
                             </div>
                         </div>
                     </div>
             );
         }
-
-        const group = (
-            <div className="col mb-4">
-                <div className="card h-100">
-                    <div className="row justify-content-center no-gutters">
-                        <img src={require('../../images/logo.png')} className="card-img"
-                             style={{maxWidth: '200px'}} alt="logo"/>
-                    </div>
-                    <div className="card-body">
-                        <h5 className="card-title">Название карточки</h5>
-                        <p className="card-text">This is a longer card with supporting text
-                            below as a natural lead-in to additional content. This content is a
-                            little bit longer.</p>
-                    </div>
-                </div>
-            </div>
-        )
 
         return (
             <div className="row h-100 justify-content-center">
@@ -119,24 +84,38 @@ class CourseCatalogPage extends React.Component {
 
                             <div className="row justify-content-center">
                                 <div className="container-fluid">
-                                    <h2 className="text-center"> ASDASD</h2>
+                                    <h2 className="text-center">
+                                        Курс "{this.props.activeCourse.name}"
+                                    </h2>
                                     <div className="progress mb-4">
-                                        <div className="progress-bar" role="progressbar" aria-valuenow="25" aria-valuemin="0"
+                                        <div className="progress-bar" role="progressbar" aria-valuenow="25"
+                                             aria-valuemin="0"
                                              aria-valuemax="100"/>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="row row-cols-1 row-cols-md-3">
-                                {group}
-                                {group}
-                                {group}
-                                {group}
-                            </div>
+                            {
+                                this.props.groups.content.length > 0
+                                    ? (
+                                        <div className="row row-cols-1 row-cols-md-3">
+                                            {renderGroups(this.props.groups.content)}
+                                        </div>
+                                    )
+                                    : (
+                                        <div className="row align-items-center h-50 justify-content-center">
+                                            <div className="alert alert-primary" role="alert">
+                                                <h2>
+                                                    Ви поки що не створили жодної групи для даного курсу
+                                                </h2>
+                                            </div>
+                                        </div>
+                                    )
+                            }
 
                             <PagePagination
-                                page={this.state.pageDto.page}
-                                totalPages={12}
+                                page={this.props.groups.page}
+                                totalPages={this.props.groups.totalPages}
                                 onClick={this.handlePaginationClick}
                             />
                         </div>
@@ -147,11 +126,20 @@ class CourseCatalogPage extends React.Component {
     }
 }
 
-function mapDispatchToProps(dispatch) {
+function mapStateToProps(state) {
     return {
-        error: bindActionCreators(errorActions, dispatch),
-        sidebar: bindActionCreators(sidebarActions, dispatch)
+        activeCourse: state.workflow.activeCourse,
+        groups: state.workflow.groups
     };
 }
 
-export default connect(null, mapDispatchToProps)(CourseCatalogPage);
+
+function mapDispatchToProps(dispatch) {
+    return {
+        error: bindActionCreators(errorActions, dispatch),
+        sidebar: bindActionCreators(sidebarActions, dispatch),
+        workflow: bindActionCreators(workflowActions, dispatch),
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CourseCatalogPage);

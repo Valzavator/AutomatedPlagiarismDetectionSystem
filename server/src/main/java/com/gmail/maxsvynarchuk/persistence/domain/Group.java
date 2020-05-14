@@ -18,6 +18,25 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@NamedEntityGraph(name = "Group.detail",
+        attributeNodes = {
+                @NamedAttributeNode(value = "course"),
+                @NamedAttributeNode(value = "studentGroups", subgraph = "Group.StudentGroup.detail"),
+                @NamedAttributeNode(value = "taskGroups", subgraph = "Group.TaskGroup.detail")
+        },
+        subgraphs = {
+                @NamedSubgraph(name = "Group.StudentGroup.detail",
+                        attributeNodes = {
+                                @NamedAttributeNode(value = "student")
+                        }
+                ),
+                @NamedSubgraph(name = "Group.TaskGroup.detail",
+                        attributeNodes = {
+                                @NamedAttributeNode("task")
+                        }
+                )
+        }
+)
 public class Group implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,19 +55,13 @@ public class Group implements Serializable {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Course course;
 
-//    @ManyToMany(fetch = FetchType.LAZY,
-//            cascade = {
-//                    CascadeType.PERSIST,
-//                    CascadeType.MERGE
-//            })
-//    @JoinTable(name = "student_group",
-//            joinColumns = {@JoinColumn(name = "group_id")},
-//            inverseJoinColumns = {@JoinColumn(name = "student_id")})
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "group")
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<StudentGroup> studentGroups;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "group")
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<TaskGroup> taskGroups;
 }

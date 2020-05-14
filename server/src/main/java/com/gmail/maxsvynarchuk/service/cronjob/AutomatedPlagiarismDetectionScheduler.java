@@ -20,7 +20,7 @@ public class AutomatedPlagiarismDetectionScheduler {
 
     @Scheduled(fixedRate = SCHEDULER_TIMEOUT_IN_MS)
     public void scheduleTaskWithFixedRate() {
-        List<TaskGroup> taskGroups = taskGroupService.findAllExpiredTaskGroupWithPendingStatus();
+        List<TaskGroup> taskGroups = taskGroupService.getAllExpiredTaskGroupWithPendingStatus();
         if (!taskGroups.isEmpty()) {
             new AutomatedPlagiarismDetectionJob(taskGroupService, plagiarismDetectionService, taskGroups)
                     .start();

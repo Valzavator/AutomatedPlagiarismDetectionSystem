@@ -4,5 +4,5 @@ public enum PlagDetectionStatus {
     PENDING,
     IN_PROCESS,
     DONE,
-    FAILED;
+    FAILED
 }

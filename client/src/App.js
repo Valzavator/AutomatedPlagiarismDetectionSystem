@@ -23,6 +23,7 @@ import Auth from "./view/container/Auth";
 import AutocloseablePage from "./view/component/AutocloseablePage";
 import SingleCheckPage from "./view/container/SingleCheckPage";
 import CoursePage from "./view/container/CoursePage";
+import GroupPage from "./view/container/GroupPage";
 
 import {checkAuth, getBasicUser} from "./store/action/authActions";
 
@@ -45,6 +46,7 @@ class App extends React.Component {
                             <Route exact path="/profile" component={Auth(ProfilePage, true)}/>
                             <Route exact path="/courses" component={Auth(CourseCatalogPage)}/>
                             <Route exact path="/courses/:courseId" component={Auth(CoursePage)}/>
+                            <Route exact path="/courses/:courseId/groups/:groupId" component={Auth(GroupPage)}/>
 
                             <Route exact path="/close" component={AutocloseablePage}/>
                             <Route exact path="/error" component={ErrorPage}/>

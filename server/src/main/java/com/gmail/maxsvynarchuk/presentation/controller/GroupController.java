@@ -29,7 +29,7 @@ public class GroupController {
             @PathVariable("courseId") Long courseId,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "6") int size) {
-        PagedDto<BasicGroupDto> pagedDto = groupFacade.getGroupsByCourseIdAndCreatorId(
+        PagedDto<BasicGroupDto> pagedDto = groupFacade.getGroupsByCourseId(
                 courseId, page, size);
         return ResponseEntity.ok()
                 .body(pagedDto);
@@ -37,13 +37,13 @@ public class GroupController {
 
     @GetMapping("/{groupId}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> getAllGroupsForCourse(
+    public ResponseEntity<?> getGroup(
             @PathVariable(value = "groupId") long groupId,
             HttpServletRequest request) {
-        Optional<GroupDto> courseDtoOpt = groupFacade.getGroupById( groupId);
-        if (courseDtoOpt.isPresent()) {
+        Optional<GroupDto> groupDtoOpt = groupFacade.getGroupById(groupId);
+        if (groupDtoOpt.isPresent()) {
             return ResponseEntity.ok()
-                    .body(courseDtoOpt.get());
+                    .body(groupDtoOpt.get());
         }
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, request.getRequestURI());
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);

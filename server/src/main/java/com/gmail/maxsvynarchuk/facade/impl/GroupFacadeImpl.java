@@ -24,7 +24,7 @@ public class GroupFacadeImpl implements GroupFacade {
 
 
     @Override
-    public PagedDto<BasicGroupDto> getGroupsByCourseIdAndCreatorId(Long courseId,
+    public PagedDto<BasicGroupDto> getGroupsByCourseId(Long courseId,
                                                                    int page,
                                                                    int size) {
         Page<Group> groupsPage =

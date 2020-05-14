@@ -13,6 +13,9 @@ class PagePagination extends React.Component {
 
     render() {
         const renderItems = (page, totalPages) => {
+            if (totalPages <= 1) {
+                return null;
+            }
             // const leftItem = page > 0 ? page - 1 : 0;
             // const rightItem = (leftItem + 2) <= totalPages ? leftItem + 2 : totalPages;
             let items = [];
