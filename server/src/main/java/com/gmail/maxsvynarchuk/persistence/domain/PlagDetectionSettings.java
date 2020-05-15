@@ -44,11 +44,6 @@ public class PlagDetectionSettings implements Serializable {
     @NotNull
     private Boolean saveLog;
 
-//    @OneToOne(fetch = FetchType.LAZY,
-//            mappedBy = "plagDetectionSetting")
-//    @ToString.Exclude
-//    private TaskGroup taskGroup;
-
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "programming_language_id", nullable = false)
     private ProgrammingLanguage programmingLanguage;

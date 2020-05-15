@@ -1,15 +1,40 @@
 import React from "react";
 import {connect} from "react-redux";
+import AssignTaskModal from "../container/control/AssignTaskModal";
 
 class Sidebar extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {}
+        this.handleChangeAssignTaskModal = this.handleChangeAssignTaskModal.bind(this);
+    }
+
+    handleChangeAssignTaskModal(isOpen) {
+        console.log(isOpen)
+        this.setState({
+            isOpenAssignTaskModal: isOpen
+        })
+    }
+
     render() {
         const renderBtnsForPage = () => {
-            if (this.props.sidebarState === 'courseCatalog')    {
+            if (this.props.sidebarState === 'courseCatalog') {
                 return allCursesBtns;
-            } else  if (this.props.sidebarState === 'course')  {
+            } else if (this.props.sidebarState === 'course') {
                 return specificCourseBtns;
-            } else  if (this.props.sidebarState === 'group')  {
+            } else if (this.props.sidebarState === 'group') {
                 return specificGroupBtns;
+            }
+            return allCursesBtns;
+        }
+
+        const renderModalsForPage = () => {
+            if (this.props.sidebarState === 'courseCatalog') {
+                return allCursesModals;
+            } else if (this.props.sidebarState === 'course') {
+                return specificCourseModals;
+            } else if (this.props.sidebarState === 'group') {
+                return specificGroupModals;
             }
             return allCursesBtns;
         }
@@ -20,11 +45,12 @@ class Sidebar extends React.Component {
                 Створити новий курс
             </button>
         ]
+        const allCursesModals = []
 
         const specificCourseBtns = [
             <button className="list-group-item list-group-item-action bg-success" key={4}>
                 <i className="fa fa-plus-circle" aria-hidden="true"/>&nbsp;&nbsp;
-                 Створити нову групу
+                Створити нову групу
             </button>,
             <button className="list-group-item list-group-item-action bg-primary" key={3}>
                 <i className="fa fa-book" aria-hidden="true"/>&nbsp;&nbsp;
@@ -39,6 +65,7 @@ class Sidebar extends React.Component {
                 Видалити даний курс
             </button>
         ]
+        const specificCourseModals = []
 
         const specificGroupBtns = [
             <button className="list-group-item list-group-item-action bg-info" key={3}>
@@ -49,7 +76,12 @@ class Sidebar extends React.Component {
                 <i className="fa fa-id-card" aria-hidden="true"/>&nbsp;&nbsp;
                 Додати студента до групи
             </button>,
-            <button className="list-group-item list-group-item-action bg-success" key={8}>
+            <button className="list-group-item list-group-item-action bg-success"
+                    data-toggle="modal"
+                    data-target="#assignTaskModal"
+                    key={"assignTaskModalBtn"}
+                    value="isOpenAssignTaskModal"
+                    onClick={() => this.handleChangeAssignTaskModal(true)}>
                 <i className="fa fa-thumb-tack" aria-hidden="true"/>&nbsp;&nbsp;
                 Назначити завдання
             </button>,
@@ -63,6 +95,15 @@ class Sidebar extends React.Component {
             </button>
         ]
 
+        const specificGroupModals = [
+            <AssignTaskModal id="assignTaskModal"
+                             key={'assignTaskModal'}
+                             isOpen={this.state.isOpenAssignTaskModal}
+                             onClose={() => this.handleChangeAssignTaskModal(false)}
+            />
+        ]
+
+
         return (
             <div className="bg-dark" id="sidebar-wrapper">
                 <div className="sidebar-sticky">
@@ -71,13 +112,16 @@ class Sidebar extends React.Component {
                     </div>
                     <div className="dropdown-divider"/>
                     <div className="list-group list-group-flush">
-                        <button className="list-group-item list-group-item-action bg-info" key={1}>
-                            <i className="fa fa-user-plus" aria-hidden="true"/>&nbsp;&nbsp;
-                            Додати нового студента
-                        </button>
+                        <div>
+                            <button className="list-group-item list-group-item-action bg-info" key={1}>
+                                <i className="fa fa-user-plus" aria-hidden="true"/>&nbsp;&nbsp;
+                                Додати нового студента
+                            </button>
+                        </div>
                         {renderBtnsForPage()}
                     </div>
                 </div>
+                <div>{renderModalsForPage()}</div>
             </div>
         )
     }

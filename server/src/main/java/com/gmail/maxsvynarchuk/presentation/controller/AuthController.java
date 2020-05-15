@@ -24,7 +24,7 @@ import java.net.URI;
 @RequestMapping("/api/v1/auth")
 @AllArgsConstructor
 public class AuthController {
-    private UserFacade userFacade;
+    private final UserFacade userFacade;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
 

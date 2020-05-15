@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/user")
 @AllArgsConstructor
 public class UserController {
-    private UserFacade userFacade;
+    private final UserFacade userFacade;
 
     @GetMapping("/basic")
     @PreAuthorize("hasRole('USER')")

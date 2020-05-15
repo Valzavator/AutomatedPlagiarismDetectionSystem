@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -12,8 +12,8 @@ public class GroupDto {
     private Long id;
     private String name;
     private Date creationDate;
-    private List<StudentGroupDto> studentGroups;
-    private List<BasicTaskGroupDto> taskGroups;
+    private Set<StudentGroupDto> studentGroups;
+    private Set<BasicTaskGroupDto> taskGroups;
 
     private String courseName;
     private String courseId;

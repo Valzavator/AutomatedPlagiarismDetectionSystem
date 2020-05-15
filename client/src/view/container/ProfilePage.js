@@ -250,10 +250,6 @@ class ProfilePage extends React.Component {
                                         </div>
                                     </div>
                                     <div className="tab-pane" id="vcs">
-                                        {/*<div className="alert alert-info alert-dismissable">*/}
-                                        {/*    <a className="panel-close close" data-dismiss="alert">×</a> This is*/}
-                                        {/*    an <strong>.alert</strong>. Use this to show important messages to the user.*/}
-                                        {/*</div>*/}
                                         <h5 className="mt-2 text-center">
                                             <span className="fa fa-sliders fa-lg"/>
                                             &nbsp;&nbsp;Cервіси
@@ -511,14 +507,6 @@ class ProfilePage extends React.Component {
                             </div>
                         </div>
                     </div>
-                    {/*<div className="col-lg-4 order-lg-1 text-center">*/}
-                    {/*    <img src="//placehold.it/150" className="mx-auto img-fluid img-circle d-block" alt="avatar"/>*/}
-                    {/*    <h6 className="mt-2">Upload a different photo</h6>*/}
-                    {/*    <label className="custom-file">*/}
-                    {/*        <input type="file" id="file" className="custom-file-input"/>*/}
-                    {/*        <span className="customRecent Activity-file-control">Choose file</span>*/}
-                    {/*    </label>*/}
-                    {/*</div>*/}
                 </div>
             </div>
         )

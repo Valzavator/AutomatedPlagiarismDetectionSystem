@@ -23,8 +23,8 @@ import java.util.Optional;
 @RequestMapping("/api/v1/test")
 @AllArgsConstructor
 public class TestController {
-    private PlagDetectionResultDao plagDetectionResultDao;
-    private StudentDao studentDao;
+    private final PlagDetectionResultDao plagDetectionResultDao;
+    private final StudentDao studentDao;
 
     @GetMapping("/all/{id}")
     public String allAccess(@PathVariable Long id) throws IOException {

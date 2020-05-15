@@ -17,11 +17,11 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@NamedEntityGraph(name = "TaskGroup.detail",
+@NamedEntityGraph(name = "TaskGroup.scheduler-process.detail",
         attributeNodes = {
                 @NamedAttributeNode(value = "group", subgraph = "TaskGroup.Group.detail"),
                 @NamedAttributeNode("task"),
-                @NamedAttributeNode(value = "plagDetectionSettings", subgraph = "TaskGroup.PlagDetectionStatus.detail")
+                @NamedAttributeNode(value = "plagDetectionSettings", subgraph = "TaskGroup.PlagDetectionSettings.detail")
         },
         subgraphs = {
                 @NamedSubgraph(name = "TaskGroup.Group.detail",
@@ -30,7 +30,7 @@ import java.util.Date;
                                 @NamedAttributeNode(value = "course", subgraph = "TaskGroup.Group.Course.detail")
                         }
                 ),
-                @NamedSubgraph(name = "TaskGroup.PlagDetectionStatus.detail",
+                @NamedSubgraph(name = "TaskGroup.PlagDetectionSettings.detail",
                         attributeNodes = {
                                 @NamedAttributeNode("programmingLanguage")
                         }
@@ -48,6 +48,25 @@ import java.util.Date;
                 @NamedSubgraph(name = "TaskGroup.Group.Course.User.detail",
                         attributeNodes = {
                                 @NamedAttributeNode("tokens")
+                        }
+                )
+        }
+)
+@NamedEntityGraph(name = "TaskGroup.settings-results.detail",
+        attributeNodes = {
+                @NamedAttributeNode(value = "task", subgraph = "TaskGroup.Group.detail"),
+                @NamedAttributeNode(value = "plagDetectionResult", subgraph = "TaskGroup.PlagDetectionResult.detail"),
+                @NamedAttributeNode(value = "plagDetectionSettings", subgraph = "TaskGroup.PlagDetectionSettings.detail")
+        },
+        subgraphs = {
+                @NamedSubgraph(name = "TaskGroup.PlagDetectionSettings.detail",
+                        attributeNodes = {
+                                @NamedAttributeNode("programmingLanguage")
+                        }
+                ),
+                @NamedSubgraph(name = "TaskGroup.PlagDetectionResult.detail",
+                        attributeNodes = {
+                                @NamedAttributeNode("resultStudents")
                         }
                 )
         }

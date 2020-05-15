@@ -3,8 +3,11 @@ import Load from "../component/Load";
 import {bindActionCreators} from "redux";
 import * as errorActions from "../../store/action/errorActions";
 import {connect} from "react-redux";
-import {downloadPlagDetectionSettings, uploadCodeToPlagDetection} from "../../api/plagiarism";
-import PlagDetectionSettings from "../component/PlagDetectionSettings";
+import {
+    downloadSingleCheckPlagDetectionSettings,
+    uploadCodeToSingleCheckPlagDetection
+} from "../../api/plagiarism";
+import SingleCheckPlagDetectionSettings from "../component/SingleCheckPlagDetectionSettings";
 
 class SingleCheckPage extends React.Component {
     constructor(props) {
@@ -15,6 +18,7 @@ class SingleCheckPage extends React.Component {
             isLoading: false,
             invalidCodeToPlagDetectionFile: true,
             invalidBaseCodeFile: false,
+            programmingLanguageName: '',
 
             programmingLanguageId: 1,
             comparisonSensitivity: 9,
@@ -65,7 +69,7 @@ class SingleCheckPage extends React.Component {
                 data.append('baseCodeZip', this.state.baseCodeZip);
             }
 
-            let response = await uploadCodeToPlagDetection(data);
+            let response = await uploadCodeToSingleCheckPlagDetection(data);
 
             await this.setState({
                 isLoading: false,
@@ -119,8 +123,8 @@ class SingleCheckPage extends React.Component {
 
                     <div className="row justify-content-center">
                         <div className="col-md-7 col-sm-12">
-                            <PlagDetectionSettings
-                                loadSettings={downloadPlagDetectionSettings}
+                            <SingleCheckPlagDetectionSettings
+                                loadSettings={downloadSingleCheckPlagDetectionSettings}
                                 onSettingsChange={this.onSettingsChange}
                                 onSubmitForm={this.handleSubmit}
                                 defaultState={this.state}
@@ -156,7 +160,7 @@ class SingleCheckPage extends React.Component {
                 <div className="container">
 
                     <div className="d-flex justify-content-center align-items-center">
-                        <h1 className="" style={{fontSize: '3vw'}}>
+                        <h1 className="text-center">
                             Результати виявлення плагіату&nbsp;&nbsp;&nbsp;
                             {this.state.plagDetectResult.isSuccessful
                                 ? (
@@ -176,6 +180,70 @@ class SingleCheckPage extends React.Component {
                     <div className="progress my-3">
                         <div className="progress-bar" role="progressbar" aria-valuenow="25" aria-valuemin="0"
                              aria-valuemax="100"/>
+                    </div>
+
+                    <div className="row justify-content-center">
+                            <div className="col-sm-12 col-md-10">
+                                <h5 className="my-3 text-center">
+                                    <span className="fa fa-sliders fa-lg"/>
+                                    &nbsp;&nbsp;Задані налаштування
+                                </h5>
+                                <div className="table-responsive mb-3">
+                                    <table className="table table-bordered table-active">
+                                        <tbody>
+                                        <tr>
+                                            <td className="w-25">Обрана мова програмування:</td>
+                                            <td>
+                                                <strong>
+                                                    {this.state.programmingLanguageName}
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="w-25">Чутливість порівняння:</td>
+                                            <td>
+                                                <strong>
+                                                    {this.state.comparisonSensitivity}
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="w-50">Мінімальний відсоток співпадіння:</td>
+                                            <td>
+                                                <strong>
+                                                    {this.state.minimumSimilarityPercent}
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="w-25">Зберігати журнал виконання:</td>
+                                            <td>
+                                                <strong>
+                                                    {this.state.saveLog ? 'Так' : 'Ні'}
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="w-25">Шаблонний код:</td>
+                                            <td>
+                                                <strong>
+                                                    {this.state.baseCodeZip ? this.state.baseCodeZip.name : 'Не завантажено'}
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="w-25">Aрхів з програмними проектами:</td>
+                                            <td>
+                                                <strong>
+                                                    {this.state.codeToPlagDetectionZip ? this.state.codeToPlagDetectionZip.name : 'Не завантажено'}
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
                     </div>
 
                     <div className="row justify-content-center">

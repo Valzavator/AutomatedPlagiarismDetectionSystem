@@ -10,6 +10,12 @@ import javax.validation.constraints.NotNull;
 @Data
 public class PlagDetectionSettingsDto {
     @NotNull
+    private Integer programmingLanguageId;
+
+    @NotNull
+    private DetectionType detectionType;
+
+    @NotNull
     @Min(1)
     private Integer comparisonSensitivity;
 
@@ -18,10 +24,4 @@ public class PlagDetectionSettingsDto {
     private Integer minimumSimilarityPercent;
 
     private MultipartFile baseCodeZip;
-
-    @NotNull
-    private Integer programmingLanguageId;
-
-    @NotNull
-    private DetectionType detectionType;
 }

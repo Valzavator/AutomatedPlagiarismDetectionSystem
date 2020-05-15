@@ -72,11 +72,10 @@ public class AutomatedPlagiarismDetectionJob extends Thread {
 
     private void checkTaskGroupStatus(List<TaskGroup> taskGroups) {
         for (TaskGroup taskGroup : taskGroups) {
-            Optional<TaskGroup> completedTaskGroupOpt =
-                    taskGroupService.getTaskGroupById(taskGroup.getId())
-                            .filter(tg -> tg.getPlagDetectionStatus() == PlagDetectionStatus.IN_PROCESS);
-            if (completedTaskGroupOpt.isPresent()) {
-                TaskGroup completedTaskGroup = completedTaskGroupOpt.get();
+            Optional<TaskGroup> taskGroupOpt =
+                    taskGroupService.getTaskGroupByIdAndStatus(taskGroup.getId(), PlagDetectionStatus.IN_PROCESS);
+            if (taskGroupOpt.isPresent()) {
+                TaskGroup completedTaskGroup = taskGroupOpt.get();
                 PlagDetectionResult result = PlagDetectionResult.builder()
                         .isSuccessful(false)
                         .date(new Date())

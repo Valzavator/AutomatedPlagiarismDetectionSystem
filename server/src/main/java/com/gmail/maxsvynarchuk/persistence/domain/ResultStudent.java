@@ -17,7 +17,7 @@ public class ResultStudent implements Serializable {
     private ResultStudentKey id;
 
     @MapsId("plagiarism_detection_result_id")
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "plagiarism_detection_result_id", nullable = false)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

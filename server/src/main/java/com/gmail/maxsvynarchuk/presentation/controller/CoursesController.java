@@ -21,7 +21,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @Slf4j
 public class CoursesController {
-    private CourseFacade courseFacade;
+    private final CourseFacade courseFacade;
 
     @GetMapping
     @PreAuthorize("hasRole('USER')")

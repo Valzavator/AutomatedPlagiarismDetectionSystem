@@ -21,7 +21,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @Slf4j
 public class GroupController {
-    private GroupFacade groupFacade;
+    private final GroupFacade groupFacade;
 
     @GetMapping
     @PreAuthorize("hasRole('USER')")

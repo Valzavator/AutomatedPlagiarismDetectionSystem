@@ -7,14 +7,16 @@ import * as workflowActions from "../../store/action/workflowActions";
 import {connect} from "react-redux";
 import moment from "moment";
 import {LinkContainer} from "react-router-bootstrap";
+import {getTaskGroup} from "../../api/taskGroup";
 
 class GroupPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isLoading: false
+            isLoading: true,
         }
 
+        this.handleDetailTaskGroupBtn = this.handleDetailTaskGroupBtn.bind(this);
     }
 
     async componentDidMount() {
@@ -29,8 +31,28 @@ class GroupPage extends React.Component {
         this.props.sidebar.changeSidebarState("courseCatalog")
     }
 
-    render() {
+    async handleDetailTaskGroupBtn(e) {
+        e.preventDefault();
+        e.persist()
+        try {
+            await this.setState({
+                isLoading: true
+            });
+            const courseId = this.props.match.params.courseId;
+            const groupId = this.props.match.params.groupId;
+            const taskId = e.target.taskId.value;
+            let res = await getTaskGroup(courseId, groupId, taskId);
+            await this.setState({
+                isLoading: false,
+                showDetailTaskGroup: true,
+                activeTaskGroup: res.data
+            });
+        } catch (err) {
+            this.props.error.throwError(err);
+        }
+    }
 
+    render() {
         const renderStudentsTable = (students) => {
             let studentRows = [];
             for (let i = 0; i < students.length; i++) {
@@ -69,7 +91,7 @@ class GroupPage extends React.Component {
             }
 
             return (
-                <div className="table-responsive">
+                <div className="table-responsive-lg">
                     <table
                         className="table table-hover table-striped table-dark table-bordered text-center">
                         <thead>
@@ -107,8 +129,9 @@ class GroupPage extends React.Component {
                             {renderTaskStatus(tasks[i].plagDetectionStatus)}
                         </td>
                         <td className="align-middle">
-                            <LinkContainer to={"/result/"}>
-                                <a href="/result/">
+                            <LinkContainer
+                                to={this.props.location.pathname + '/tasks/' + tasks[i].taskId}>
+                                <a href={this.props.location.pathname + '/tasks/' + tasks[i].taskId}>
                                     <i className="fa fa-eye fa-lg" aria-hidden="true">&nbsp;&nbsp;</i>
                                 </a>
                             </LinkContainer>
@@ -134,7 +157,7 @@ class GroupPage extends React.Component {
             }
 
             return (
-                <div className="table-responsive">
+                <div className="table-responsive-lg">
                     <table
                         className="table table-hover table-striped table-dark table-bordered text-center">
                         <thead>
@@ -173,7 +196,7 @@ class GroupPage extends React.Component {
             } else if (status === "PENDING") {
                 return (
                     <span className="badge badge-warning">
-                        Невдача
+                         В очікуванні
                     </span>
                 );
             } else if (status === "IN_PROCESS") {
@@ -185,170 +208,172 @@ class GroupPage extends React.Component {
             }
         };
 
-        return (
-            <div className="row h-100 justify-content-center">
-                {this.state.isLoading
-                    ? (<Load/>)
-                    : (
-                        <div className="container my-3">
+        const groupInfo = (
+            <div className="container my-3">
+                {/*<AssignTaskButton/>*/}
+                <div className="row justify-content-center">
+                    <div className="container-fluid">
+                        <h2 className="text-center">
+                            Група "{this.props.activeGroup.name}"
+                        </h2>
+                        <div className="jumbotron pt-2">
+                            <div className="row">
+                                <div className="col-md-6">
+                                    <h5 className="my-3 text-center">
+                                        <span className="fa fa-info-circle fa-lg"/>
+                                        &nbsp;&nbsp;Головна інформація
+                                    </h5>
+                                    <table
+                                        className="table table-borderless">
+                                        <tbody>
+                                        <tr>
+                                            <td className="w-25">Назва курсу:</td>
+                                            <td>
+                                                <strong>
+                                                    <LinkContainer
+                                                        to={"/courses/" + this.props.activeGroup.courseId}>
+                                                        <a href="#1">
+                                                            {this.props.activeGroup.courseName}
+                                                        </a>
+                                                    </LinkContainer>
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="w-25">Назва групи:</td>
+                                            <td>
+                                                <strong>
+                                                    {this.props.activeGroup.name}
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{width: '30%'}}>Дата створення:</td>
+                                            <td>
+                                                <strong>
+                                                    {moment(this.props.activeGroup.creationDate).format('DD.MM.YYYY HH:mm')}
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="w-25">Студентів:</td>
+                                            <td>
+                                                <strong>
+                                                    {this.props.activeGroup.studentGroups.length}
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="w-25">Завдань:</td>
+                                            <td>
+                                                <strong>
+                                                    {this.props.activeGroup.taskGroups.length}
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div className="col-md-6">
+                                    <h5 className="my-3 text-center">
+                                        <span className="fa fa-bar-chart fa-lg"/>
+                                        &nbsp;&nbsp;Статисика завдань групи
+                                    </h5>
+                                    <table
+                                        className="table table-hover table-striped table-dark table-bordered">
+                                        <tbody>
+                                        <tr>
+                                            <td className="w-25">В очікуванні:</td>
+                                            <td>
+                                                <strong>
+                                                    {this.props.activeGroup.taskGroups
+                                                        .filter(t => t.plagDetectionStatus === 'PENDING')
+                                                        .length}
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{width: '35%'}}>Успішно виконаних:</td>
+                                            <td>
+                                                <strong>
+                                                    {this.props.activeGroup.taskGroups
+                                                        .filter(t => t.plagDetectionStatus === 'DONE')
+                                                        .length}
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="w-25">Помилка виконання:</td>
+                                            <td>
+                                                <strong>
+                                                    {this.props.activeGroup.taskGroups
+                                                        .filter(t => t.plagDetectionStatus === 'FAILED')
+                                                        .length}
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
 
                             <div className="row justify-content-center">
-                                <div className="container-fluid">
-                                    <h2 className="text-center">
-                                        Група "{this.props.activeGroup.name}"
-                                    </h2>
-                                    <div className="jumbotron pt-2">
-                                        <div className="row">
-                                            <div className="col-md-6">
-                                                <h5 className="my-3 text-center">
-                                                    <span className="fa fa-info-circle fa-lg"/>
-                                                    &nbsp;&nbsp;Головна інформація
-                                                </h5>
-                                                <table
-                                                    className="table table-borderless">
-                                                    <tbody>
-                                                    <tr>
-                                                        <td className="w-25">Назва курсу:</td>
-                                                        <td>
-                                                            <strong>
-                                                                <LinkContainer
-                                                                    to={"/courses/" + this.props.activeGroup.courseId}>
-                                                                    <a href="#1">
-                                                                        {this.props.activeGroup.courseName}
-                                                                    </a>
-                                                                </LinkContainer>
-                                                            </strong>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className="w-25">Назва групи:</td>
-                                                        <td>
-                                                            <strong>
-                                                                {this.props.activeGroup.name}
-                                                            </strong>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td style={{width: '30%'}}>Дата створення:</td>
-                                                        <td>
-                                                            <strong>
-                                                                {moment(this.props.activeGroup.creationDate).format('DD.MM.YYYY HH:mm')}
-                                                            </strong>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className="w-25">Студентів:</td>
-                                                        <td>
-                                                            <strong>
-                                                                {this.props.activeGroup.studentGroups.length}
-                                                            </strong>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className="w-25">Завдань:</td>
-                                                        <td>
-                                                            <strong>
-                                                                {this.props.activeGroup.taskGroups.length}
-                                                            </strong>
-                                                        </td>
-                                                    </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            <div className="col-md-6">
-                                                <h5 className="my-3 text-center">
-                                                    <span className="fa fa-bar-chart fa-lg"/>
-                                                    &nbsp;&nbsp;Статисика завдань групи
-                                                </h5>
-                                                <table
-                                                    className="table table-hover table-striped table-dark table-bordered">
-                                                    <tbody>
-                                                    <tr>
-                                                        <td className="w-25">В очікуванні:</td>
-                                                        <td>
-                                                            <strong>
-                                                                {this.props.activeGroup.taskGroups
-                                                                    .filter(t => t.plagDetectionStatus === 'PENDING')
-                                                                    .length}
-                                                            </strong>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td style={{width: '35%'}}>Успішно виконаних:</td>
-                                                        <td>
-                                                            <strong>
-                                                                {this.props.activeGroup.taskGroups
-                                                                    .filter(t => t.plagDetectionStatus === 'DONE')
-                                                                    .length}
-                                                            </strong>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className="w-25">Помилка виконання:</td>
-                                                        <td>
-                                                            <strong>
-                                                                {this.props.activeGroup.taskGroups
-                                                                    .filter(t => t.plagDetectionStatus === 'FAILED')
-                                                                    .length}
-                                                            </strong>
-                                                        </td>
-                                                    </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-
-                                        <div className="row justify-content-center">
-                                            <ul className="nav nav-tabs nav-fill w-100 bg-secondary">
-                                                <li className="nav-item">
-                                                    <a className="nav-link active" data-toggle="tab"
-                                                       href="#nav-students">
-                                                        Студенти
-                                                    </a>
-                                                </li>
-                                                <li className="nav-item">
-                                                    <a className="nav-link" data-toggle="tab" href="#nav-tasks">
-                                                        Завдання
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                            <div className="tab-content w-100" id="nav-tabContent">
-                                                <div className="tab-pane fade show active" id="nav-students">
-                                                    {this.props.activeGroup.studentGroups.length > 0
-                                                        ? (
-                                                            renderStudentsTable(this.props.activeGroup.studentGroups)
-                                                        )
-                                                        : (
-                                                            <div className="alert alert-primary text-center mt-3"
-                                                                 role="alert">
-                                                                Ви ще не додали студентів до даної групи
-                                                            </div>
-                                                        )
-                                                    }
+                                <ul className="nav nav-tabs nav-fill w-100 bg-secondary">
+                                    <li className="nav-item">
+                                        <a className="nav-link active" data-toggle="tab"
+                                           href="#nav-students">
+                                            Студенти
+                                        </a>
+                                    </li>
+                                    <li className="nav-item">
+                                        <a className="nav-link" data-toggle="tab" href="#nav-tasks">
+                                            Завдання
+                                        </a>
+                                    </li>
+                                </ul>
+                                <div className="tab-content w-100" id="nav-tabContent">
+                                    <div className="tab-pane fade show active" id="nav-students">
+                                        {this.props.activeGroup.studentGroups.length > 0
+                                            ? (
+                                                renderStudentsTable(this.props.activeGroup.studentGroups)
+                                            )
+                                            : (
+                                                <div className="alert alert-primary text-center mt-3"
+                                                     role="alert">
+                                                    Ви ще не додали студентів до даної групи
                                                 </div>
-                                                <div className="tab-pane fade" id="nav-tasks">
-                                                    {this.props.activeGroup.taskGroups.length > 0
-                                                        ? (
-                                                            renderTasksTable(this.props.activeGroup.taskGroups)
-                                                        )
-                                                        : (
-                                                            <div className="alert alert-primary text-center mt-3"
-                                                                 role="alert">
-                                                                Ви ще не призначили завдання для даної групи
-                                                            </div>
-                                                        )
-                                                    }
-                                                </div>
-                                            </div>
-                                        </div>
-
+                                            )
+                                        }
                                     </div>
-
+                                    <div className="tab-pane fade" id="nav-tasks">
+                                        {this.props.activeGroup.taskGroups.length > 0
+                                            ? (
+                                                renderTasksTable(this.props.activeGroup.taskGroups)
+                                            )
+                                            : (
+                                                <div className="alert alert-primary text-center mt-3"
+                                                     role="alert">
+                                                    Ви ще не призначили завдання для даної групи
+                                                </div>
+                                            )
+                                        }
+                                    </div>
                                 </div>
                             </div>
 
                         </div>
-                    )
+
+                    </div>
+                </div>
+
+            </div>
+        );
+
+        return (
+            <div className="row h-100 justify-content-center">
+                {this.state.isLoading
+                    ? (<Load/>)
+                    : (groupInfo)
                 }
             </div>
         )

@@ -25,6 +25,11 @@ public class TaskGroupDaoImpl implements TaskGroupDao {
     }
 
     @Override
+    public Optional<TaskGroup> findByIdAndStatus(TaskGroupKey id, PlagDetectionStatus status) {
+        return repository.findByIdAndPlagDetectionStatus(id, status);
+    }
+
+    @Override
     public Optional<TaskGroup> findOne(TaskGroupKey taskGroupKey) {
         return repository.findById(taskGroupKey);
     }

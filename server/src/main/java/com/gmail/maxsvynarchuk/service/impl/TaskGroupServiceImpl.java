@@ -3,6 +3,7 @@ package com.gmail.maxsvynarchuk.service.impl;
 import com.gmail.maxsvynarchuk.persistence.dao.TaskGroupDao;
 import com.gmail.maxsvynarchuk.persistence.domain.TaskGroup;
 import com.gmail.maxsvynarchuk.persistence.domain.TaskGroupKey;
+import com.gmail.maxsvynarchuk.persistence.domain.type.PlagDetectionStatus;
 import com.gmail.maxsvynarchuk.service.TaskGroupService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,11 @@ public class TaskGroupServiceImpl implements TaskGroupService {
     @Override
     public Optional<TaskGroup> getTaskGroupById(TaskGroupKey id) {
         return taskGroupDao.findOne(id);
+    }
+
+    @Override
+    public Optional<TaskGroup> getTaskGroupByIdAndStatus(TaskGroupKey id, PlagDetectionStatus status) {
+        return taskGroupDao.findByIdAndStatus(id, status);
     }
 
     @Transactional(readOnly = true)

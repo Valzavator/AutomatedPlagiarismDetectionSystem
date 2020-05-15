@@ -3,13 +3,13 @@ package com.gmail.maxsvynarchuk.facade.impl;
 import com.gmail.maxsvynarchuk.config.constant.JPlag;
 import com.gmail.maxsvynarchuk.config.constant.Paths;
 import com.gmail.maxsvynarchuk.facade.Facade;
-import com.gmail.maxsvynarchuk.facade.SinglePlagiarismDetectionFacade;
+import com.gmail.maxsvynarchuk.facade.SingleCheckPlagiarismDetectionFacade;
 import com.gmail.maxsvynarchuk.facade.converter.Converter;
 import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionResult;
 import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionSettings;
 import com.gmail.maxsvynarchuk.persistence.domain.ProgrammingLanguage;
 import com.gmail.maxsvynarchuk.presentation.payload.request.SingleCheckPlagDetectionDto;
-import com.gmail.maxsvynarchuk.presentation.payload.request.SingleCheckPlagDetectionResultDto;
+import com.gmail.maxsvynarchuk.presentation.payload.response.SingleCheckPlagDetectionResultDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.OptionsForSingleCheckSettingsDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.ProgrammingLanguageDto;
 import com.gmail.maxsvynarchuk.service.PlagDetectionResultService;
@@ -27,7 +27,7 @@ import java.util.Objects;
 
 @Facade
 @AllArgsConstructor
-public class SinglePlagiarismDetectionFacadeImpl implements SinglePlagiarismDetectionFacade {
+public class SingleCheckPlagiarismDetectionFacadeImpl implements SingleCheckPlagiarismDetectionFacade {
     public static final String DATE_FORMAT = "yyyy-MM-dd" + File.separator + "HH-mm-ss";
 
     private final ProgrammingLanguageService programmingLanguageService;

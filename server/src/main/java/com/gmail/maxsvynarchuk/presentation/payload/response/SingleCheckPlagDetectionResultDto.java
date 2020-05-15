@@ -1,4 +1,4 @@
-package com.gmail.maxsvynarchuk.presentation.payload.request;
+package com.gmail.maxsvynarchuk.presentation.payload.response;
 
 import lombok.Data;
 

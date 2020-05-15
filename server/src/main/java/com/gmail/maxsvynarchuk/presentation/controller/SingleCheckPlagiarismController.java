@@ -1,16 +1,16 @@
 package com.gmail.maxsvynarchuk.presentation.controller;
 
-import com.gmail.maxsvynarchuk.facade.SinglePlagiarismDetectionFacade;
+import com.gmail.maxsvynarchuk.facade.SingleCheckPlagiarismDetectionFacade;
 import com.gmail.maxsvynarchuk.presentation.payload.request.SingleCheckPlagDetectionDto;
-import com.gmail.maxsvynarchuk.presentation.payload.request.SingleCheckPlagDetectionResultDto;
+import com.gmail.maxsvynarchuk.presentation.payload.response.SingleCheckPlagDetectionResultDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.OptionsForSingleCheckSettingsDto;
+import com.gmail.maxsvynarchuk.presentation.util.ControllerUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.Objects;
@@ -20,14 +20,12 @@ import java.util.Objects;
 @AllArgsConstructor
 @Slf4j
 public class SingleCheckPlagiarismController {
-    private final SinglePlagiarismDetectionFacade singlePlagiarismDetectionFacade;
-
-    private static final String ZIP_CONTENT_TYPE = "zip";
+    private final SingleCheckPlagiarismDetectionFacade singleCheckPlagiarismDetectionFacade;
 
     @GetMapping("/options")
     public ResponseEntity<?> getOptionsForSingleCheckSettings() {
         OptionsForSingleCheckSettingsDto optionsForSettings =
-                singlePlagiarismDetectionFacade.getOptionsForSingleCheckSettings();
+                singleCheckPlagiarismDetectionFacade.getOptionsForSingleCheckSettings();
         return ResponseEntity.ok().body(optionsForSettings);
     }
 
@@ -35,7 +33,7 @@ public class SingleCheckPlagiarismController {
     public ResponseEntity<?> singleCheckPlagiarismDetection(
             @Valid SingleCheckPlagDetectionDto dto)
             throws HttpMediaTypeNotSupportedException {
-        if (!validateZipMediaType(dto.getCodeToPlagDetectionZip())) {
+        if (!ControllerUtil.validateZipMediaType(dto.getCodeToPlagDetectionZip())) {
             throw new HttpMediaTypeNotSupportedException("Invalid 'codeToPlagDetectionZip' media type!");
         }
 
@@ -43,22 +41,11 @@ public class SingleCheckPlagiarismController {
                 dto.getBaseCodeZip().getSize() <= 0) {
             dto.setBaseCodeZip(null);
         } else if (Objects.nonNull(dto.getBaseCodeZip()) &&
-                !validateZipMediaType(dto.getBaseCodeZip())) {
+                !ControllerUtil.validateZipMediaType(dto.getBaseCodeZip())) {
             throw new HttpMediaTypeNotSupportedException("Invalid 'baseCodeZip' media type!");
         }
-
-
-        long startTime = System.nanoTime();
-        SingleCheckPlagDetectionResultDto result = singlePlagiarismDetectionFacade.processSingleCheck(dto);
-        long stopTime = System.nanoTime();
-        System.out.println((stopTime - startTime) / 1000000000);
-
+        SingleCheckPlagDetectionResultDto result = singleCheckPlagiarismDetectionFacade.processSingleCheck(dto);
         return ResponseEntity.ok().body(result);
     }
 
-    private boolean validateZipMediaType(MultipartFile file) {
-        return Objects.nonNull(file) &&
-                Objects.nonNull(file.getContentType()) &&
-                file.getContentType().contains(ZIP_CONTENT_TYPE);
-    }
 }

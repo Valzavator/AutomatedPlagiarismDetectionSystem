@@ -35,15 +35,10 @@ public class PlagDetectionResult implements Serializable {
     @NotNull
     private Date date;
 
-//    @OneToOne(fetch = FetchType.LAZY,
-//            mappedBy = "plagDetectionResult")
-    //    @ToString.Exclude
-//    private TaskGroup taskGroup;
-
     @OneToMany(cascade = CascadeType.ALL,
             fetch = FetchType.EAGER,
             mappedBy = "result")
-//    @ToString.Exclude
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<ResultStudent> resultStudents;
 

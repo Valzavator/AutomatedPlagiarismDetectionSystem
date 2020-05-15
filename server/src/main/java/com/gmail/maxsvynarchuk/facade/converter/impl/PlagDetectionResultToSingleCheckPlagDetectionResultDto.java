@@ -2,7 +2,7 @@ package com.gmail.maxsvynarchuk.facade.converter.impl;
 
 import com.gmail.maxsvynarchuk.facade.converter.Converter;
 import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionResult;
-import com.gmail.maxsvynarchuk.presentation.payload.request.SingleCheckPlagDetectionResultDto;
+import com.gmail.maxsvynarchuk.presentation.payload.response.SingleCheckPlagDetectionResultDto;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;

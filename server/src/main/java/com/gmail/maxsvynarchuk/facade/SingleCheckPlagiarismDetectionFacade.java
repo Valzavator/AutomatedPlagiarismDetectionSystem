@@ -1,10 +1,10 @@
 package com.gmail.maxsvynarchuk.facade;
 
 import com.gmail.maxsvynarchuk.presentation.payload.request.SingleCheckPlagDetectionDto;
-import com.gmail.maxsvynarchuk.presentation.payload.request.SingleCheckPlagDetectionResultDto;
+import com.gmail.maxsvynarchuk.presentation.payload.response.SingleCheckPlagDetectionResultDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.OptionsForSingleCheckSettingsDto;
 
-public interface SinglePlagiarismDetectionFacade {
+public interface SingleCheckPlagiarismDetectionFacade {
 
     OptionsForSingleCheckSettingsDto getOptionsForSingleCheckSettings();
 

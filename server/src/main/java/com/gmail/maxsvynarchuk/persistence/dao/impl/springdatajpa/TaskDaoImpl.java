@@ -15,6 +15,11 @@ public class TaskDaoImpl implements TaskDao {
     private final TaskRepository repository;
 
     @Override
+    public List<Task> findAllTaskByCourseId(Long courseId) {
+        return repository.findAllByCourseId(courseId);
+    }
+
+    @Override
     public Optional<Task> findOne(Long id) {
         return repository.findById(id);
     }
@@ -38,4 +43,5 @@ public class TaskDaoImpl implements TaskDao {
     public boolean exist(Long id) {
         return repository.existsById(id);
     }
+
 }
