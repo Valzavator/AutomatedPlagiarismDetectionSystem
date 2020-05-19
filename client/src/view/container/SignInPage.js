@@ -43,6 +43,7 @@ class SignInPage extends React.Component {
                 });
                 if (isSuccessful === true) {
                     await this.props.actions.auth.getBasicUser();
+                    this.props.history.push('/courses');
                 } else if (isSuccessful === false) {
                     const {notify} = this.props;
                     notify({

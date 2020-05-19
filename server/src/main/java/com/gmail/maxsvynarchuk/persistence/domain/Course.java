@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "courses")
@@ -44,7 +45,7 @@ public class Course implements Serializable {
 //            fetch = FetchType.LAZY,
 //            mappedBy = "course")
 //    private Set<Group> groups;
-
+//
 //    @OneToMany(cascade = CascadeType.ALL,
 //            fetch = FetchType.LAZY,
 //            mappedBy = "course")

@@ -37,6 +37,7 @@ class GroupPage extends React.Component {
             }
         }
 
+        this.handleResultBtn = this.handleResultBtn.bind(this);
         this.handleBackBtn = this.handleBackBtn.bind(this);
     }
 
@@ -56,6 +57,10 @@ class GroupPage extends React.Component {
         }
     }
 
+    handleResultBtn() {
+        window.open(this.state.activeTaskGroup.plagDetectionResult.resultPath, "_blank")
+    }
+
     handleBackBtn() {
         this.props.history.push(
             '/courses/' + this.props.match.params.courseId + '/groups/' + this.props.match.params.groupId);
@@ -67,8 +72,8 @@ class GroupPage extends React.Component {
             for (let i = 0; i < students.length; i++) {
                 studentRows.push(
                     <tr key={i}>
-                        <th scope="row">{i + 1}</th>
-                        <td className="overflow-text">
+                        <th scope="row" className="align-middle">{i + 1}</th>
+                        <td className="overflow-text align-middle">
                             <LinkContainer
                                 to={"/students/" + students[i].studentId}>
                                 <a href="/students/">
@@ -78,7 +83,7 @@ class GroupPage extends React.Component {
                                 </a>
                             </LinkContainer>
                         </td>
-                        <td style={{width: '500px'}}>
+                        <td style={{maxWidth: '500px', wordBreak: 'break-word'}}>
                             {students[i].logMessage}
                         </td>
                     </tr>
@@ -183,12 +188,15 @@ class GroupPage extends React.Component {
                         )
                     }
 
-
-                    <div className="alert alert-danger text-center mt-3" role="alert">
-                        <h5>Невдалося завантажити репозиторії</h5>
-                    </div>
                     {result.resultStudents.length > 0
-                        ? renderStudentsTable(result.resultStudents)
+                        ? (
+                            <div>
+                                <div className="alert alert-danger text-center mt-3" role="alert">
+                                    <h5>Невдалося завантажити репозиторії</h5>
+                                </div>
+                                {renderStudentsTable(result.resultStudents)}
+                            </div>
+                        )
                         : null
                     }
 

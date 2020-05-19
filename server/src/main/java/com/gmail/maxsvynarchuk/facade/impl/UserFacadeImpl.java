@@ -25,6 +25,7 @@ public class UserFacadeImpl implements UserFacade {
         return userService.registerUser(user);
     }
 
+
     @Override
     public UserProfileDto getUserProfile(Long userId) {
         User user = userService.getRequiredUserById(userId);

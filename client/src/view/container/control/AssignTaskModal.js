@@ -1,5 +1,5 @@
 import React from "react";
-import Load from "../../component/Load";
+// import Load from "../../component/Load";
 import {bindActionCreators} from "redux";
 import * as errorActions from "../../../store/action/errorActions";
 import * as workflowActions from "../../../store/action/workflowActions";
@@ -10,14 +10,15 @@ import {
     assignNewTaskGroup
 } from "../../../api/plagiarism";
 import {matchPath, withRouter} from "react-router-dom";
+import * as moment from "moment";
 
 class AssignTaskModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             courseId: -1,
-            // isLoading: true,
-            invalidBaseCodeFile: false,
+            isLoading: false,
+            invalidForm: false,
 
             taskId: -1,
             expiryDate: Date.now(),
@@ -42,17 +43,17 @@ class AssignTaskModal extends React.Component {
         this.setState({
             ...settings
         })
-        console.log(settings)
     }
 
     componentDidMount() {
         const match = matchPath(this.props.location.pathname, {
-            path: "/courses/:courseId",
+            path: "/courses/:courseId/groups/:groupId",
             exact: false,
             strict: false
         });
         this.setState({
-            courseId: match.params.courseId
+            courseId: match.params.courseId,
+            groupId: match.params.groupId
         });
     }
 
@@ -64,25 +65,24 @@ class AssignTaskModal extends React.Component {
 
             const data = new FormData();
             //using File API to get chosen file
+            data.append('taskId', this.state.taskId);
+            data.append('expiryDate', new Date(this.state.expiryDate).toUTCString());
             data.append('programmingLanguageId', this.state.programmingLanguageId);
+            data.append('detectionType', this.state.detectionType);
             data.append('comparisonSensitivity', this.state.comparisonSensitivity);
             data.append('minimumSimilarityPercent', this.state.minimumSimilarityPercent);
             data.append('saveLog', this.state.saveLog);
-            data.append('codeToPlagDetectionZip', this.state.codeToPlagDetectionZip);
             if (this.state.baseCodeZip) {
                 data.append('baseCodeZip', this.state.baseCodeZip);
             }
 
-            // let response = await uploadCodeToSingleCheckPlagDetection(data);
-            //
-            // await this.setState({
-            //     isLoading: false,
-            //     isSettings: false,
-            //     plagDetectResult: {
-            //         ...this.state.plagDetectResult,
-            //         ...response.data
-            //     }
-            // });
+            data.forEach((v, k) => console.log(k + " ---- " + v));
+
+            await assignNewTaskGroup(this.state.courseId, this.state.groupId, data);
+            await this.setState({
+                isLoading: false,
+            });
+            window.location.reload();
         } catch (err) {
             this.props.error.throwError(err);
         }
@@ -113,7 +113,7 @@ class AssignTaskModal extends React.Component {
                             <h4 className="modal-title">
                                 Назначити завдання для Групи "{this.props.activeGroup.name}"
                             </h4>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                            <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.handleCloseBtn}>
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -124,7 +124,7 @@ class AssignTaskModal extends React.Component {
                                         {this.props.isOpen
                                             ? (
                                                 <PlagDetectionSettings
-                                                    loadSettings={() => downloadTaskGroupPlagDetectionSettings(this.state.courseId)}
+                                                    loadSettings={() => downloadTaskGroupPlagDetectionSettings(this.state.courseId, this.state.groupId)}
                                                     courseId={this.props.match.params.courseId}
                                                     onSettingsChange={this.onSettingsChange}
                                                     onSubmitForm={this.handleSubmit}
@@ -138,10 +138,13 @@ class AssignTaskModal extends React.Component {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={this.handleCloseBtn}>
+                            <button type="button" className="btn btn-secondary" data-dismiss="modal"
+                                    onClick={this.handleCloseBtn}>
                                 Повернутися
                             </button>
-                            <button type="button" className="btn btn-primary" onClick={this.handleSubmit} disabled>
+                            <button type="button" className="btn btn-primary"
+                                    onClick={this.handleSubmit}
+                                    disabled={this.state.invalidForm}>
                                 Зберегти
                             </button>
                         </div>

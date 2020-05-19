@@ -104,10 +104,12 @@ class CourseCatalogPage extends React.Component {
                                     )
                                     : (
                                         <div className="row align-items-center h-50 justify-content-center">
-                                            <div className="alert alert-primary" role="alert">
-                                                <h2>
-                                                    Ви поки що не створили жодної групи для даного курсу
-                                                </h2>
+                                            <div className="container-fluid">
+                                                <div className="alert alert-primary" role="alert">
+                                                    <h2>
+                                                        Ви поки що не створили жодної групи для даного курсу
+                                                    </h2>
+                                                </div>
                                             </div>
                                         </div>
                                     )

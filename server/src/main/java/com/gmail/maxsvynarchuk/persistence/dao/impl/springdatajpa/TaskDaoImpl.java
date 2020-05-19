@@ -15,8 +15,8 @@ public class TaskDaoImpl implements TaskDao {
     private final TaskRepository repository;
 
     @Override
-    public List<Task> findAllTaskByCourseId(Long courseId) {
-        return repository.findAllByCourseId(courseId);
+    public List<Task> findAllByCourseIdAndNotAssignedToGroup(Long courseId, Long groupId) {
+        return repository.findAllByCourseIdAndNotAssignedToGroup(courseId, groupId);
     }
 
     @Override

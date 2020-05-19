@@ -1,7 +1,7 @@
 package com.gmail.maxsvynarchuk.service.cronjob;
 
 import com.gmail.maxsvynarchuk.persistence.domain.TaskGroup;
-import com.gmail.maxsvynarchuk.service.PlagiarismDetectionService;
+import com.gmail.maxsvynarchuk.service.PlagDetectionService;
 import com.gmail.maxsvynarchuk.service.TaskGroupService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 @AllArgsConstructor
 public class AutomatedPlagiarismDetectionScheduler {
-    private final PlagiarismDetectionService plagiarismDetectionService;
+    private final PlagDetectionService plagDetectionService;
     private final TaskGroupService taskGroupService;
     private static final int SCHEDULER_TIMEOUT_IN_MS = 30000;
 
@@ -22,7 +22,7 @@ public class AutomatedPlagiarismDetectionScheduler {
     public void scheduleTaskWithFixedRate() {
         List<TaskGroup> taskGroups = taskGroupService.getAllExpiredTaskGroupWithPendingStatus();
         if (!taskGroups.isEmpty()) {
-            new AutomatedPlagiarismDetectionJob(taskGroupService, plagiarismDetectionService, taskGroups)
+            new AutomatedPlagiarismDetectionJob(taskGroupService, plagDetectionService, taskGroups)
                     .start();
         }
     }

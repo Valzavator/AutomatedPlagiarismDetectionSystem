@@ -6,9 +6,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 @Data
-public class PlagDetectionSettingsDto {
+public class TaskGroupPlagDetectionDto {
+    @NotNull
+    private Long taskId;
+
+    @NotNull
+    private Date expiryDate;
+
     @NotNull
     private Integer programmingLanguageId;
 
@@ -22,6 +29,9 @@ public class PlagDetectionSettingsDto {
     @NotNull
     @Min(1)
     private Integer minimumSimilarityPercent;
+
+    @NotNull
+    private Boolean saveLog;
 
     private MultipartFile baseCodeZip;
 }

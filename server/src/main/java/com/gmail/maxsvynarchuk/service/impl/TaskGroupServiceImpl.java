@@ -1,20 +1,24 @@
 package com.gmail.maxsvynarchuk.service.impl;
 
 import com.gmail.maxsvynarchuk.persistence.dao.TaskGroupDao;
+import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionResult;
 import com.gmail.maxsvynarchuk.persistence.domain.TaskGroup;
 import com.gmail.maxsvynarchuk.persistence.domain.TaskGroupKey;
 import com.gmail.maxsvynarchuk.persistence.domain.type.PlagDetectionStatus;
+import com.gmail.maxsvynarchuk.service.PlagDetectionResultService;
 import com.gmail.maxsvynarchuk.service.TaskGroupService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class TaskGroupServiceImpl implements TaskGroupService {
+    private final PlagDetectionResultService plagDetectionResultService;
     private final TaskGroupDao taskGroupDao;
 
     @Transactional(readOnly = true)

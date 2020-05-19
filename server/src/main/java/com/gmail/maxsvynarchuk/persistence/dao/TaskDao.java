@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface TaskDao extends GenericDao<Task, Long> {
 
-    List<Task> findAllTaskByCourseId(Long courseId);
+    List<Task> findAllByCourseIdAndNotAssignedToGroup(Long courseId, Long groupId);
 
 }

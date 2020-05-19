@@ -28,7 +28,6 @@ export function loadAllGroups(courseId, page = 0, size = 6) {
     return async function (dispatch) {
         try {
             const res = await getAllGroupsForCourse(courseId, page, size);
-            console.log(res.data)
             dispatch({type: types.LOAD_GROUPS, groups: res.data});
         } catch (error) {
             dispatch({type: types.THROW_ERROR, error});

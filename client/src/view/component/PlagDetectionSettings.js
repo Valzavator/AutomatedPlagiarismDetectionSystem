@@ -33,6 +33,7 @@ class PlagDetectionSettings extends React.Component {
 
             ...defaultState,
 
+            invalidForm: true,
             invalidBaseCodeFile: false,
             invalidBaseCodeMessage: "",
             baseCodeLabel: defaultState.baseCodeZip ? defaultState.baseCodeZip.name : "Обрати файл...",
@@ -70,6 +71,7 @@ class PlagDetectionSettings extends React.Component {
                 taskId: tasks && tasks.length > 0 ? tasks[0].id : -1,
 
                 fileTypesSupport: activeLanguage.fileTypesSupport,
+                invalidForm: !tasks || tasks.length === 0
             }, () => this.setAllChanges());
         } catch (err) {
             this.props.error.throwError(err);
@@ -78,13 +80,23 @@ class PlagDetectionSettings extends React.Component {
 
     handleChangeExpireDate(date) {
         const expiryDate = moment(date).format('YYYY-MM-DD HH:mm:ss')
-        console.log(expiryDate)
-        this.setState({
-            expiryDate: expiryDate,
-        });
-        this.props.onSettingsChange({
-            expiryDate: expiryDate,
-        });
+        if (expiryDate !== 'Invalid date') {
+            this.setState({
+                expiryDate: expiryDate,
+                invalidForm: false,
+            });
+            this.props.onSettingsChange({
+                expiryDate: expiryDate,
+                invalidForm: false,
+            });
+        } else {
+            this.setState({
+                invalidForm: true,
+            });
+            this.props.onSettingsChange({
+                invalidForm: true,
+            });
+        }
     }
 
     handleChangeTask(e) {
@@ -205,7 +217,7 @@ class PlagDetectionSettings extends React.Component {
             taskId: this.state.taskId,
             expiryDate: this.state.expiryDate,
 
-            invalidBaseCodeFile: this.state.invalidBaseCodeFile,
+            invalidForm: this.state.invalidForm || this.state.invalidBaseCodeFile,
         });
     }
 
@@ -226,11 +238,11 @@ class PlagDetectionSettings extends React.Component {
                                 </span>
                     </div>
                     <input {...props} className="form-control form-control-lg"/>
-                    <div className="input-group-append">
-                        <button className="btn btn-secondary" id="selectTypeComparing" onClick={clear}>
-                            <i className="fa fa-times fa-lg" aria-hidden="true"/>
-                        </button>
-                    </div>
+                    {/*<div className="input-group-append">*/}
+                    {/*    <button className="btn btn-secondary" id="selectTypeComparing" onClick={clear}>*/}
+                    {/*        <i className="fa fa-times fa-lg" aria-hidden="true"/>*/}
+                    {/*    </button>*/}
+                    {/*</div>*/}
                 </div>
             );
         }
@@ -244,44 +256,54 @@ class PlagDetectionSettings extends React.Component {
             <form onSubmit={this.handleSubmit}>
                 {this.state.isLoading ? <Load/> : null}
 
-                <div className="form-group">
-                    <label htmlFor="selectLanguage">
+                {this.state.tasks.length > 0
+                ? (
+                        <div className="form-group">
+                            <label htmlFor="selectLanguage">
                         <span className="" id="selectTask" data-tip
                               data-for='selectTaskFAQ'>
                                 <i className="fa fa-question-circle-o fa-lg"
                                    aria-hidden="true"/>
                         </span>
-                        &nbsp;Завдання:
-                    </label>
-                    <ReactTooltip id='selectTaskFAQ' place="left" type='info'
-                                  multiline={true}
-                                  effect="solid">
-                        Завдання курсу
-                    </ReactTooltip>
-                    <div className="input-group">
-                        <div className="input-group-prepend">
+                                &nbsp;Завдання:
+                            </label>
+                            <ReactTooltip id='selectTaskFAQ' place="left" type='info'
+                                          multiline={true}
+                                          effect="solid">
+                                Завдання курсу
+                            </ReactTooltip>
+                            <div className="input-group">
+                                <div className="input-group-prepend">
                             <span className="input-group-text" id="selectLanguage">
                                 <i className="fa fa-thumb-tack fa-lg" aria-hidden="true"/>
                             </span>
+                                </div>
+                                {(() => {
+                                    let options = this.state.tasks.map(
+                                        l =>
+                                            <option value={l.id} key={l.id}>
+                                                {l.name}
+                                            </option>
+                                    );
+                                    return (
+                                        <select className="form-control form-control-lg"
+                                                value={this.state.taskId}
+                                                onChange={this.handleChangeTask}
+                                                disabled={this.state.tasks.length === 0}>
+                                            {options}
+                                        </select>
+                                    );
+                                })()}
+                            </div>
                         </div>
-                        {(() => {
-                            let options = this.state.tasks.map(
-                                l =>
-                                    <option value={l.id} key={l.id}>
-                                        {l.name}
-                                    </option>
-                            );
-                            return (
-                                <select className="form-control form-control-lg"
-                                        value={this.state.taskId}
-                                        onChange={this.handleChangeTask}
-                                        disabled={this.state.tasks.length === 0}>
-                                    {options}
-                                </select>
-                            );
-                        })()}
-                    </div>
-                </div>
+
+                    )
+                    : (
+                        <div className="alert alert-warning" role="alert">
+                            Всі завдання для курсу вже назначені в групі. <a href="#" className="alert-link">Створити нове завдання</a>.
+                        </div>
+                    )
+                }
 
                 <div className="form-group">
                     <label htmlFor="selectDateTime">

@@ -90,11 +90,13 @@ class CourseCatalogPage extends React.Component {
                                 ? renderCourses(this.props.courses.content)
                                 : (
                                     <div className="row align-items-center h-100 justify-content-center">
+
                                         <div className="alert alert-primary" role="alert">
                                             <h2>
                                                 Ви поки що не створили жодного курсу
                                             </h2>
                                         </div>
+
                                     </div>
                                 )
                             }

@@ -13,7 +13,7 @@ import com.gmail.maxsvynarchuk.presentation.payload.response.SingleCheckPlagDete
 import com.gmail.maxsvynarchuk.presentation.payload.response.OptionsForSingleCheckSettingsDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.ProgrammingLanguageDto;
 import com.gmail.maxsvynarchuk.service.PlagDetectionResultService;
-import com.gmail.maxsvynarchuk.service.PlagiarismDetectionService;
+import com.gmail.maxsvynarchuk.service.PlagDetectionService;
 import com.gmail.maxsvynarchuk.service.ProgrammingLanguageService;
 import com.gmail.maxsvynarchuk.util.FileSystemWriter;
 import lombok.AllArgsConstructor;
@@ -31,7 +31,7 @@ public class SingleCheckPlagiarismDetectionFacadeImpl implements SingleCheckPlag
     public static final String DATE_FORMAT = "yyyy-MM-dd" + File.separator + "HH-mm-ss";
 
     private final ProgrammingLanguageService programmingLanguageService;
-    private final PlagiarismDetectionService plagiarismDetectionService;
+    private final PlagDetectionService plagiarismDetectionService;
     private final PlagDetectionResultService plagDetectionResultService;
 
     private final FileSystemWriter fileSystemWriter;
@@ -48,43 +48,44 @@ public class SingleCheckPlagiarismDetectionFacadeImpl implements SingleCheckPlag
 
     @Override
     public SingleCheckPlagDetectionResultDto processSingleCheck(SingleCheckPlagDetectionDto dto) {
+        //TODO - change to ResourceNotFoundException
         ProgrammingLanguage programmingLanguage = programmingLanguageService
                 .getProgrammingLanguageById(dto.getProgrammingLanguageId())
                 .orElseThrow();
-        PlagDetectionSettings setting = settingsConverter.convert(dto);
-        setting.setProgrammingLanguage(programmingLanguage);
+        PlagDetectionSettings settings = settingsConverter.convert(dto);
+        settings.setProgrammingLanguage(programmingLanguage);
 
-        generatePaths(setting, dto);
+        generatePaths(settings, dto);
 
         PlagDetectionResult result = null;
-        if (!fileSystemWriter.unzipFile(dto.getCodeToPlagDetectionZip(), setting.getDataPath())) {
+        if (!fileSystemWriter.unzipFile(dto.getCodeToPlagDetectionZip(), settings.getDataPath())) {
             result = PlagDetectionResult.failed("Unable to unpack archive with code to plagiarism detection!");
         }
         if (Objects.isNull(result) &&
                 Objects.nonNull(dto.getBaseCodeZip()) &&
-                !fileSystemWriter.unzipFile(dto.getBaseCodeZip(), setting.getBaseCodePath())) {
+                !fileSystemWriter.unzipFile(dto.getBaseCodeZip(), settings.getBaseCodePath())) {
             result = PlagDetectionResult.failed("Unable to unpack archive with base code to plagiarism detection!");
         }
         if (Objects.isNull(result)) {
-            result = plagiarismDetectionService.processForSingleTask(setting);
+            result = plagiarismDetectionService.processForSingleTask(settings);
         }
         plagDetectionResultService.savePlagDetectionResult(result);
 
         return resultConverter.convert(result);
     }
 
-    private void generatePaths(PlagDetectionSettings setting, SingleCheckPlagDetectionDto dto) {
+    private void generatePaths(PlagDetectionSettings settings, SingleCheckPlagDetectionDto dto) {
         SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
         String dateString = formatter.format(new Date());
         String fileName = dto.getCodeToPlagDetectionZip().getOriginalFilename();
 
-        setting.setDataPath(
+        settings.setDataPath(
                 Path.of(Paths.ZIP_DATA_FOLDER, dateString, fileName).toString());
-        setting.setResultPath(
+        settings.setResultPath(
                 Path.of(Paths.ANALYSIS_RESULT_FOLDER, dateString, fileName).toString());
 
         if (Objects.nonNull(dto.getBaseCodeZip())) {
-            setting.setBaseCodePath(
+            settings.setBaseCodePath(
                     Path.of(Paths.ZIP_DATA_FOLDER, dateString, fileName, JPlag.BASE_CODE_DIRECTORY).toString());
         }
     }

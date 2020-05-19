@@ -1,5 +1,6 @@
 package com.gmail.maxsvynarchuk.persistence.domain;
 
+import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
 import lombok.*;
 
 import javax.persistence.*;
@@ -7,6 +8,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -49,4 +52,17 @@ public class PlagDetectionResult implements Serializable {
                 .resultMessage(resultMessage)
                 .build();
     }
+
+    public void addResultStudents(Set<ResultStudent> newResultStudents) {
+        if (Objects.isNull(getResultStudents())) {
+            resultStudents = new HashSet<>();
+        }
+        newResultStudents.forEach(rs -> {
+            ResultStudentKey resultStudentKey = new ResultStudentKey(id, rs.getStudent().getId());
+            rs.setId(resultStudentKey);
+            rs.setResult(this);
+        });
+        resultStudents.addAll(newResultStudents);
+    }
+
 }

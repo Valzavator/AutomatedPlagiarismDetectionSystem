@@ -27,12 +27,12 @@ public class Runner {
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        String str = "Language accepted: Javac 1.9+ based AST plugin\nCommand line: -s C:\\Users\\Valzavator\\IdeaProjects\\AutomatedPlagiarismDetectionSystem\\server\\target\\classes\\data\\zip\\2020-05-07\\19-49-15\\source.zip -r C:\\Users\\Valzavator\\IdeaProjects\\AutomatedPlagiarismDetectionSystem\\server\\target\\classes\\static\\jplag-results\\2020-05-07\\19-49-15\\source.zip -l java19 -t 12 -m 10% \r\ninitialize ok\r\n0 submissions\r\n\n0 submissions parsed successfully!\n0 parser errors!\n\n\nError: Not enough valid submissions! (only 0 are valid):\n\r\n" +
-                 "Comparing progbase_sr3_sverhrazum.c-progbase_sr3_zverevfpm.c: 0.0\r\nComparing progbase_sr3_tiwatit.c-progbase_sr3_valerystudent.c: 0.0\r\nComparing progbase_sr3_tiwatit.c-progbase_sr3_wmdanor.c: 0.0\r\nComparing progbase_sr3_tiwatit.c-progbase_sr3_yehorf.c: 0.0\r\nComparing progbase_sr3_tiwatit.c-progbase_sr3_zverevfpm.c: 0.0\r\nComparing progbase_sr3_valerystudent.c-progbase_sr3_wmdanor.c: 23.030304\r\nComparing progbase_sr3_valerystudent.c-progbase_sr3_yehorf.c: 24.358974\r\nComparing progbase_sr3_valerystudent.c-progbase_sr3_zverevfpm.c: 0.0\r\nComparing progbase_sr3_wmdanor.c-progbase_sr3_yehorf.c: 30.76923\r\nComparing progbase_sr3_wmdanor.c-progbase_sr3_zverevfpm.c: 0.0\r\nComparing progbase_sr3_yehorf.c-progbase_sr3_zverevfpm.c: 0.0\r\n\nWriting results to: C:\\Users\\Valzavator\\IdeaProjects\\AutomatedPlagiarismDetectionSystem\\server\\target\\classes\\static\\jplag-results\\2020-05-07\\19-57-42\\source.zip\n";
-
-        int startIndex = str.indexOf("initialize ok");
-        int endIndex = str.indexOf("Writing results to:");
-        System.out.println(str.substring(startIndex, endIndex));
+//        String str = "Language accepted: Javac 1.9+ based AST plugin\nCommand line: -s C:\\Users\\Valzavator\\IdeaProjects\\AutomatedPlagiarismDetectionSystem\\server\\target\\classes\\data\\zip\\2020-05-07\\19-49-15\\source.zip -r C:\\Users\\Valzavator\\IdeaProjects\\AutomatedPlagiarismDetectionSystem\\server\\target\\classes\\static\\jplag-results\\2020-05-07\\19-49-15\\source.zip -l java19 -t 12 -m 10% \r\ninitialize ok\r\n0 submissions\r\n\n0 submissions parsed successfully!\n0 parser errors!\n\n\nError: Not enough valid submissions! (only 0 are valid):\n\r\n" +
+//                 "Comparing progbase_sr3_sverhrazum.c-progbase_sr3_zverevfpm.c: 0.0\r\nComparing progbase_sr3_tiwatit.c-progbase_sr3_valerystudent.c: 0.0\r\nComparing progbase_sr3_tiwatit.c-progbase_sr3_wmdanor.c: 0.0\r\nComparing progbase_sr3_tiwatit.c-progbase_sr3_yehorf.c: 0.0\r\nComparing progbase_sr3_tiwatit.c-progbase_sr3_zverevfpm.c: 0.0\r\nComparing progbase_sr3_valerystudent.c-progbase_sr3_wmdanor.c: 23.030304\r\nComparing progbase_sr3_valerystudent.c-progbase_sr3_yehorf.c: 24.358974\r\nComparing progbase_sr3_valerystudent.c-progbase_sr3_zverevfpm.c: 0.0\r\nComparing progbase_sr3_wmdanor.c-progbase_sr3_yehorf.c: 30.76923\r\nComparing progbase_sr3_wmdanor.c-progbase_sr3_zverevfpm.c: 0.0\r\nComparing progbase_sr3_yehorf.c-progbase_sr3_zverevfpm.c: 0.0\r\n\nWriting results to: C:\\Users\\Valzavator\\IdeaProjects\\AutomatedPlagiarismDetectionSystem\\server\\target\\classes\\static\\jplag-results\\2020-05-07\\19-57-42\\source.zip\n";
+//
+//        int startIndex = str.indexOf("initialize ok");
+//        int endIndex = str.indexOf("Writing results to:");
+        System.out.println(Path.of("/asd").getRoot().toString());
 
 //        System.out.println(Charset.availableCharsets());
 //        System.out.println(Charset.isSupported("ISO-8859-5"));

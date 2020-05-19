@@ -1,7 +1,6 @@
 package com.gmail.maxsvynarchuk.service;
 
-import com.gmail.maxsvynarchuk.persistence.domain.TaskGroup;
-import com.gmail.maxsvynarchuk.persistence.domain.TaskGroupKey;
+import com.gmail.maxsvynarchuk.persistence.domain.*;
 import com.gmail.maxsvynarchuk.persistence.domain.type.PlagDetectionStatus;
 
 import java.util.List;

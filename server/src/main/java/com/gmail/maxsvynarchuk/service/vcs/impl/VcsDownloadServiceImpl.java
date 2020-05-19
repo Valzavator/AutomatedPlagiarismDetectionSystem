@@ -4,48 +4,49 @@ import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
 import com.gmail.maxsvynarchuk.persistence.domain.vcs.RepositoryFileInfo;
 import com.gmail.maxsvynarchuk.persistence.domain.vcs.RepositoryInfo;
 import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
-import com.gmail.maxsvynarchuk.persistence.exception.oauth.InvalidVcsUrlException;
 import com.gmail.maxsvynarchuk.persistence.exception.oauth.OAuthIllegalTokenException;
 import com.gmail.maxsvynarchuk.persistence.vcs.VcsRepositoryDao;
+import com.gmail.maxsvynarchuk.service.exception.FailedToWriteToFileSystemException;
 import com.gmail.maxsvynarchuk.service.vcs.VcsDownloadService;
 import com.gmail.maxsvynarchuk.service.vcs.VcsOAuthService;
 import com.gmail.maxsvynarchuk.util.FileSystemWriter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.Path;
 import java.util.Date;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 public class VcsDownloadServiceImpl implements VcsDownloadService {
+    public static final String ILLEGAL_AUTHORIZATION_PROVIDER = "Such authorization provider doesn't exist!";
+
     private final VcsRepositoryDao vcsRepositoryBitbucketDao;
     private final VcsRepositoryDao vcsRepositoryGitHubDao;
     private final VcsOAuthService vcsOAuthBitbucketService;
     private final VcsOAuthService vcsOAuthGitHubService;
     private final FileSystemWriter fileSystemWriter;
 
-    @Transactional
     @Override
-    public Optional<RepositoryInfo> downloadRepository(AccessToken userAccessToken,
-                                                       String repositoryUrl,
-                                                       String prefixPath,
-                                                       Date lastDateCommit) {
+    public RepositoryInfo downloadRepository(AccessToken userAccessToken,
+                                             String repositoryUrl,
+                                             String prefixPath,
+                                             Date lastDateCommit) {
         log.debug("Attempt to download repository ({})", repositoryUrl);
         AuthorizationProvider authorizationProvider = AuthorizationProvider.recognizeFromUrl(repositoryUrl);
         if (Objects.isNull(userAccessToken) ||
                 authorizationProvider != userAccessToken.getAuthorizationProvider()) {
-            log.debug("Access token is not suitable for this authorization provider!");
-            return Optional.empty();
+            log.error("Invalid authorization for {} service", authorizationProvider);
+            throw new OAuthIllegalTokenException("Invalid authorization for " + authorizationProvider + " service",
+                    userAccessToken);
         }
         VcsRepositoryDao vcsRepositoryDao = getVcsRepositoryDaoForAuthorizationProvider(authorizationProvider);
         if (Objects.isNull(vcsRepositoryDao)) {
-            log.debug("Such authorization provider doesn't exist!");
-            return Optional.empty();
+            log.error(ILLEGAL_AUTHORIZATION_PROVIDER);
+            throw new IllegalStateException(ILLEGAL_AUTHORIZATION_PROVIDER);
         }
 
         try {
@@ -55,13 +56,9 @@ public class VcsDownloadServiceImpl implements VcsDownloadService {
                     prefixPath,
                     lastDateCommit);
             log.debug("Attempt to download SUCCESSFUL - repository ({}) ", repositoryUrl);
-            return Optional.of(repositoryInfo);
-        } catch (InvalidVcsUrlException ex) {
-            // TODO refactor exception handler
-            log.error(ex.toString());
-            return Optional.empty();
+            return repositoryInfo;
         } catch (OAuthIllegalTokenException ex) {
-            log.error(ex.toString());
+            log.debug(ex.toString());
             AccessToken newAccessToken = tryToRefreshToken(userAccessToken);
             return downloadRepository(newAccessToken,
                     repositoryUrl,
@@ -78,8 +75,10 @@ public class VcsDownloadServiceImpl implements VcsDownloadService {
                 repositoryInfo.getWebsiteUrl());
         if (Objects.isNull(userAccessToken) ||
                 repositoryInfo.getAuthorizationProvider() != userAccessToken.getAuthorizationProvider()) {
-            log.debug("Access token is not suitable for this authorization provider!");
-            return false;
+            log.error("Invalid authorization for {} service", repositoryInfo.getAuthorizationProvider());
+            throw new OAuthIllegalTokenException(
+                    "Invalid authorization for " + repositoryInfo.getAuthorizationProvider() + " service",
+                    userAccessToken);
         }
         if (repositoryInfo.isEmptyRepository()) {
             log.debug("Attempt to download raw content of files FAILED - empty repository ({}) ",
@@ -89,21 +88,28 @@ public class VcsDownloadServiceImpl implements VcsDownloadService {
         VcsRepositoryDao vcsRepositoryDao = getVcsRepositoryDaoForAuthorizationProvider(
                 repositoryInfo.getAuthorizationProvider());
         if (Objects.isNull(vcsRepositoryDao)) {
-            log.debug("Such authorization provider doesn't exist!");
-            return false;
+            log.error(ILLEGAL_AUTHORIZATION_PROVIDER);
+            throw new IllegalStateException(ILLEGAL_AUTHORIZATION_PROVIDER);
         }
 
         fileSystemWriter.deleteDirectory(repositoryDataPath);
         for (RepositoryFileInfo fileInfo : repositoryInfo.getFilesInfo()) {
-            String fileData = vcsRepositoryDao.getRawFileContent(userAccessToken, fileInfo);
+            String fileData;
+            try {
+                fileData = vcsRepositoryDao.getRawFileContent(userAccessToken, fileInfo);
+            } catch (OAuthIllegalTokenException ex) {
+                log.debug(ex.toString());
+                userAccessToken = tryToRefreshToken(userAccessToken);
+                fileData = vcsRepositoryDao.getRawFileContent(userAccessToken, fileInfo);
+            }
+
             try {
                 fileSystemWriter.writeStringData(
-                        repositoryDataPath + fileInfo.getPath(),
+                        Path.of(repositoryDataPath, fileInfo.getPath()).toString(),
                         fileData);
-            } catch (Exception ex) {
-                // TODO refactor exception handler
+            } catch (IllegalStateException ex) {
                 log.error(ex.toString());
-                return false;
+                throw new FailedToWriteToFileSystemException(ex);
             }
         }
 
@@ -113,8 +119,8 @@ public class VcsDownloadServiceImpl implements VcsDownloadService {
     }
 
 
-    private VcsRepositoryDao getVcsRepositoryDaoForAuthorizationProvider(AuthorizationProvider
-                                                                                 authorizationProvider) {
+    private VcsRepositoryDao getVcsRepositoryDaoForAuthorizationProvider(
+            AuthorizationProvider authorizationProvider) {
         if (authorizationProvider == AuthorizationProvider.GITHUB) {
             return vcsRepositoryGitHubDao;
         } else if (authorizationProvider == AuthorizationProvider.BITBUCKET) {

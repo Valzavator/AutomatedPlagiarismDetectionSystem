@@ -1,7 +1,7 @@
 package com.gmail.maxsvynarchuk.presentation.controller;
 
 import com.gmail.maxsvynarchuk.facade.CourseFacade;
-import com.gmail.maxsvynarchuk.presentation.payload.response.*;
+import com.gmail.maxsvynarchuk.presentation.payload.response.CourseDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.error.ApiError;
 import com.gmail.maxsvynarchuk.presentation.security.AuthUser;
 import com.gmail.maxsvynarchuk.presentation.security.serivce.UserPrincipal;
@@ -17,24 +17,13 @@ import java.util.Optional;
 
 
 @RestController
-@RequestMapping("/api/v1/courses")
+@RequestMapping("/api/v1/courses/{courseId}")
 @AllArgsConstructor
 @Slf4j
-public class CoursesController {
+public class CourseController {
     private final CourseFacade courseFacade;
 
     @GetMapping
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<PagedDto<CourseDto>> getAllUserCourses(
-            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-            @RequestParam(value = "size", required = false, defaultValue = "5") int size,
-            @AuthUser UserPrincipal currentUser) {
-        PagedDto<CourseDto> pagedDto = courseFacade.getCoursesByCreatorId(currentUser.getId(), page, size);
-        return ResponseEntity.ok()
-                .body(pagedDto);
-    }
-
-    @GetMapping("/{courseId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getCourse(
             @PathVariable(value = "courseId") long courseId,

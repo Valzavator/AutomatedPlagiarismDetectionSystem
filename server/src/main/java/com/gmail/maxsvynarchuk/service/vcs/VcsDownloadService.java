@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface VcsDownloadService {
 
-    Optional<RepositoryInfo> downloadRepository(AccessToken userAccessToken,
+    RepositoryInfo downloadRepository(AccessToken userAccessToken,
                                                 String repositoryUrl,
                                                 String prefixPath,
                                                 Date lastDateCommit);

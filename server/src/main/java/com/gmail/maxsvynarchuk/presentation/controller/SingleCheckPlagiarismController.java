@@ -44,6 +44,7 @@ public class SingleCheckPlagiarismController {
                 !ControllerUtil.validateZipMediaType(dto.getBaseCodeZip())) {
             throw new HttpMediaTypeNotSupportedException("Invalid 'baseCodeZip' media type!");
         }
+
         SingleCheckPlagDetectionResultDto result = singleCheckPlagiarismDetectionFacade.processSingleCheck(dto);
         return ResponseEntity.ok().body(result);
     }

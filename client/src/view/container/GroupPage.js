@@ -320,19 +320,19 @@ class GroupPage extends React.Component {
                             <div className="row justify-content-center">
                                 <ul className="nav nav-tabs nav-fill w-100 bg-secondary">
                                     <li className="nav-item">
-                                        <a className="nav-link active" data-toggle="tab"
+                                        <a className="nav-link" data-toggle="tab"
                                            href="#nav-students">
                                             Студенти
                                         </a>
                                     </li>
                                     <li className="nav-item">
-                                        <a className="nav-link" data-toggle="tab" href="#nav-tasks">
+                                        <a className="nav-link active" data-toggle="tab" href="#nav-tasks">
                                             Завдання
                                         </a>
                                     </li>
                                 </ul>
                                 <div className="tab-content w-100" id="nav-tabContent">
-                                    <div className="tab-pane fade show active" id="nav-students">
+                                    <div className="tab-pane fade" id="nav-students">
                                         {this.props.activeGroup.studentGroups.length > 0
                                             ? (
                                                 renderStudentsTable(this.props.activeGroup.studentGroups)
@@ -345,7 +345,7 @@ class GroupPage extends React.Component {
                                             )
                                         }
                                     </div>
-                                    <div className="tab-pane fade" id="nav-tasks">
+                                    <div className="tab-pane fade active show" id="nav-tasks">
                                         {this.props.activeGroup.taskGroups.length > 0
                                             ? (
                                                 renderTasksTable(this.props.activeGroup.taskGroups)
