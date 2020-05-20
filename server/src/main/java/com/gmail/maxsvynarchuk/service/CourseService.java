@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface CourseService {
 
-    Page<Course> getCoursesByCreatorId(Long creatorId, int page, int size);
+    Page<Course> getAllCoursesByCreatorId(Long creatorId, int page, int size);
 
     Optional<Course> getCourseById(Long creatorId, Long courseId);
 

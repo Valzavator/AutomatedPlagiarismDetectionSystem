@@ -13,12 +13,12 @@ export function signInUser({email, password}) {
                 return true;
             }
         } catch (error) {
-            // if (error.status === 401) {
-            //     dispatch({type: types.UNAUTH_USER});
-            //     return false;
-            // } else {
+            if (error.status === 401) {
+                dispatch({type: types.UNAUTH_USER});
+            } else {
                 dispatch({type: types.THROW_ERROR, error});
-            // }
+            }
+            return false;
         }
     };
 }

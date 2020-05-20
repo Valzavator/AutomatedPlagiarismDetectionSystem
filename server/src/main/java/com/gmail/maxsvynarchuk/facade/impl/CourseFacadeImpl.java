@@ -22,7 +22,7 @@ public class CourseFacadeImpl implements CourseFacade {
 
     @Override
     public PagedDto<CourseDto> getCoursesByCreatorId(Long creatorId, int page, int size) {
-        Page<Course> coursesPage = courseService.getCoursesByCreatorId(creatorId, page, size);
+        Page<Course> coursesPage = courseService.getAllCoursesByCreatorId(creatorId, page, size);
         List<CourseDto> courseDtos = courseToCourseDto.convertAll(coursesPage.getContent());
         return PagedDto.<CourseDto>builder()
                 .content(courseDtos)

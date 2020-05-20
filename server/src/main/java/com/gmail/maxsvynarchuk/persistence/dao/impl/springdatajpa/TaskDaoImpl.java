@@ -4,6 +4,8 @@ import com.gmail.maxsvynarchuk.persistence.dao.TaskDao;
 import com.gmail.maxsvynarchuk.persistence.dao.repository.TaskRepository;
 import com.gmail.maxsvynarchuk.persistence.domain.Task;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,6 +15,11 @@ import java.util.Optional;
 @AllArgsConstructor
 public class TaskDaoImpl implements TaskDao {
     private final TaskRepository repository;
+
+    @Override
+    public Page<Task> findAllByCourseId(Long courseId, Pageable pageable) {
+        return repository.findByCourseId(courseId, pageable);
+    }
 
     @Override
     public List<Task> findAllByCourseIdAndNotAssignedToGroup(Long courseId, Long groupId) {
@@ -37,6 +44,11 @@ public class TaskDaoImpl implements TaskDao {
     @Override
     public void delete(Task obj) {
         repository.delete(obj);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        repository.deleteById(id);
     }
 
     @Override

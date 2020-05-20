@@ -7,9 +7,9 @@ import java.util.Optional;
 
 public interface GroupService {
 
-    Page<Group> getGroupsByCourseId(Long courseId,
-                                    int page,
-                                    int size);
+    Page<Group> getAllGroupsByCourseId(Long courseId,
+                                       int page,
+                                       int size);
 
     Optional<Group> getGroupById(Long groupId);
 

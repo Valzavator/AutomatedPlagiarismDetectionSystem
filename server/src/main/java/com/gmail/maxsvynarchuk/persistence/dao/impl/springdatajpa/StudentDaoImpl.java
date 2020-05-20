@@ -5,6 +5,8 @@ import com.gmail.maxsvynarchuk.persistence.dao.repository.StudentRepository;
 import com.gmail.maxsvynarchuk.persistence.domain.Student;
 import com.gmail.maxsvynarchuk.persistence.domain.Task;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,6 +17,11 @@ import java.util.Set;
 @AllArgsConstructor
 public class StudentDaoImpl implements StudentDao {
     private final StudentRepository repository;
+
+    @Override
+    public Page<Student> findByCreatorId(Long creatorId, Pageable pageable) {
+        return repository.findByCreatorId(creatorId, pageable);
+    }
 
     @Override
     public Optional<Student> findOne(Long id) {
@@ -34,6 +41,11 @@ public class StudentDaoImpl implements StudentDao {
     @Override
     public void delete(Student obj) {
         repository.delete(obj);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        repository.deleteById(id);
     }
 
     @Override

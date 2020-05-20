@@ -46,6 +46,12 @@ export default function authReducer(state = INITIAL_STATE, action) {
             return Object.assign({}, state, {
                 activeGroup: action.activeGroup
             });
+        case types.DELETE_TASK_GROUP_FROM_ACTIVE_GROUP:
+            let updatedActiveGroup = Object.assign({}, state.activeGroup);
+            updatedActiveGroup.taskGroups = updatedActiveGroup.taskGroups.filter(tg => tg.taskId !== action.taskId);
+            return Object.assign({}, state, {
+                activeGroup: updatedActiveGroup
+            });
         default:
             return state;
     }

@@ -47,6 +47,11 @@ public class CourseDaoImpl implements CourseDao {
     }
 
     @Override
+    public void deleteById(Long id) {
+        repository.deleteById(id);
+    }
+
+    @Override
     public boolean exist(Long id) {
         return repository.existsById(id);
     }

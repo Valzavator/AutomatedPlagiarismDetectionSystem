@@ -51,6 +51,18 @@ public class TaskGroupFacadeImpl implements TaskGroupFacade {
     }
 
     @Override
+    public boolean deleteTaskGroup(Long taskId, Long groupId) {
+        TaskGroupKey taskGroupKey = new TaskGroupKey(taskId, groupId);
+        Optional<TaskGroup> taskGroupOpt = taskGroupService.getTaskGroupById(taskGroupKey)
+                .filter(tg -> tg.getPlagDetectionStatus() != PlagDetectionStatus.IN_PROCESS);
+        if (taskGroupOpt.isPresent()) {
+            taskGroupService.deleteTaskGroup(taskGroupKey);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public OptionsForSettingsDto getOptionsForTaskGroupAdding(Long courseId, Long groupId) {
         List<ProgrammingLanguage> languages = programmingLanguageService.getAllProgrammingLanguages();
         List<ProgrammingLanguageDto> languageDtos = programmingLanguageDto.convertAll(languages);

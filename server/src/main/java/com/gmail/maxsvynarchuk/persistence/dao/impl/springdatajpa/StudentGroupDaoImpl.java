@@ -4,6 +4,7 @@ import com.gmail.maxsvynarchuk.persistence.dao.StudentGroupDao;
 import com.gmail.maxsvynarchuk.persistence.dao.repository.StudentGroupRepository;
 import com.gmail.maxsvynarchuk.persistence.domain.Student;
 import com.gmail.maxsvynarchuk.persistence.domain.StudentGroup;
+import com.gmail.maxsvynarchuk.persistence.domain.StudentGroupKey;
 import com.gmail.maxsvynarchuk.persistence.domain.Task;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -23,7 +24,7 @@ public class StudentGroupDaoImpl implements StudentGroupDao {
     }
 
     @Override
-    public Optional<StudentGroup> findOne(Long id) {
+    public Optional<StudentGroup> findOne(StudentGroupKey id) {
         return repository.findById(id);
     }
 
@@ -43,7 +44,12 @@ public class StudentGroupDaoImpl implements StudentGroupDao {
     }
 
     @Override
-    public boolean exist(Long id) {
+    public void deleteById(StudentGroupKey id) {
+        repository.deleteById(id);
+    }
+
+    @Override
+    public boolean exist(StudentGroupKey id) {
         return repository.existsById(id);
     }
 }

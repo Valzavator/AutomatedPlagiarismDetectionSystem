@@ -50,6 +50,11 @@ public class TaskGroupDaoImpl implements TaskGroupDao {
     }
 
     @Override
+    public void deleteById(TaskGroupKey taskGroupKey) {
+        repository.deleteById(taskGroupKey);
+    }
+
+    @Override
     public boolean exist(TaskGroupKey taskGroupKey) {
         return repository.existsById(taskGroupKey);
     }

@@ -300,7 +300,7 @@ class PlagDetectionSettings extends React.Component {
                     )
                     : (
                         <div className="alert alert-warning" role="alert">
-                            Всі завдання для курсу вже назначені в групі. <a href="#" className="alert-link">Створити нове завдання</a>.
+                            Всі завдання курсу вже назначені для групи. <a href="#" className="alert-link">Створити нове завдання</a>.
                         </div>
                     )
                 }

@@ -7,7 +7,7 @@ import * as workflowActions from "../../store/action/workflowActions";
 import {connect} from "react-redux";
 import moment from "moment";
 import {LinkContainer} from "react-router-bootstrap";
-import {getTaskGroup} from "../../api/taskGroup";
+import {deleteTaskGroup} from "../../api/taskGroup";
 
 class GroupPage extends React.Component {
     constructor(props) {
@@ -17,7 +17,7 @@ class GroupPage extends React.Component {
             updateGroupInfo: true
         }
 
-        this.handleDetailTaskGroupBtn = this.handleDetailTaskGroupBtn.bind(this);
+        this.handleRemoveTaskBtn = this.handleRemoveTaskBtn.bind(this);
     }
 
     async componentDidMount() {
@@ -25,12 +25,11 @@ class GroupPage extends React.Component {
         await this.loadGroupInfo();
         this.timerID = setInterval(
             () => this.loadGroupInfo(),
-            5000
+            1000
         );
     }
 
     componentWillUnmount() {
-        this.props.sidebar.changeSidebarState("courseCatalog")
         clearInterval(this.timerID);
     }
 
@@ -49,25 +48,26 @@ class GroupPage extends React.Component {
         }
     }
 
-    async handleDetailTaskGroupBtn(e) {
+    async handleRemoveTaskBtn(e) {
         e.preventDefault();
-        e.persist()
+        e.persist();
+
         try {
             await this.setState({
                 isLoading: true
             });
             const courseId = this.props.match.params.courseId;
             const groupId = this.props.match.params.groupId;
-            const taskId = e.target.taskId.value;
-            let res = await getTaskGroup(courseId, groupId, taskId);
+            const taskId = e.target.deleteTaskId.value;
+            await deleteTaskGroup(courseId, groupId, taskId);
+            this.props.workflow.deleteTaskGroupFromActiveGroup(taskId);
             await this.setState({
                 isLoading: false,
-                showDetailTaskGroup: true,
-                activeTaskGroup: res.data
             });
         } catch (err) {
             this.props.error.throwError(err);
         }
+
     }
 
     render() {
@@ -79,8 +79,8 @@ class GroupPage extends React.Component {
                         <th scope="row">{i + 1}</th>
                         <td className="overflow-text">
                             <LinkContainer
-                                to={"/students/" + students[i].studentId}>
-                                <a href="/students/">
+                                to={"/students" + students[i].studentId}>
+                                <a href="/students">
                                     <i className="fa fa-user fa-lg"
                                        aria-hidden="true">&nbsp;&nbsp;</i>
                                     {students[i].studentFullName}
@@ -114,10 +114,10 @@ class GroupPage extends React.Component {
                         className="table table-hover table-striped table-dark table-bordered text-center">
                         <thead>
                         <tr className="bg-primary">
-                            <th scope="col">№</th>
+                            <th scope="col" style={{width: '47px'}}>№</th>
                             <th scope="col">Повне ім'я студента</th>
                             <th scope="col">Репозиторій студента</th>
-                            <th scope="col"/>
+                            <th scope="col" style={{width: '97px'}}>Видалити</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -160,11 +160,11 @@ class GroupPage extends React.Component {
                             </button>
                         </td>
                         <td className="align-middle">
-                            <form>
-                                <input name="delete" value={tasks[i].id}
-                                       hidden readOnly/>
+                            <form onSubmit={this.handleRemoveTaskBtn}>
+                                <input name="deleteTaskId" value={tasks[i].taskId} hidden readOnly/>
                                 <button type="submit"
-                                        className="btn btn-link" id="deleteLinkBtn" disabled>
+                                        className="btn btn-link" id="deleteLinkBtn"
+                                        disabled={tasks[i].plagDetectionStatus === 'IN_PROCESS'}>
                                     <i className="fa fa-times fa-lg"
                                        aria-hidden="true"/>
                                 </button>
@@ -187,7 +187,7 @@ class GroupPage extends React.Component {
                             <th scope="col">Статус</th>
                             <th scope="col">Переглянути</th>
                             <th scope="col">Редагувати</th>
-                            <th scope="col"/>
+                            <th scope="col" style={{width: '97px'}}>Видалити</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -228,7 +228,6 @@ class GroupPage extends React.Component {
 
         const groupInfo = (
             <div className="container my-3">
-                {/*<AssignTaskButton/>*/}
                 <div className="row justify-content-center">
                     <div className="container-fluid">
                         <h2 className="text-center">

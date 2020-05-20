@@ -28,7 +28,7 @@ public class GroupFacadeImpl implements GroupFacade {
                                                                    int page,
                                                                    int size) {
         Page<Group> groupsPage =
-                groupService.getGroupsByCourseId(courseId, page, size);
+                groupService.getAllGroupsByCourseId(courseId, page, size);
         List<BasicGroupDto> courseDtos = groupToBasicGroupDto.convertAll(groupsPage.getContent());
         return PagedDto.<BasicGroupDto>builder()
                 .content(courseDtos)

@@ -9,8 +9,8 @@ import java.util.Optional;
 public interface GroupFacade {
 
     PagedDto<BasicGroupDto> getGroupsByCourseId(Long courseId,
-                                                            int page,
-                                                            int size);
+                                                int page,
+                                                int size);
 
     Optional<GroupDto> getGroupById(Long groupId);
 

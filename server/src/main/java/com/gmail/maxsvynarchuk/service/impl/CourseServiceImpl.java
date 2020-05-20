@@ -20,12 +20,12 @@ public class CourseServiceImpl implements CourseService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<Course> getCoursesByCreatorId(Long userId,
-                                              int page,
-                                              int size) {
+    public Page<Course> getAllCoursesByCreatorId(Long creatorId,
+                                                 int page,
+                                                 int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(
                 Sort.Order.desc("creationDate")));
-        return courseDao.findByCreatorId(userId, pageable);
+        return courseDao.findByCreatorId(creatorId, pageable);
     }
 
     @Transactional(readOnly = true)

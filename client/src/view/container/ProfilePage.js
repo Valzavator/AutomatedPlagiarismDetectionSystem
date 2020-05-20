@@ -148,7 +148,7 @@ class ProfilePage extends React.Component {
                 : (
                     <form onSubmit={this.handleAuthorizeVcsBtnClick}>
                         <input name="authorizationLink" value={authorizationLink} hidden readOnly/>
-                        <button className="btn btn-link">
+                        <button type="submit" className="btn btn-link">
                             <i className="fa fa-plus fa-2x"
                                aria-hidden="true"/>
                         </button>

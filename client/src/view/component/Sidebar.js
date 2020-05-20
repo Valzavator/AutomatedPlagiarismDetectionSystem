@@ -3,6 +3,7 @@ import {connect} from "react-redux";
 import AssignTaskModal from "../container/control/AssignTaskModal";
 import {LinkContainer} from "react-router-bootstrap";
 import {matchPath, withRouter} from "react-router-dom";
+import AddStudentToGroupModal from "../container/control/AddStudentToGroupModal";
 
 class Sidebar extends React.Component {
     constructor(props) {
@@ -43,6 +44,8 @@ class Sidebar extends React.Component {
                 return specificCourseTasksBtns;
             } else if (this.props.sidebarState === 'taskGroup') {
                 return taskGroupDetailBtns;
+            } else if (this.props.sidebarState === 'students') {
+                return studentsBtns;
             }
             return allCursesBtns;
         }
@@ -58,6 +61,8 @@ class Sidebar extends React.Component {
                 return specificCourseTasksModals;
             } else if (this.props.sidebarState === 'taskGroup') {
                 return taskGroupDetailModals;
+            } else if (this.props.sidebarState === 'students') {
+                return studentsModals;
             }
             return allCursesBtns;
         }
@@ -119,7 +124,11 @@ class Sidebar extends React.Component {
                 <i className="fa fa-chevron-circle-left" aria-hidden="true"/>&nbsp;&nbsp;
                 Повернутися до курсу
             </button>,
-            <button className="list-group-item list-group-item-action bg-success" key={'addStudentToGroup'}>
+            <button className="list-group-item list-group-item-action bg-success"
+                    data-toggle="modal"
+                    data-target="#assignTaskModal"
+                    key={'addStudentToGroup'}
+                    onClick={() => this.handleChangeAssignTaskModal(true)}>
                 <i className="fa fa-id-card" aria-hidden="true"/>&nbsp;&nbsp;
                 Додати студента до групи
             </button>,
@@ -127,7 +136,6 @@ class Sidebar extends React.Component {
                     data-toggle="modal"
                     data-target="#assignTaskModal"
                     key={"assignTaskModalBtn"}
-                    value="isOpenAssignTaskModal"
                     onClick={() => this.handleChangeAssignTaskModal(true)}>
                 <i className="fa fa-thumb-tack" aria-hidden="true"/>&nbsp;&nbsp;
                 Назначити завдання
@@ -147,6 +155,12 @@ class Sidebar extends React.Component {
                              key={'assignTaskModal'}
                              isOpen={this.state.isOpenAssignTaskModal}
                              onClose={() => this.handleChangeAssignTaskModal(false)}
+            />,
+            <AddStudentToGroupModal
+                id="assignTaskModal"
+                key={'assignTaskModal'}
+                isOpen={this.state.isOpenAssignTaskModal}
+                onClose={() => this.handleChangeAssignTaskModal(false)}
             />
         ]
 
@@ -155,18 +169,26 @@ class Sidebar extends React.Component {
                     onClick={this.handleBackBtn}>
                 <i className="fa fa-chevron-circle-left" aria-hidden="true"/>&nbsp;&nbsp;
                 Повернутися до групи
+            </button>,
+            <button className="list-group-item list-group-item-action bg-warning" key={'editTaskGroup'}>
+                <i className="fa fa-pencil-square" aria-hidden="true"/>&nbsp;&nbsp;
+                Редагувати завдання
+            </button>,
+            <button className="list-group-item list-group-item-action bg-danger" key={'removeTaskGroup'}>
+                <i className="fa fa-trash" aria-hidden="true"/>&nbsp;&nbsp;
+                Видалити завдання групи
             </button>
         ]
 
         const taskGroupDetailModals = []
 
-        const studentsGroupBtns = [
+        const studentsBtns = [
             <button className="list-group-item list-group-item-action bg-info" key={'addNewStudent'}>
                 <i className="fa fa-user-plus" aria-hidden="true"/>&nbsp;&nbsp;
                 Додати нового студента
             </button>
         ]
-        const studentsGroupModals = []
+        const studentsModals = []
 
         return (
             <div className="bg-dark" id="sidebar-wrapper">

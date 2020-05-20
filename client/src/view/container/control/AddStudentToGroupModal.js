@@ -12,7 +12,7 @@ import {
 import {matchPath, withRouter} from "react-router-dom";
 import * as moment from "moment";
 
-class AssignTaskModal extends React.Component {
+class AddStudentToGroupModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -167,4 +167,4 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AssignTaskModal));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AddStudentToGroupModal));

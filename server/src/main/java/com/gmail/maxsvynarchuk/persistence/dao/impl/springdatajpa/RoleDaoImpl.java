@@ -41,6 +41,11 @@ public class RoleDaoImpl implements RoleDao {
     }
 
     @Override
+    public void deleteById(Integer id) {
+        repository.deleteById(id);
+    }
+
+    @Override
     public boolean exist(Integer id) {
         return repository.existsById(id);
     }

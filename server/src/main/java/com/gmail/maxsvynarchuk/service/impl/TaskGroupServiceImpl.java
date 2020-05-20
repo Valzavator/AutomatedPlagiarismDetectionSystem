@@ -34,7 +34,7 @@ public class TaskGroupServiceImpl implements TaskGroupService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<TaskGroup> getAllExpiredTaskGroupWithPendingStatus() {
+    public List<TaskGroup> getAllExpiredTaskGroupsWithPendingStatus() {
         return taskGroupDao.findAllExpiredTaskGroupWithPendingStatus();
     }
 
@@ -42,6 +42,11 @@ public class TaskGroupServiceImpl implements TaskGroupService {
     @Override
     public TaskGroup saveTaskGroup(TaskGroup taskGroup) {
         return taskGroupDao.save(taskGroup);
+    }
+
+    @Override
+    public void deleteTaskGroup(TaskGroupKey id) {
+        taskGroupDao.deleteById(id);
     }
 
 }

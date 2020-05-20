@@ -3,72 +3,81 @@ import Load from "../component/Load";
 import {bindActionCreators} from "redux";
 import * as errorActions from "../../store/action/errorActions";
 import * as sidebarActions from "../../store/action/sidebarActions";
-import * as workflowActions from "../../store/action/workflowActions";
 import {connect} from "react-redux";
-import moment from "moment";
 import PagePagination from "../component/PagePagination";
-import {LinkContainer} from "react-router-bootstrap";
+import {getAllCourseTasks} from "../../api/task";
 
 class TasksPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isLoading: false
+            isLoading: false,
+            content: [],
+            page: 0,
+            totalPages: 0
         }
 
         this.handlePaginationClick = this.handlePaginationClick.bind(this);
     }
 
-    async componentDidMount() {
-        await this.props.workflow.loadSpecificCourse(this.props.match.params.courseId);
-        await this.props.sidebar.changeSidebarState("courseTasks", "Меню керування:");
-        await this.props.workflow.loadAllGroups(this.props.match.params.courseId);
-        await this.setState({
-            isLoading: false
-        });
+    componentDidMount() {
+        this.props.sidebar.changeSidebarState("courseTasks", "Меню керування:");
+        this.loadCourseTasks();
     }
 
     componentWillUnmount() {
         this.props.sidebar.changeSidebarState("courseCatalog")
     }
 
-    async handlePaginationClick(page) {
-        await this.setState({
-            isLoading: true
-        });
-        await this.props.workflow.loadAllGroups(this.props.match.params.courseId, page);
-        await this.setState({
-            isLoading: false
-        });
+    async loadCourseTasks(page = 0) {
+        try {
+            await this.setState({
+                isLoading: true
+            });
+            const courseId = this.props.match.params.courseId;
+            let res = await getAllCourseTasks(courseId, page);
+            console.log(res.data)
+            await this.setState({
+                isLoading: false,
+                ...res.data
+            });
+        } catch (err) {
+            this.props.error.throwError(err);
+        }
+    }
+
+    handlePaginationClick(page) {
+        this.loadCourseTasks(page);
     }
 
     render() {
 
-        const renderGroups = (groups) => {
-            return groups.map(
-                group =>
-                    <div className="col mb-4" key={group.id}>
-                        <div className="card h-100">
-                            <div className="card-body">
-                                <h5 className="card-title text-center">{group.name}</h5>
-                                <div className="row justify-content-center no-gutters">
-                                    <img src={require('../../images/logo.png')} className="card-img"
-                                         style={{maxWidth: '200px'}} alt="logo"/>
-                                </div>
-                                <p className="card-text text-center">
-                                    <small className="text-muted">
-                                        Дата створення: {moment(group.creationDate).format('DD.MM.YYYY HH:mm')}
-                                    </small>
-                                </p>
-                                <div className="text-sm-center text-center">
-                                    <LinkContainer
-                                        to={"/courses/" + this.props.match.params.courseId + "/groups/" + group.id}>
-                                        <button className="stretched-link btn btn-primary">
-                                            Перейти до групи&nbsp;&nbsp;
-                                            <i className="fa fa-chevron-circle-right fa-lg" aria-hidden="true"/>
-                                        </button>
-                                    </LinkContainer>
-                                </div>
+        const renderTasks = (tasks) => {
+            return tasks.map(
+                task =>
+                    <div className="col mb-4" key={task.id}>
+                        <div className="card">
+                            <ul className="list-group list-group-flush">
+                                <li className="list-group-item">
+                                    Назва: <strong>{task.name}</strong>
+                                </li>
+                                <li className="list-group-item">
+                                    Директорія репозиторія: <strong>"{task.repositoryPrefixPath}"</strong>
+                                </li>
+                            </ul>
+                            <div className="card-body overflow-auto" style={{maxHeight: '200px'}}>
+                                <h5 className="card-title text-center">Опис завдання</h5>
+                                {task.description ? task.description : 'Відсутній...'}
+                            </div>
+                            <div className="card-body text-center">
+                                <button className="btn btn-danger align-self-end m-3">
+                                    Видалити&nbsp;&nbsp;
+                                    <i className="fa fa-trash fa-lg" aria-hidden="true"/>
+                                </button>
+                                <button className="btn btn-warning align-self-end m-3">
+                                    Редагувати&nbsp;&nbsp;
+                                    <i className="fa fa-pencil-square fa-lg" aria-hidden="true"/>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -85,7 +94,11 @@ class TasksPage extends React.Component {
                             <div className="row justify-content-center">
                                 <div className="container-fluid">
                                     <h2 className="text-center">
-                                        Завдання курсу "{this.props.activeCourse.name}"
+                                        Завдання курсу
+                                        {this.props.activeCourse.name !== 'NOT_LOADED'
+                                            ? `"${this.props.activeCourse.name}"`
+                                            : null
+                                        }
                                     </h2>
                                     <div className="progress mb-4">
                                         <div className="progress-bar" role="progressbar" aria-valuenow="25"
@@ -96,18 +109,18 @@ class TasksPage extends React.Component {
                             </div>
 
                             {
-                                this.props.groups.content.length > 0
+                                this.state.content.length > 0
                                     ? (
                                         <div className="row row-cols-1 row-cols-md-3">
-                                            {renderGroups(this.props.groups.content)}
+                                            {renderTasks(this.state.content)}
                                         </div>
                                     )
                                     : (
                                         <div className="row align-items-center h-50 justify-content-center">
                                             <div className="container-fluid">
                                                 <div className="alert alert-primary" role="alert">
-                                                    <h2>
-                                                        Ви поки що не створили жодної групи для даного курсу
+                                                    <h2 className="text-center">
+                                                        Ви не створили жодного завдання для даного курсу
                                                     </h2>
                                                 </div>
                                             </div>
@@ -116,8 +129,8 @@ class TasksPage extends React.Component {
                             }
 
                             <PagePagination
-                                page={this.props.groups.page}
-                                totalPages={this.props.groups.totalPages}
+                                page={this.state.page}
+                                totalPages={this.state.totalPages}
                                 onClick={this.handlePaginationClick}
                             />
                         </div>
@@ -131,16 +144,13 @@ class TasksPage extends React.Component {
 function mapStateToProps(state) {
     return {
         activeCourse: state.workflow.activeCourse,
-        groups: state.workflow.groups
     };
 }
-
 
 function mapDispatchToProps(dispatch) {
     return {
         error: bindActionCreators(errorActions, dispatch),
-        sidebar: bindActionCreators(sidebarActions, dispatch),
-        workflow: bindActionCreators(workflowActions, dispatch),
+        sidebar: bindActionCreators(sidebarActions, dispatch)
     };
 }
 

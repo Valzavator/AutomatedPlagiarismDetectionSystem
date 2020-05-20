@@ -38,6 +38,16 @@ public class TaskGroupController {
         return ControllerUtil.prepareResponse(taskGroupDtoOpt, request.getRequestURI());
     }
 
+    @PostMapping("/{taskId}/delete")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> deleteTaskGroup(
+            @PathVariable(value = "taskId") long taskId,
+            @PathVariable(value = "groupId") long groupId) {
+        return taskGroupFacade.deleteTaskGroup(taskId, groupId)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.badRequest().build();
+    }
+
     @GetMapping("/options")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getOptionsForTaskGroupSettings(

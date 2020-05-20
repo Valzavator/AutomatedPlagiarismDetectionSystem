@@ -5,38 +5,53 @@ import * as errorActions from "../../store/action/errorActions";
 import * as sidebarActions from "../../store/action/sidebarActions";
 import * as workflowActions from "../../store/action/workflowActions";
 import {connect} from "react-redux";
-import moment from "moment";
 import PagePagination from "../component/PagePagination";
 import {LinkContainer} from "react-router-bootstrap";
+import {getAllStudents} from "../../api/student";
 
 class StudentsPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isLoading: false
+            isLoading: false,
+            content: [],
+            page: 0,
+            totalPages: 0
         }
 
         this.handlePaginationClick = this.handlePaginationClick.bind(this);
     }
 
-    async componentDidMount() {
-        await this.props.workflow.loadSpecificCourse(this.props.match.params.courseId);
-        await this.props.sidebar.changeSidebarState("srudents", "Меню керування:");
-        await this.props.workflow.loadAllGroups(this.props.match.params.courseId);
-        await this.setState({
-            isLoading: false
-        });
+    componentDidMount() {
+        this.props.sidebar.changeSidebarState("students", "Меню керування:");
+        this.loadStudents();
     }
 
     componentWillUnmount() {
         this.props.sidebar.changeSidebarState("courseCatalog")
     }
 
+    async loadStudents(page = 0) {
+        try {
+            await this.setState({
+                isLoading: true
+            });
+            let res = await getAllStudents(page);
+            console.log(res.data);
+            await this.setState({
+                isLoading: false,
+                ...res.data
+            });
+        } catch (err) {
+            this.props.error.throwError(err);
+        }
+    }
+
     async handlePaginationClick(page) {
         await this.setState({
             isLoading: true
         });
-        await this.props.workflow.loadAllGroups(this.props.match.params.courseId, page);
+        await this.loadStudents(page);
         await this.setState({
             isLoading: false
         });
@@ -44,34 +59,62 @@ class StudentsPage extends React.Component {
 
     render() {
 
-        const renderGroups = (groups) => {
-            return groups.map(
-                group =>
-                    <div className="col mb-4" key={group.id}>
-                        <div className="card h-100">
-                            <div className="card-body">
-                                <h5 className="card-title text-center">{group.name}</h5>
-                                <div className="row justify-content-center no-gutters">
-                                    <img src={require('../../images/logo.png')} className="card-img"
-                                         style={{maxWidth: '200px'}} alt="logo"/>
-                                </div>
-                                <p className="card-text text-center">
-                                    <small className="text-muted">
-                                        Дата створення: {moment(group.creationDate).format('DD.MM.YYYY HH:mm')}
-                                    </small>
-                                </p>
-                                <div className="text-sm-center text-center">
-                                    <LinkContainer
-                                        to={"/courses/" + this.props.match.params.courseId + "/groups/" + group.id}>
-                                        <button className="stretched-link btn btn-primary">
-                                            Перейти до групи&nbsp;&nbsp;
-                                            <i className="fa fa-chevron-circle-right fa-lg" aria-hidden="true"/>
-                                        </button>
-                                    </LinkContainer>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        const renderStudentsTable = (students) => {
+            let studentRows = [];
+            for (let i = 0; i < students.length; i++) {
+                studentRows.push(
+                    <tr key={i}>
+                        <th scope="row">{i + 1}</th>
+                        <td className="overflow-text">
+                            <LinkContainer
+                                to={"/students"}>
+                                <a href="/students">
+                                    <i className="fa fa-user fa-lg"
+                                       aria-hidden="true">&nbsp;&nbsp;</i>
+                                    {students[i].fullName}
+                                </a>
+                            </LinkContainer>
+                        </td>
+                        <td className="align-middle">
+                            <LinkContainer
+                                to={`/students/${students[i].id}`}>
+                                <a href={`/students/${students[i].id}`}>
+                                    <i className="fa fa-eye fa-lg" aria-hidden="true">&nbsp;&nbsp;</i>
+                                </a>
+                            </LinkContainer>
+                        </td>
+                        <td className="align-middle">
+                            <form>
+                                <input name="delete" value={students[i].id}
+                                       hidden readOnly/>
+                                <button type="submit"
+                                        className="rmv-btn-as-link" disabled>
+                                    <i className="fa fa-times fa-lg"
+                                       aria-hidden="true"/>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                )
+            }
+
+            return (
+                <div className="table-responsive-lg">
+                    <table
+                        className="table table-hover table-striped table-dark table-bordered text-center">
+                        <thead>
+                        <tr className="bg-primary">
+                            <th scope="col" style={{width: '47px'}}>№</th>
+                            <th scope="col">Повне ім'я студента</th>
+                            <th scope="col" style={{width: '120px'}}>Переглянути</th>
+                            <th scope="col" style={{width: '97px'}}>Видалити</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {studentRows}
+                        </tbody>
+                    </table>
+                </div>
             );
         }
 
@@ -96,18 +139,14 @@ class StudentsPage extends React.Component {
                             </div>
 
                             {
-                                this.props.groups.content.length > 0
-                                    ? (
-                                        <div className="row row-cols-1 row-cols-md-3">
-                                            {renderGroups(this.props.groups.content)}
-                                        </div>
-                                    )
+                                this.state.content.length > 0
+                                    ? renderStudentsTable(this.state.content)
                                     : (
                                         <div className="row align-items-center h-50 justify-content-center">
                                             <div className="container-fluid">
-                                                <div className="alert alert-primary" role="alert">
+                                                <div className="alert alert-primary text-center" role="alert">
                                                     <h2>
-                                                        Ви поки що не створили жодної групи для даного курсу
+                                                        Ви не додали жодного студента до системи
                                                     </h2>
                                                 </div>
                                             </div>
@@ -116,8 +155,8 @@ class StudentsPage extends React.Component {
                             }
 
                             <PagePagination
-                                page={this.props.groups.page}
-                                totalPages={this.props.groups.totalPages}
+                                page={this.state.page}
+                                totalPages={this.state.totalPages}
                                 onClick={this.handlePaginationClick}
                             />
                         </div>

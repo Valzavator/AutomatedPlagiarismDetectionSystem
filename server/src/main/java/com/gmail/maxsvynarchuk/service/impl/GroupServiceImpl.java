@@ -20,9 +20,9 @@ public class GroupServiceImpl implements GroupService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<Group> getGroupsByCourseId(Long courseId,
-                                           int page,
-                                           int size) {
+    public Page<Group> getAllGroupsByCourseId(Long courseId,
+                                              int page,
+                                              int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(
                 Sort.Order.desc("creationDate")));
         return groupDao.findByCourseId(courseId, pageable);

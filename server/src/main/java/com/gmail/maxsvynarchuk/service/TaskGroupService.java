@@ -12,8 +12,10 @@ public interface TaskGroupService {
 
     Optional<TaskGroup> getTaskGroupByIdAndStatus(TaskGroupKey id, PlagDetectionStatus status);
 
-    List<TaskGroup> getAllExpiredTaskGroupWithPendingStatus();
+    List<TaskGroup> getAllExpiredTaskGroupsWithPendingStatus();
 
     TaskGroup saveTaskGroup(TaskGroup taskGroup);
+
+    void deleteTaskGroup(TaskGroupKey id);
 
 }

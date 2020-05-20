@@ -34,11 +34,18 @@ public interface GenericDao<T, ID extends Serializable> {
     T save(T obj);
 
     /**
-     * Delete certain object, identified by id, from database.
+     * Delete certain object from database.
      *
-     * @param obj user to delete.
+     * @param obj the object to delete.
      */
     void delete(T obj);
+
+    /**
+     * Delete certain object, identified by id, from database.
+     *
+     * @param id the ID of object to delete.
+     */
+    void deleteById(ID id);
 
     /**
      * Check object's existing in database.

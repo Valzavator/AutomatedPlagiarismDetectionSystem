@@ -43,8 +43,9 @@ public class PlagDetectionServiceImpl implements PlagDetectionService {
         PlagDetectionSettings setting = taskGroup.getPlagDetectionSettings();
         Set<StudentGroup> studentGroups = loadStudents(taskGroup);
 
-        boolean wasReloaded = fileSystemWriter.reloadDirectory(setting.getDataPath(),
-                setting.getBaseCodePath());
+        boolean wasReloaded = Objects.nonNull(setting.getBaseCodePath())
+                ? fileSystemWriter.reloadDirectory(setting.getDataPath(), setting.getBaseCodePath())
+                : fileSystemWriter.reloadDirectory(setting.getDataPath());
 
         if (!wasReloaded) {
             return PlagDetectionResult.failed("Server error!");
