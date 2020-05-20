@@ -1,48 +1,23 @@
 import React from "react";
-// import Load from "../../component/Load";
 import {bindActionCreators} from "redux";
 import * as errorActions from "../../../store/action/errorActions";
 import * as workflowActions from "../../../store/action/workflowActions";
 import {connect} from "react-redux";
-import PlagDetectionSettings from "../../component/PlagDetectionSettings";
-import {
-    downloadTaskGroupPlagDetectionSettings,
-    assignNewTaskGroup
-} from "../../../api/plagiarism";
 import {matchPath, withRouter} from "react-router-dom";
-import * as moment from "moment";
+import {getAllStudentsForAddingToGroup} from "../../../api/student";
+import Load from "../../component/Load";
 
 class AddStudentToGroupModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            courseId: -1,
             isLoading: false,
             invalidForm: false,
-
-            taskId: -1,
-            expiryDate: Date.now(),
-            programmingLanguageId: 1,
-            detectionType: 'GROUP',
-            comparisonSensitivity: 9,
-            minimumSimilarityPercent: 20,
-            saveLog: true,
-            baseCodeZip: null,
+            students: []
         }
 
-        this.onSettingsChange = this.onSettingsChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleCloseBtn = this.handleCloseBtn.bind(this);
-    }
-
-    componentWillUnmount() {
-        this.props.onClose();
-    }
-
-    onSettingsChange(settings) {
-        this.setState({
-            ...settings
-        })
     }
 
     componentDidMount() {
@@ -52,10 +27,37 @@ class AddStudentToGroupModal extends React.Component {
             strict: false
         });
         if (match) {
+            // this.loadStudents(match.params.courseId, match.params.groupId);
             this.setState({
                 courseId: match.params.courseId,
                 groupId: match.params.groupId
             });
+        }
+    }
+
+    componentWillUnmount() {
+        this.props.onClose();
+    }
+
+    async componentDidUpdate(prevProps, prevState, snapshot) {
+        if (!prevProps.isOpen && this.props.isOpen) {
+            await this.loadStudents(this.state.courseId, this.state.groupId);
+        }
+    }
+
+    async loadStudents(courseId, groupId) {
+        try {
+            await this.setState({
+                isLoading: true
+            });
+            let res = await getAllStudentsForAddingToGroup(courseId, groupId);
+            await this.setState({
+                isLoading: false,
+                students: res.data.students
+            });
+            console.log(this.state.students);
+        } catch (err) {
+            this.props.error.throwError(err);
         }
     }
 
@@ -64,24 +66,24 @@ class AddStudentToGroupModal extends React.Component {
             await this.setState({
                 isLoading: true,
             });
-
-            const data = new FormData();
-            //using File API to get chosen file
-            data.append('taskId', this.state.taskId);
-            data.append('expiryDate', new Date(this.state.expiryDate).toUTCString());
-            data.append('programmingLanguageId', this.state.programmingLanguageId);
-            data.append('detectionType', this.state.detectionType);
-            data.append('comparisonSensitivity', this.state.comparisonSensitivity);
-            data.append('minimumSimilarityPercent', this.state.minimumSimilarityPercent);
-            data.append('saveLog', this.state.saveLog);
-            if (this.state.baseCodeZip) {
-                data.append('baseCodeZip', this.state.baseCodeZip);
-            }
-            await assignNewTaskGroup(this.state.courseId, this.state.groupId, data);
-            await this.setState({
-                isLoading: false,
-            });
-            window.location.reload();
+            //
+            // const data = new FormData();
+            // //using File API to get chosen file
+            // data.append('taskId', this.state.taskId);
+            // data.append('expiryDate', new Date(this.state.expiryDate).toUTCString());
+            // data.append('programmingLanguageId', this.state.programmingLanguageId);
+            // data.append('detectionType', this.state.detectionType);
+            // data.append('comparisonSensitivity', this.state.comparisonSensitivity);
+            // data.append('minimumSimilarityPercent', this.state.minimumSimilarityPercent);
+            // data.append('saveLog', this.state.saveLog);
+            // if (this.state.baseCodeZip) {
+            //     data.append('baseCodeZip', this.state.baseCodeZip);
+            // }
+            // await assignNewTaskGroup(this.state.courseId, this.state.groupId, data);
+            // await this.setState({
+            //     isLoading: false,
+            // });
+            // window.location.reload();
         } catch (err) {
             this.props.error.throwError(err);
         }
@@ -107,47 +109,56 @@ class AddStudentToGroupModal extends React.Component {
             <div className="modal fade" id={this.props.id} tabIndex="-1" role="dialog" data-backdrop="static"
                  aria-labelledby="assignTaskModalLabel" aria-hidden="true">
                 <div className="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h4 className="modal-title">
-                                Назначити завдання для Групи "{this.props.activeGroup.name}"
-                            </h4>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.handleCloseBtn}>
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            <div className="container-fluid">
-                                <div className="row justify-content-center">
-                                    <div className="col-lg-8">
-                                        {this.props.isOpen
-                                            ? (
-                                                <PlagDetectionSettings
-                                                    loadSettings={() => downloadTaskGroupPlagDetectionSettings(this.state.courseId, this.state.groupId)}
-                                                    courseId={this.props.match.params.courseId}
-                                                    onSettingsChange={this.onSettingsChange}
-                                                    onSubmitForm={this.handleSubmit}
-                                                    defaultState={this.state}
-                                                />
-                                            )
-                                            : null
-                                        }
+                    {this.state.isLoading
+                        ? (<Load/>)
+                        : (
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h4 className="modal-title">
+                                        Додати студента до групи "{this.props.activeGroup.name}"
+                                    </h4>
+                                    <button type="button" className="close" data-dismiss="modal" aria-label="Close"
+                                            onClick={this.handleCloseBtn}>
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div className="modal-body">
+                                    <div className="container-fluid">
+                                        <div className="row justify-content-center">
+                                            <div className="col-lg-8">
+                                                {/*{this.props.isOpen*/}
+                                                {/*    ? (*/}
+                                                {/*        <PlagDetectionSettings*/}
+                                                {/*            loadSettings={() => downloadTaskGroupPlagDetectionSettings(this.state.courseId, this.state.groupId)}*/}
+                                                {/*            courseId={this.props.match.params.courseId}*/}
+                                                {/*            onSettingsChange={this.onSettingsChange}*/}
+                                                {/*            onSubmitForm={this.handleSubmit}*/}
+                                                {/*            defaultState={this.state}*/}
+                                                {/*        />*/}
+                                                {/*    )*/}
+                                                {/*    : null*/}
+                                                {/*}*/}
+                                                {this.state.students.length}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-dismiss="modal"
+                                            onClick={this.handleCloseBtn}>
+                                        <i className="fa fa-chevron-circle-left fa-lg" aria-hidden="true"/>&nbsp;&nbsp;
+                                        Повернутися
+                                    </button>
+                                    <button type="button" className="btn btn-primary"
+                                            onClick={this.handleSubmit}
+                                            disabled={this.state.invalidForm}>
+                                        <i className="fa fa-user-plus fa-lg" aria-hidden="true"/>&nbsp;&nbsp;
+                                        Додати студента
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-dismiss="modal"
-                                    onClick={this.handleCloseBtn}>
-                                Повернутися
-                            </button>
-                            <button type="button" className="btn btn-primary"
-                                    onClick={this.handleSubmit}
-                                    disabled={this.state.invalidForm}>
-                                Зберегти
-                            </button>
-                        </div>
-                    </div>
+                        )
+                    }
                 </div>
             </div>
         )

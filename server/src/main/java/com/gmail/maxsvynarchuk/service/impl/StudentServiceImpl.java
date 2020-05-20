@@ -11,6 +11,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class StudentServiceImpl implements StudentService {
@@ -20,8 +22,15 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Page<Student> getAllStudentsByCreatorId(Long creatorId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(
-                Sort.Order.desc("id")));
+                Sort.Order.asc("fullName")));
         return studentDao.findByCreatorId(creatorId, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Student> getAllStudentsNotAddedToCourse(Long userId, Long courseId) {
+        Sort sort = Sort.by(Sort.Order.asc("fullName"));
+        return studentDao.findAllNotAddedToCourse(userId, courseId, sort);
     }
 
 }

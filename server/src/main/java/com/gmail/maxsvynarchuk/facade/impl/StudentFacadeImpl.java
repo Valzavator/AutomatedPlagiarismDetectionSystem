@@ -3,10 +3,12 @@ package com.gmail.maxsvynarchuk.facade.impl;
     import com.gmail.maxsvynarchuk.facade.Facade;
 import com.gmail.maxsvynarchuk.facade.StudentFacade;
 import com.gmail.maxsvynarchuk.facade.converter.Converter;
-import com.gmail.maxsvynarchuk.persistence.domain.Student;
-import com.gmail.maxsvynarchuk.presentation.payload.response.PagedDto;
-import com.gmail.maxsvynarchuk.presentation.payload.response.StudentDto;
-import com.gmail.maxsvynarchuk.service.StudentService;
+    import com.gmail.maxsvynarchuk.persistence.domain.ProgrammingLanguage;
+    import com.gmail.maxsvynarchuk.persistence.domain.Student;
+    import com.gmail.maxsvynarchuk.persistence.domain.Task;
+    import com.gmail.maxsvynarchuk.presentation.controller.StudentGroupController;
+    import com.gmail.maxsvynarchuk.presentation.payload.response.*;
+    import com.gmail.maxsvynarchuk.service.StudentService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 
@@ -30,6 +32,13 @@ public class StudentFacadeImpl implements StudentFacade {
                 .totalElements(studentsPage.getTotalElements())
                 .totalPages(studentsPage.getTotalPages())
                 .build();
+    }
+
+    @Override
+    public StudentContainerDto getStudentsForAddingToCourse(Long userId, Long courseId) {
+        List<Student> students = studentService.getAllStudentsNotAddedToCourse(userId, courseId);
+        List<StudentDto> studentDtos = studentToStudentDto.convertAll(students);
+        return new StudentContainerDto(studentDtos);
     }
 
 }

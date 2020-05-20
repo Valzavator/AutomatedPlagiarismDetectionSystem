@@ -3,15 +3,14 @@ package com.gmail.maxsvynarchuk.persistence.dao.impl.springdatajpa;
 import com.gmail.maxsvynarchuk.persistence.dao.StudentDao;
 import com.gmail.maxsvynarchuk.persistence.dao.repository.StudentRepository;
 import com.gmail.maxsvynarchuk.persistence.domain.Student;
-import com.gmail.maxsvynarchuk.persistence.domain.Task;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 @AllArgsConstructor
@@ -21,6 +20,11 @@ public class StudentDaoImpl implements StudentDao {
     @Override
     public Page<Student> findByCreatorId(Long creatorId, Pageable pageable) {
         return repository.findByCreatorId(creatorId, pageable);
+    }
+
+    @Override
+    public List<Student> findAllNotAddedToCourse(Long userId, Long courseId, Sort sort) {
+        return repository.findAllNotAddedToCourse(userId, courseId, sort);
     }
 
     @Override

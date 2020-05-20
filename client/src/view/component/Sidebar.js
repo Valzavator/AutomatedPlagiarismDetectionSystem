@@ -10,12 +10,12 @@ class Sidebar extends React.Component {
         super(props);
         this.state = {}
         this.handleBackBtn = this.handleBackBtn.bind(this);
-        this.handleChangeAssignTaskModal = this.handleChangeAssignTaskModal.bind(this);
+        this.handleChangeModal = this.handleChangeModal.bind(this);
     }
 
-    handleChangeAssignTaskModal(isOpen) {
+    handleChangeModal(taskModal, isOpen) {
         this.setState({
-            isOpenAssignTaskModal: isOpen
+            [taskModal]: isOpen
         })
     }
 
@@ -126,9 +126,9 @@ class Sidebar extends React.Component {
             </button>,
             <button className="list-group-item list-group-item-action bg-success"
                     data-toggle="modal"
-                    data-target="#assignTaskModal"
+                    data-target="#addStudentToGroupModal"
                     key={'addStudentToGroup'}
-                    onClick={() => this.handleChangeAssignTaskModal(true)}>
+                    onClick={() => this.handleChangeModal('addStudentToGroupModal', true)}>
                 <i className="fa fa-id-card" aria-hidden="true"/>&nbsp;&nbsp;
                 Додати студента до групи
             </button>,
@@ -136,7 +136,7 @@ class Sidebar extends React.Component {
                     data-toggle="modal"
                     data-target="#assignTaskModal"
                     key={"assignTaskModalBtn"}
-                    onClick={() => this.handleChangeAssignTaskModal(true)}>
+                    onClick={() => this.handleChangeModal('assignTaskModal',true)}>
                 <i className="fa fa-thumb-tack" aria-hidden="true"/>&nbsp;&nbsp;
                 Назначити завдання
             </button>,
@@ -153,14 +153,14 @@ class Sidebar extends React.Component {
         const specificGroupModals = [
             <AssignTaskModal id="assignTaskModal"
                              key={'assignTaskModal'}
-                             isOpen={this.state.isOpenAssignTaskModal}
-                             onClose={() => this.handleChangeAssignTaskModal(false)}
+                             isOpen={this.state.assignTaskModal}
+                             onClose={() => this.handleChangeModal('assignTaskModal', false)}
             />,
             <AddStudentToGroupModal
-                id="assignTaskModal"
-                key={'assignTaskModal'}
-                isOpen={this.state.isOpenAssignTaskModal}
-                onClose={() => this.handleChangeAssignTaskModal(false)}
+                id="addStudentToGroupModal"
+                key={'addStudentToGroupModal'}
+                isOpen={this.state.addStudentToGroupModal}
+                onClose={() => this.handleChangeModal('addStudentToGroupModal', false)}
             />
         ]
 

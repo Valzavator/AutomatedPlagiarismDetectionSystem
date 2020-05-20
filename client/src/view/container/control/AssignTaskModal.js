@@ -10,7 +10,6 @@ import {
     assignNewTaskGroup
 } from "../../../api/plagiarism";
 import {matchPath, withRouter} from "react-router-dom";
-import * as moment from "moment";
 
 class AssignTaskModal extends React.Component {
     constructor(props) {
@@ -110,7 +109,7 @@ class AssignTaskModal extends React.Component {
                     <div className="modal-content">
                         <div className="modal-header">
                             <h4 className="modal-title">
-                                Назначити завдання для Групи "{this.props.activeGroup.name}"
+                                Назначити завдання для групи "{this.props.activeGroup.name}"
                             </h4>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.handleCloseBtn}>
                                 <span aria-hidden="true">&times;</span>
@@ -139,12 +138,14 @@ class AssignTaskModal extends React.Component {
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-dismiss="modal"
                                     onClick={this.handleCloseBtn}>
+                                <i className="fa fa-chevron-circle-left fa-lg" aria-hidden="true"/>&nbsp;&nbsp;
                                 Повернутися
                             </button>
                             <button type="button" className="btn btn-primary"
                                     onClick={this.handleSubmit}
                                     disabled={this.state.invalidForm}>
-                                Зберегти
+                                <i className="fa fa-plus-circle fa-lg" aria-hidden="true"/>&nbsp;&nbsp;
+                                Назначити завдання
                             </button>
                         </div>
                     </div>
