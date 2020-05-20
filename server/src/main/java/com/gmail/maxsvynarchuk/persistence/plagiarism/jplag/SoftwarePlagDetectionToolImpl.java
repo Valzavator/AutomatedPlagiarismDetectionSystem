@@ -20,6 +20,7 @@ import java.util.Objects;
 @Repository
 public class SoftwarePlagDetectionToolImpl implements SoftwarePlagDetectionTool {
     public static final String INDEX_FILE = "index.html";
+    public static final String BAD_BASECODE_ERROR = "Error: Bad basecode submission";
 
     @Override
     public PlagDetectionResult generateHtmlResult(PlagDetectionSettings settings) {
@@ -51,7 +52,12 @@ public class SoftwarePlagDetectionToolImpl implements SoftwarePlagDetectionTool 
             result.setResultPath(
                     generateResultPath(settings.getResultPath()));
         } else {
-            result.setResultMessage("Plagiarism detection tool was interrupted (see logs)!");
+            if (Objects.nonNull(jplagLog) && jplagLog.contains(BAD_BASECODE_ERROR)) {
+                result.setResultMessage("Archive with BASECODE must contain files with allowed format " +
+                        "for the selected programming language!");
+            } else {
+                result.setResultMessage("Plagiarism detection tool was interrupted (see logs)!");
+            }
         }
         return result;
     }

@@ -27,7 +27,7 @@ public class ResultStudent implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "student_id", nullable = false)
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude
+//    @EqualsAndHashCode.Exclude
     private Student student;
 
     @NotBlank

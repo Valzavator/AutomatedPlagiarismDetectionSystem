@@ -7,19 +7,20 @@ import NotificationsSystem from 'reapop';
 import theme from 'reapop-theme-bootstrap';
 import {withRouter} from "react-router-dom";
 
-// const pagesPathsWithoutSidebar = ['/', '/profile', '/single-check']
+const pagesPrefixWithSidebar = ['/courses', '/students']
 
 class Layout extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            // renderSidebar: true,
             renderSidebar: false,
         };
     };
 
     componentDidMount() {
-        if (this.props.isAuthorized) {
+        const currLocation = this.props.location.pathname;
+
+        if (this.props.isAuthorized && pagesPrefixWithSidebar.find(prefix => currLocation.startsWith(prefix))) {
             this.setState({renderSidebar: true});
         } else {
             this.setState({renderSidebar: false});
@@ -28,18 +29,19 @@ class Layout extends React.Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         const currLocation = this.props.location.pathname;
-        if (this.props.errorStatus >= 300 &&
-            currLocation !== '/error') {
-            this.props.history.push('/error');
-        }
+
         if (this.props.isAuthorized !== prevProps.isAuthorized ||
             currLocation !== prevProps.location.pathname) {
-            // if (this.props.isAuthorized && !pagesPathsWithoutSidebar.includes(currLocation)) {
-            if (this.props.isAuthorized) {
+            if (this.props.isAuthorized && pagesPrefixWithSidebar.find(prefix => currLocation.startsWith(prefix))) {
                 this.setState({renderSidebar: true});
             } else {
                 this.setState({renderSidebar: false});
             }
+        }
+
+        if (this.props.errorStatus >= 300 &&
+            currLocation !== '/error') {
+            this.props.history.push('/error');
         }
     }
 

@@ -13,6 +13,7 @@ class GroupPage extends React.Component {
         super(props);
         this.state = {
             isLoading: true,
+            updateTaskGroupInfo: true,
             activeTaskGroup: {
                 taskId: -1,
                 taskName: 'NOT_LOADED',
@@ -41,16 +42,33 @@ class GroupPage extends React.Component {
         this.handleBackBtn = this.handleBackBtn.bind(this);
     }
 
-    async componentDidMount() {
+    componentDidMount() {
+        this.props.sidebar.changeSidebarState("taskGroup", "Деталі завдання: ");
+        this.loadTaskGroupInfo();
+        this.timerID = setInterval(
+            () => this.loadTaskGroupInfo(),
+            5000
+        );
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timerID);
+    }
+
+    async loadTaskGroupInfo() {
+        if (!this.state.updateTaskGroupInfo) {
+            clearInterval(this.timerID);
+            return;
+        }
         try {
             const courseId = this.props.match.params.courseId;
             const groupId = this.props.match.params.groupId;
             const taskId = this.props.match.params.taskId;
             let res = await getTaskGroup(courseId, groupId, taskId);
-            console.log(res.data)
             await this.setState({
                 isLoading: false,
-                activeTaskGroup: res.data
+                activeTaskGroup: res.data,
+                updateTaskGroupInfo: ['PENDING', 'IN_PROCESS'].includes(res.data.plagDetectionStatus)
             });
         } catch (err) {
             this.props.error.throwError(err);
@@ -92,6 +110,9 @@ class GroupPage extends React.Component {
 
             return (
                 <div className="col-md-12">
+                    <div className="alert alert-danger text-center" role="alert">
+                        <h5>Невдалося завантажити репозиторії студентів</h5>
+                    </div>
                     <div className="table-responsive-lg">
                         <table
                             className="table table-hover table-striped table-dark table-bordered text-center">
@@ -188,18 +209,6 @@ class GroupPage extends React.Component {
                         )
                     }
 
-                    {result.resultStudents.length > 0
-                        ? (
-                            <div>
-                                <div className="alert alert-danger text-center mt-3" role="alert">
-                                    <h5>Невдалося завантажити репозиторії</h5>
-                                </div>
-                                {renderStudentsTable(result.resultStudents)}
-                            </div>
-                        )
-                        : null
-                    }
-
                     {result.log && result.log.length > 0
                         ? (
                             <div className="col-md-12 my-3">
@@ -218,6 +227,12 @@ class GroupPage extends React.Component {
                         )
                         : null
                     }
+
+                    {result.resultStudents.length > 0
+                        ? renderStudentsTable(result.resultStudents)
+                        : null
+                    }
+
                     {result.isSuccessful
                         ? (
                             <div className="col-md-12 text-center mb-4">
@@ -360,7 +375,8 @@ class GroupPage extends React.Component {
                         </div>
                     </div>
 
-                    {this.state.activeTaskGroup.plagDetectionResult
+                    {this.state.activeTaskGroup.plagDetectionResult &&
+                    (this.state.activeTaskGroup.plagDetectionStatus === "FAILED" || this.state.activeTaskGroup.plagDetectionStatus === "DONE")
                         ? (
                             <div>
                                 <div className="progress mb-3">

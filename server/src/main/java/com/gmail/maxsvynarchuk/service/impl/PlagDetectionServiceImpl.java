@@ -43,7 +43,12 @@ public class PlagDetectionServiceImpl implements PlagDetectionService {
         PlagDetectionSettings setting = taskGroup.getPlagDetectionSettings();
         Set<StudentGroup> studentGroups = loadStudents(taskGroup);
 
-        fileSystemWriter.deleteDirectory(setting.getDataPath());
+        boolean wasReloaded = fileSystemWriter.reloadDirectory(setting.getDataPath(),
+                setting.getBaseCodePath());
+
+        if (!wasReloaded) {
+            return PlagDetectionResult.failed("Server error!");
+        }
 
         Set<ResultStudent> resultStudents = new HashSet<>();
         for (StudentGroup studentGroup : studentGroups) {
@@ -59,7 +64,7 @@ public class PlagDetectionServiceImpl implements PlagDetectionService {
                         task.getRepositoryPrefixPath(),
                         taskGroup.getExpiryDate());
                 if (repositoryInfo.isEmptyRepository()) {
-                    errorLogMessage = "Directory <" + task.getRepositoryPrefixPath() + "> doesn`t exist!";
+                    errorLogMessage = "Directory \"" + task.getRepositoryPrefixPath() + "\" doesn`t exist!";
                 } else {
                     vcsDownloadService.downloadAndSaveRawContentOfFiles(
                             accessToken,

@@ -32,7 +32,7 @@ public class Runner {
 //
 //        int startIndex = str.indexOf("initialize ok");
 //        int endIndex = str.indexOf("Writing results to:");
-        System.out.println(Path.of("/asd").getRoot().toString());
+        System.out.println(Path.of("/asd/asdas").getParent().toString());
 
 //        System.out.println(Charset.availableCharsets());
 //        System.out.println(Charset.isSupported("ISO-8859-5"));

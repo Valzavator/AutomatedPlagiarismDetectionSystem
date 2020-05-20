@@ -75,9 +75,6 @@ class AssignTaskModal extends React.Component {
             if (this.state.baseCodeZip) {
                 data.append('baseCodeZip', this.state.baseCodeZip);
             }
-
-            data.forEach((v, k) => console.log(k + " ---- " + v));
-
             await assignNewTaskGroup(this.state.courseId, this.state.groupId, data);
             await this.setState({
                 isLoading: false,

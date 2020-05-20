@@ -23,7 +23,6 @@ export const apiRequest = async (method, path, body) => {
         }
     } catch (error) {
         if (error.response) {
-            console.log(error.response.data)
             if (error.response.data) {
                 throw Exception(error.response.data);
             } else {
@@ -39,7 +38,6 @@ export const apiRequest = async (method, path, body) => {
             });
         } else {
             // Something happened in setting up the request that triggered an Error
-            console.log('Error', error.message);
             throw Exception({
                 status: 418,
                 error: ' I’m a teapot ;)',

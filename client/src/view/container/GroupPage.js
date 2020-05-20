@@ -14,21 +14,39 @@ class GroupPage extends React.Component {
         super(props);
         this.state = {
             isLoading: true,
+            updateGroupInfo: true
         }
 
         this.handleDetailTaskGroupBtn = this.handleDetailTaskGroupBtn.bind(this);
     }
 
     async componentDidMount() {
-        await this.props.workflow.loadSpecificGroup(this.props.match.params.groupId, this.props.match.params.courseId);
         await this.props.sidebar.changeSidebarState("group", "Керування групою: ");
-        await this.setState({
-            isLoading: false
-        });
+        await this.loadGroupInfo();
+        this.timerID = setInterval(
+            () => this.loadGroupInfo(),
+            5000
+        );
     }
 
     componentWillUnmount() {
         this.props.sidebar.changeSidebarState("courseCatalog")
+        clearInterval(this.timerID);
+    }
+
+    async loadGroupInfo() {
+        await this.props.workflow.loadSpecificGroup(
+            this.props.match.params.groupId,
+            this.props.match.params.courseId);
+        const updateGroupInfo = this.props.activeGroup.taskGroups
+            .find(tg => ['PENDING', 'IN_PROCESS'].includes(tg.plagDetectionStatus)) !== undefined;
+        await this.setState({
+            isLoading: false,
+            updateGroupInfo: updateGroupInfo
+        });
+        if (!this.state.updateGroupInfo) {
+            clearInterval(this.timerID);
+        }
     }
 
     async handleDetailTaskGroupBtn(e) {
@@ -137,7 +155,7 @@ class GroupPage extends React.Component {
                             </LinkContainer>
                         </td>
                         <td>
-                            <button className="btn btn-link" id="updateLinkBtn" >
+                            <button className="btn btn-link" id="updateLinkBtn">
                                 <i className="fa fa-pencil-square-o fa-lg" aria-hidden="true">&nbsp;&nbsp;</i>
                             </button>
                         </td>
@@ -287,7 +305,7 @@ class GroupPage extends React.Component {
                                             <td>
                                                 <strong>
                                                     {this.props.activeGroup.taskGroups
-                                                        .filter(t => t.plagDetectionStatus === 'PENDING')
+                                                        .filter(tg => tg.plagDetectionStatus === 'PENDING')
                                                         .length}
                                                 </strong>
                                             </td>

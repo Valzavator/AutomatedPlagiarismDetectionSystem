@@ -60,10 +60,13 @@ public class VcsDownloadServiceImpl implements VcsDownloadService {
         } catch (OAuthIllegalTokenException ex) {
             log.debug(ex.toString());
             AccessToken newAccessToken = tryToRefreshToken(userAccessToken);
-            return downloadRepository(newAccessToken,
+            RepositoryInfo repositoryInfo = vcsRepositoryDao.getSubDirectoryRepositoryInfo(
+                    newAccessToken,
                     repositoryUrl,
                     prefixPath,
                     lastDateCommit);
+            log.debug("Attempt to download SUCCESSFUL - repository ({}) ", repositoryUrl);
+            return repositoryInfo;
         }
     }
 

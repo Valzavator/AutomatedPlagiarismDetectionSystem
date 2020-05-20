@@ -77,9 +77,11 @@ public class TaskGroupFacadeImpl implements TaskGroupFacade {
         generatePaths(settings, group, task, dto.getBaseCodeZip());
 
         PlagDetectionResult result = null;
-        if (Objects.nonNull(dto.getBaseCodeZip()) &&
-                !fileSystemWriter.unzipFile(dto.getBaseCodeZip(), settings.getBaseCodePath())) {
-            result = PlagDetectionResult.failed("Unable to unpack archive with base code to plagiarism detection!");
+        if (Objects.nonNull(dto.getBaseCodeZip())) {
+            fileSystemWriter.deleteDirectory(settings.getBaseCodePath());
+            if (!fileSystemWriter.unzipFile(dto.getBaseCodeZip(), settings.getBaseCodePath())) {
+                result = PlagDetectionResult.failed("Unable to unpack archive with base code to plagiarism detection!");
+            }
         }
 
         TaskGroupKey id = new TaskGroupKey(dto.getTaskId(), groupId);
@@ -87,7 +89,7 @@ public class TaskGroupFacadeImpl implements TaskGroupFacade {
                 .id(id)
                 .creationDate(new Date())
                 .expiryDate(dto.getExpiryDate())
-                .plagDetectionStatus(Objects.isNull(result) ? PlagDetectionStatus.PENDING :  PlagDetectionStatus.FAILED)
+                .plagDetectionStatus(Objects.isNull(result) ? PlagDetectionStatus.PENDING : PlagDetectionStatus.FAILED)
                 .plagDetectionSettings(settings)
                 .plagDetectionResult(result)
                 .build();

@@ -7,6 +7,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
@@ -66,7 +67,7 @@ public class FileSystemWriter {
         return fileName;
     }
 
-    public boolean deleteDirectory(String filePathStr) {
+    public boolean deleteDirectory(String filePathStr, String... ignoreDirectories) {
         Path filePath = Path.of(filePathStr);
         if (!Files.exists(filePath)) {
             return true;
@@ -75,7 +76,33 @@ public class FileSystemWriter {
             Files.walk(filePath)
                     .sorted(Comparator.reverseOrder())
                     .map(Path::toFile)
-                    .forEach(File::delete);
+                    .forEach(f -> {
+                        boolean toDelete = true;
+                        String absolutePath = f.getAbsolutePath();
+                        for (String ignoreDirectory: ignoreDirectories) {
+                            if (absolutePath.startsWith(ignoreDirectory)) {
+                                toDelete = false;
+                                break;
+                            }
+                        }
+                        if (toDelete) {
+                            f.delete();
+                        }
+                    });
+        } catch (IOException e) {
+            log.error("", e);
+            return false;
+        }
+        return true;
+    }
+
+    public boolean reloadDirectory(String directoryPathStr, String... ignoreDirectories) {
+        try {
+            if (!deleteDirectory(directoryPathStr, ignoreDirectories)) {
+                return false;
+            }
+            Path directoryPath = Path.of(directoryPathStr);
+            Files.createDirectories(directoryPath);
         } catch (IOException e) {
             log.error("", e);
             return false;
