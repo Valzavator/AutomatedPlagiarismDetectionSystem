@@ -48,7 +48,19 @@ export function loadSpecificGroup(groupId, courseId) {
 
 export function deleteTaskGroupFromActiveGroup(taskId) {
     return function (dispatch) {
-        dispatch({type: types.DELETE_TASK_GROUP_FROM_ACTIVE_GROUP, taskId: parseInt(taskId)})
+        dispatch({type: types.DELETE_TASK_GROUP_FROM_ACTIVE_GROUP, taskId: parseInt(taskId)});
+    }
+}
+
+export function addStudentToActiveGroup(newStudent) {
+    return function (dispatch) {
+        dispatch({type: types.ADD_STUDENT_TO_ACTIVE_GROUP, newStudent: newStudent});
+    }
+}
+
+export function deleteStudentFromActiveGroup(studentId) {
+    return function (dispatch) {
+        dispatch({type: types.DELETE_STUDENT_FROM_ACTIVE_GROUP, studentId: parseInt(studentId)});
     }
 }
 

@@ -44,8 +44,8 @@ class SignUpPage extends React.Component {
                 if (error.status === 400 && error.success === false) {
                     const {notify} = this.props;
                     notify({
-                        title: 'Помилка реєстрації',
-                        message: 'Такий email вже існує в системі!',
+                        title: 'Помилка реєстрації!',
+                        message: 'Такий email вже існує в системі.',
                         status: 'error',
                         position: 'br',
                         dismissible: true,
@@ -248,6 +248,3 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(null, mapDispatchToProps)(SignUpPage);
-
-
-// export default connect(null, {notify})(SignUpPage);

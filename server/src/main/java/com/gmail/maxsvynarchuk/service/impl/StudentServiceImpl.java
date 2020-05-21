@@ -12,11 +12,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class StudentServiceImpl implements StudentService {
     private final StudentDao studentDao;
+
+    @Transactional(readOnly = true)
+    @Override
+    public Optional<Student> getStudentById(Long studentId) {
+        //TODO - find by id and creatorId
+        return studentDao.findOne(studentId);
+    }
 
     @Transactional(readOnly = true)
     @Override

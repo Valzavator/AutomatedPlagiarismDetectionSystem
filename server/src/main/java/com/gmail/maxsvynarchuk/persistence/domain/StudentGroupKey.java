@@ -14,9 +14,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 public
 class StudentGroupKey implements Serializable {
-    @Column(name = "group_id")
-    private Long groupId;
-
     @Column(name = "student_id")
     private Long studentId;
+
+    @Column(name = "group_id")
+    private Long groupId;
 }

@@ -39,7 +39,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({IllegalArgumentException.class})
     public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex,
-                                                                   HttpServletRequest request) {
+                                                                 HttpServletRequest request) {
         log.debug(ex.toString());
         return buildResponseEntity(
                 new ApiError(HttpStatus.BAD_REQUEST, request.getRequestURI(), ex));
@@ -68,6 +68,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         apiError.setSubErrors(errors);
 
         return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler({Throwable.class})
+    public ResponseEntity<Object> handleIllegalArgumentException(Throwable ex,
+                                                                 HttpServletRequest request) {
+        log.error("", ex);
+        return buildResponseEntity(
+                new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, request.getRequestURI(), ex));
     }
 
     @Override

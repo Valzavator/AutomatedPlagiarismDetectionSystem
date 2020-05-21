@@ -8,6 +8,6 @@ public interface StudentFacade {
 
     PagedDto<StudentDto> getStudentsByCreatorId(Long creatorId, int page, int size);
 
-     StudentContainerDto getStudentsForAddingToCourse(Long userId, Long courseId);
+    StudentContainerDto getStudentsForAddingToCourse(Long userId, Long courseId);
 
 }

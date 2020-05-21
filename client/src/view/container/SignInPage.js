@@ -47,8 +47,8 @@ class SignInPage extends React.Component {
                 } else if (isSuccessful === false) {
                     const {notify} = this.props;
                     notify({
-                        title: 'Помилка авторизації',
-                        message: 'Невірний Email або Пароль!',
+                        title: 'Помилка авторизації!',
+                        message: 'Невірний Email або Пароль.',
                         status: 'error',
                         position: 'br',
                         dismissible: true,

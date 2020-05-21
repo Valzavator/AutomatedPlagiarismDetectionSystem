@@ -47,11 +47,28 @@ export default function authReducer(state = INITIAL_STATE, action) {
                 activeGroup: action.activeGroup
             });
         case types.DELETE_TASK_GROUP_FROM_ACTIVE_GROUP:
-            let updatedActiveGroup = Object.assign({}, state.activeGroup);
-            updatedActiveGroup.taskGroups = updatedActiveGroup.taskGroups.filter(tg => tg.taskId !== action.taskId);
+            let activeGroupToDeleteTaskGroup = Object.assign({}, state.activeGroup);
+            activeGroupToDeleteTaskGroup.taskGroups = activeGroupToDeleteTaskGroup.taskGroups
+                .filter(tg => tg.taskId !== action.taskId);
             return Object.assign({}, state, {
-                activeGroup: updatedActiveGroup
+                activeGroup: activeGroupToDeleteTaskGroup
             });
+        case types.ADD_STUDENT_TO_ACTIVE_GROUP:
+            let activeGroupToAddStudent = Object.assign({}, state.activeGroup);
+            activeGroupToAddStudent.studentGroups = [...activeGroupToAddStudent.studentGroups, action.newStudent];
+
+            console.log(activeGroupToAddStudent.studentGroups)
+
+            return Object.assign({}, state, {
+                activeGroup: activeGroupToAddStudent
+            });
+        case types.DELETE_STUDENT_FROM_ACTIVE_GROUP:
+        let activeGroupToDeleteStudent = Object.assign({}, state.activeGroup);
+            activeGroupToDeleteStudent.studentGroups = activeGroupToDeleteStudent.studentGroups
+                .filter(s => s.studentId !== action.studentId);
+        return Object.assign({}, state, {
+            activeGroup: activeGroupToDeleteStudent
+        });
         default:
             return state;
     }

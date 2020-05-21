@@ -53,13 +53,7 @@ public class TaskGroupFacadeImpl implements TaskGroupFacade {
     @Override
     public boolean deleteTaskGroup(Long taskId, Long groupId) {
         TaskGroupKey taskGroupKey = new TaskGroupKey(taskId, groupId);
-        Optional<TaskGroup> taskGroupOpt = taskGroupService.getTaskGroupById(taskGroupKey)
-                .filter(tg -> tg.getPlagDetectionStatus() != PlagDetectionStatus.IN_PROCESS);
-        if (taskGroupOpt.isPresent()) {
-            taskGroupService.deleteTaskGroup(taskGroupKey);
-            return true;
-        }
-        return false;
+        return taskGroupService.deleteTaskGroup(taskGroupKey);
     }
 
     @Override
@@ -74,8 +68,8 @@ public class TaskGroupFacadeImpl implements TaskGroupFacade {
     }
 
     @Override
-    public void assignNewTaskGroup(Long groupId, TaskGroupPlagDetectionDto dto) {
-        Group group = groupService.getGroupById(groupId)
+    public void assignNewTaskGroup(TaskGroupPlagDetectionDto dto) {
+        Group group = groupService.getGroupById(dto.getGroupId())
                 .orElseThrow();
         Task task = taskService.getTaskById(dto.getTaskId())
                 .orElseThrow();
@@ -96,7 +90,7 @@ public class TaskGroupFacadeImpl implements TaskGroupFacade {
             }
         }
 
-        TaskGroupKey id = new TaskGroupKey(dto.getTaskId(), groupId);
+        TaskGroupKey id = new TaskGroupKey(dto.getTaskId(), dto.getGroupId());
         TaskGroup taskGroup = TaskGroup.builder()
                 .id(id)
                 .creationDate(new Date())

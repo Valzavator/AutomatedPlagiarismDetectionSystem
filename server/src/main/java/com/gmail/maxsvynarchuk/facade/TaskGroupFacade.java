@@ -10,10 +10,10 @@ public interface TaskGroupFacade {
 
     Optional<TaskGroupDto> getTaskGroupById(Long taskId, Long groupId);
 
-    boolean deleteTaskGroup(Long taskId, Long groupId);
-
     OptionsForSettingsDto getOptionsForTaskGroupAdding(Long courseId, Long groupId);
 
-    void assignNewTaskGroup(Long groupId, TaskGroupPlagDetectionDto dto);
+    void assignNewTaskGroup(TaskGroupPlagDetectionDto dto);
+
+    boolean deleteTaskGroup(Long taskId, Long groupId);
 
 }

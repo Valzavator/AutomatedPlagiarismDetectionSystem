@@ -45,8 +45,14 @@ public class TaskGroupServiceImpl implements TaskGroupService {
     }
 
     @Override
-    public void deleteTaskGroup(TaskGroupKey id) {
-        taskGroupDao.deleteById(id);
+    public boolean deleteTaskGroup(TaskGroupKey id) {
+        Optional<TaskGroup> taskGroupOpt = taskGroupDao.findOne(id)
+                .filter(tg -> tg.getPlagDetectionStatus() != PlagDetectionStatus.IN_PROCESS);
+        if (taskGroupOpt.isPresent()) {
+            taskGroupDao.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
 }

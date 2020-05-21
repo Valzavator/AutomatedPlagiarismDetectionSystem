@@ -9,6 +9,3 @@ export const uploadCodeToSingleCheckPlagDetection = async (formData) =>
 export const downloadTaskGroupPlagDetectionSettings = async (courseId, groupId) =>
     await apiRequest('GET', '/courses/' + courseId + '/groups/' + groupId + '/tasks/options');
 
-export const assignNewTaskGroup = async (courseId, groupId, formData) =>
-    await apiRequest('POST', '/courses/' + courseId + '/groups/' + groupId + '/tasks/assign', formData);
-

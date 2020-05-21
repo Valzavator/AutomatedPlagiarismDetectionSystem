@@ -4,6 +4,7 @@ import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
 import com.gmail.maxsvynarchuk.persistence.domain.vcs.RepositoryFileInfo;
 import com.gmail.maxsvynarchuk.persistence.domain.vcs.RepositoryInfo;
 import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
+import com.gmail.maxsvynarchuk.persistence.exception.oauth.InvalidVcsUrlException;
 import com.gmail.maxsvynarchuk.persistence.exception.oauth.OAuthIllegalTokenException;
 import com.gmail.maxsvynarchuk.persistence.vcs.VcsRepositoryDao;
 import com.gmail.maxsvynarchuk.service.exception.FailedToWriteToFileSystemException;
@@ -29,6 +30,11 @@ public class VcsDownloadServiceImpl implements VcsDownloadService {
     private final VcsOAuthService vcsOAuthBitbucketService;
     private final VcsOAuthService vcsOAuthGitHubService;
     private final FileSystemWriter fileSystemWriter;
+
+    @Override
+    public void checkAccessToRepository(AccessToken userAccessToken, String repositoryUrl) {
+        throw new InvalidVcsUrlException("SOME message");
+    }
 
     @Override
     public RepositoryInfo downloadRepository(AccessToken userAccessToken,

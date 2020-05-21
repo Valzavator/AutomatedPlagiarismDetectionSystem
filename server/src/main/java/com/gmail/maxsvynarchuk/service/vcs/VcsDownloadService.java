@@ -8,10 +8,13 @@ import java.util.Optional;
 
 public interface VcsDownloadService {
 
+    void checkAccessToRepository(AccessToken userAccessToken,
+                                 String repositoryUrl);
+
     RepositoryInfo downloadRepository(AccessToken userAccessToken,
-                                                String repositoryUrl,
-                                                String prefixPath,
-                                                Date lastDateCommit);
+                                      String repositoryUrl,
+                                      String prefixPath,
+                                      Date lastDateCommit);
 
     boolean downloadAndSaveRawContentOfFiles(AccessToken userAccessToken,
                                              RepositoryInfo repositoryInfo,

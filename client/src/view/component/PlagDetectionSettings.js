@@ -6,6 +6,7 @@ import * as errorActions from "../../store/action/errorActions";
 import {connect} from "react-redux";
 import Load from "./Load";
 import * as moment from "moment";
+import $ from "jquery";
 
 function getOr(value, orValue) {
     return value ? value : orValue;
@@ -221,15 +222,9 @@ class PlagDetectionSettings extends React.Component {
         });
     }
 
-
     render() {
 
         const renderDateTimeInput = (props) => {
-            function clear(e) {
-                e.preventDefault();
-                props.onChange({target: {value: ''}});
-            }
-
             return (
                 <div className="input-group">
                     <div className="input-group-prepend">
@@ -238,11 +233,6 @@ class PlagDetectionSettings extends React.Component {
                                 </span>
                     </div>
                     <input {...props} className="form-control form-control-lg"/>
-                    {/*<div className="input-group-append">*/}
-                    {/*    <button className="btn btn-secondary" id="selectTypeComparing" onClick={clear}>*/}
-                    {/*        <i className="fa fa-times fa-lg" aria-hidden="true"/>*/}
-                    {/*    </button>*/}
-                    {/*</div>*/}
                 </div>
             );
         }
@@ -274,7 +264,7 @@ class PlagDetectionSettings extends React.Component {
                             </ReactTooltip>
                             <div className="input-group">
                                 <div className="input-group-prepend">
-                            <span className="input-group-text" id="selectLanguage">
+                            <span className="input-group-text" id="selectTask">
                                 <i className="fa fa-thumb-tack fa-lg" aria-hidden="true"/>
                             </span>
                                 </div>
@@ -300,7 +290,11 @@ class PlagDetectionSettings extends React.Component {
                     )
                     : (
                         <div className="alert alert-warning" role="alert">
-                            Всі завдання курсу вже назначені для групи. <a href="#" className="alert-link">Створити нове завдання</a>.
+                            Всі завдання курсу вже назначені для групи.
+                            <a href={`/courses/${this.props.courseId}/tasks`} className="alert-link"
+                               onClick={this.props.redirectTasksLink}>
+                                Створити нове завдання.
+                            </a>
                         </div>
                     )
                 }

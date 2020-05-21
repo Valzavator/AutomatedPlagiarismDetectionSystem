@@ -37,7 +37,7 @@ class ErrorPage extends React.Component {
                     <h1 className="default-status-error">{this.props.error.status}</h1>
                     <h1 className="default-status-error">{this.props.error.error}</h1>
                     <p className="default-text-muted-error">{this.props.error.message}</p>
-                    <Link to={"/"} className="btn btn-lg btn-primary">
+                    <Link to={"/"} className="btn btn-lg btn-primary mb-5">
                         До головної сторінки
                     </Link>
                 </div>

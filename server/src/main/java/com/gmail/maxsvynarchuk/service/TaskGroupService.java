@@ -16,6 +16,6 @@ public interface TaskGroupService {
 
     TaskGroup saveTaskGroup(TaskGroup taskGroup);
 
-    void deleteTaskGroup(TaskGroupKey id);
+    boolean deleteTaskGroup(TaskGroupKey id);
 
 }

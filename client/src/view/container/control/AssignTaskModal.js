@@ -5,11 +5,10 @@ import * as errorActions from "../../../store/action/errorActions";
 import * as workflowActions from "../../../store/action/workflowActions";
 import {connect} from "react-redux";
 import PlagDetectionSettings from "../../component/PlagDetectionSettings";
-import {
-    downloadTaskGroupPlagDetectionSettings,
-    assignNewTaskGroup
-} from "../../../api/plagiarism";
+import {downloadTaskGroupPlagDetectionSettings} from "../../../api/plagiarism";
+import {assignNewTaskGroup} from "../../../api/taskGroup";
 import {matchPath, withRouter} from "react-router-dom";
+import $ from 'jquery';
 
 class AssignTaskModal extends React.Component {
     constructor(props) {
@@ -32,10 +31,12 @@ class AssignTaskModal extends React.Component {
         this.onSettingsChange = this.onSettingsChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleCloseBtn = this.handleCloseBtn.bind(this);
+        this.handleTasksRedirectLink = this.handleTasksRedirectLink.bind(this);
     }
 
     componentWillUnmount() {
         this.props.onClose();
+        $(this.modal).modal('hide');
     }
 
     onSettingsChange(settings) {
@@ -67,6 +68,7 @@ class AssignTaskModal extends React.Component {
             const data = new FormData();
             //using File API to get chosen file
             data.append('taskId', this.state.taskId);
+            data.append('groupId', this.state.groupId);
             data.append('expiryDate', new Date(this.state.expiryDate).toUTCString());
             data.append('programmingLanguageId', this.state.programmingLanguageId);
             data.append('detectionType', this.state.detectionType);
@@ -100,18 +102,27 @@ class AssignTaskModal extends React.Component {
         })
     }
 
+    handleTasksRedirectLink(e) {
+        e.preventDefault();
+        $(this.modal).modal('hide');
+        this.handleCloseBtn();
+        this.props.history.push(`/courses/${this.state.courseId}/tasks`);
+    }
+
     render() {
 
         return (
             <div className="modal fade" id={this.props.id} tabIndex="-1" role="dialog" data-backdrop="static"
-                 aria-labelledby="assignTaskModalLabel" aria-hidden="true">
+                 aria-labelledby="assignTaskModalLabel" aria-hidden="true"
+                 ref={modal => this.modal = modal}>
                 <div className="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h4 className="modal-title">
                                 Назначити завдання для групи "{this.props.activeGroup.name}"
                             </h4>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.handleCloseBtn}>
+                            <button type="button" className="close" data-dismiss="modal" aria-label="Close"
+                                    onClick={this.handleCloseBtn}>
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -123,10 +134,11 @@ class AssignTaskModal extends React.Component {
                                             ? (
                                                 <PlagDetectionSettings
                                                     loadSettings={() => downloadTaskGroupPlagDetectionSettings(this.state.courseId, this.state.groupId)}
-                                                    courseId={this.props.match.params.courseId}
+                                                    courseId={this.state.courseId}
                                                     onSettingsChange={this.onSettingsChange}
                                                     onSubmitForm={this.handleSubmit}
                                                     defaultState={this.state}
+                                                    redirectTasksLink={this.handleTasksRedirectLink}
                                                 />
                                             )
                                             : null
@@ -135,7 +147,7 @@ class AssignTaskModal extends React.Component {
                                 </div>
                             </div>
                         </div>
-                        <div className="modal-footer">
+                        <div className="modal-footer justify-content-center">
                             <button type="button" className="btn btn-secondary" data-dismiss="modal"
                                     onClick={this.handleCloseBtn}>
                                 <i className="fa fa-chevron-circle-left fa-lg" aria-hidden="true"/>&nbsp;&nbsp;

@@ -40,16 +40,6 @@ public class TaskGroupController {
         return ControllerUtil.prepareResponse(taskGroupDtoOpt, request.getRequestURI());
     }
 
-    @PostMapping("/{taskId}/delete")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> deleteTaskGroup(
-            @PathVariable(value = "taskId") long taskId,
-            @PathVariable(value = "groupId") long groupId) {
-        return taskGroupFacade.deleteTaskGroup(taskId, groupId)
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.badRequest().build();
-    }
-
     @GetMapping("/options")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getOptionsForTaskGroupSettings(
@@ -73,8 +63,17 @@ public class TaskGroupController {
                 !ControllerUtil.validateZipMediaType(dto.getBaseCodeZip())) {
             throw new HttpMediaTypeNotSupportedException("Invalid 'baseCodeZip' media type!");
         }
-        taskGroupFacade.assignNewTaskGroup(groupId, dto);
+        taskGroupFacade.assignNewTaskGroup(dto);
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/{taskId}/delete")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> deleteTaskGroup(
+            @PathVariable(value = "taskId") long taskId,
+            @PathVariable(value = "groupId") long groupId) {
+        return taskGroupFacade.deleteTaskGroup(taskId, groupId)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.badRequest().build();
+    }
 }

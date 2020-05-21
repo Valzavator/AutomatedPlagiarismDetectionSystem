@@ -11,6 +11,9 @@ import java.util.Date;
 @Data
 public class TaskGroupPlagDetectionDto {
     @NotNull
+    private Long groupId;
+
+    @NotNull
     private Long taskId;
 
     @NotNull

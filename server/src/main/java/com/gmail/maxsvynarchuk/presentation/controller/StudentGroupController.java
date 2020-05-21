@@ -1,24 +1,22 @@
 package com.gmail.maxsvynarchuk.presentation.controller;
 
 import com.gmail.maxsvynarchuk.facade.StudentFacade;
-import com.gmail.maxsvynarchuk.facade.TaskGroupFacade;
-import com.gmail.maxsvynarchuk.presentation.payload.request.TaskGroupPlagDetectionDto;
+import com.gmail.maxsvynarchuk.facade.StudentGroupFacade;
+import com.gmail.maxsvynarchuk.persistence.exception.oauth.InvalidVcsUrlException;
+import com.gmail.maxsvynarchuk.presentation.payload.request.StudentGroupDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.*;
+import com.gmail.maxsvynarchuk.presentation.payload.response.error.ApiError;
 import com.gmail.maxsvynarchuk.presentation.security.AuthUser;
 import com.gmail.maxsvynarchuk.presentation.security.serivce.UserPrincipal;
-import com.gmail.maxsvynarchuk.presentation.util.ControllerUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Objects;
-import java.util.Optional;
 
 
 @RestController
@@ -27,6 +25,7 @@ import java.util.Optional;
 @Slf4j
 public class StudentGroupController {
     private final StudentFacade studentFacade;
+    private final StudentGroupFacade studentGroupFacade;
 
     @GetMapping
     @PreAuthorize("hasRole('USER')")
@@ -38,14 +37,29 @@ public class StudentGroupController {
                 .body(students);
     }
 
-//    @PostMapping("/{taskId}/delete")
-//    @PreAuthorize("hasRole('USER')")
-//    public ResponseEntity<?> deleteTaskGroup(
-//            @PathVariable(value = "taskId") long taskId,
-//            @PathVariable(value = "groupId") long groupId) {
-//        return taskGroupFacade.deleteTaskGroup(taskId, groupId)
-//                ? ResponseEntity.noContent().build()
-//                : ResponseEntity.badRequest().build();
-//    }
+    @PostMapping("/add")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> addStudentToGroup(
+            @AuthUser UserPrincipal user,
+            @Valid @RequestBody StudentGroupDto dto,
+            HttpServletRequest request) {
+        try {
+            studentGroupFacade.addStudentToGroup(user.getId(), dto);
+            return ResponseEntity.ok().build();
+        } catch (InvalidVcsUrlException ex) {
+            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, request.getRequestURI(), ex);
+            return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/{studentId}/delete")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> deleteStudentFromGroup(
+            @PathVariable(value = "studentId") long studentId,
+            @PathVariable(value = "groupId") long groupId) {
+        return studentGroupFacade.deleteStudentFromGroup(studentId, groupId)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.badRequest().build();
+    }
 
 }

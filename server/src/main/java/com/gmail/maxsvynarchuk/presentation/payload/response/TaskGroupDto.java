@@ -1,6 +1,5 @@
 package com.gmail.maxsvynarchuk.presentation.payload.response;
 
-import com.gmail.maxsvynarchuk.persistence.domain.TaskGroupKey;
 import com.gmail.maxsvynarchuk.persistence.domain.type.PlagDetectionStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,8 +9,6 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 public class TaskGroupDto {
-    private TaskGroupKey id;
-
     private Long taskId;
     private String taskName;
 
