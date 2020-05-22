@@ -12,6 +12,7 @@ import com.gmail.maxsvynarchuk.persistence.vcs.impl.bitbucket.dto.*;
 import kong.unirest.GenericType;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 
@@ -20,6 +21,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Repository("vcsRepositoryBitbucketDao")
+@AllArgsConstructor
 public class VcsRepositoryBitbucketDao implements VcsRepositoryDao {
     public static final String AUTHORIZATION = "Authorization";
     private final static String REPOSITORY_INFO_FIELDS_PARAM =
@@ -29,9 +31,16 @@ public class VcsRepositoryBitbucketDao implements VcsRepositoryDao {
     private final static String BLOB_INFO_FIELDS_PARAM =
             "?pagelen=50&fields=values.path,values.type,values.links,values.size,next";
 
+    private final VcsOAuthBitbucketDao vcsOAuthBitbucketDao;
+
     @Override
     public boolean checkAccess(AccessToken accessToken, String repositoryUrl) {
-        return Objects.nonNull(getBitbucketRepositoryInfo(accessToken, repositoryUrl));
+        try {
+            return Objects.nonNull(getBitbucketRepositoryInfo(accessToken, repositoryUrl));
+        } catch (OAuthIllegalTokenException ex) {
+            accessToken = vcsOAuthBitbucketDao.getRefreshedOAuthToken(accessToken);
+            return Objects.nonNull(getBitbucketRepositoryInfo(accessToken, repositoryUrl));
+        }
     }
 
     @Override

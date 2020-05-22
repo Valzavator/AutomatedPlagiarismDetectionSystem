@@ -75,6 +75,7 @@ class SignUpPage extends React.Component {
         if (!firstName || firstName.length === 0) {
             this.setError('firstName',
                 'Буль-ласка заповніть дане поле!')
+            isValid = false;
         } else if (!/^[A-zА-яЁёІіЇїЄє]+$/.test(firstName)) {
             this.setError('firstName',
                 "Ім'я повинно містити лише букви!")
@@ -84,6 +85,7 @@ class SignUpPage extends React.Component {
         if (!lastName || lastName.length === 0) {
             this.setError('lastName',
                 'Буль-ласка заповніть дане поле!')
+            isValid = false;
         } else if (!/^[A-zА-яЁёІіЇїЄє]+$/.test(lastName)) {
             this.setError('lastName',
                 "Прізвище повинно містити лише букви!")
@@ -93,6 +95,7 @@ class SignUpPage extends React.Component {
         if (!password || password.length === 0) {
             this.setError('password',
                 'Буль-ласка заповніть дане поле!')
+            isValid = false;
         } else if (password.length < 6) {
             this.setError('password',
                 'Пароль повинен містити не менше 6 символів!')
@@ -108,7 +111,6 @@ class SignUpPage extends React.Component {
             [fieldName + 'MessageError']: errorMessage
         });
     }
-    ;
 
     render() {
         const renderErrorMessage = (fieldName) => {

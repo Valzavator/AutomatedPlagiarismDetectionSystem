@@ -249,12 +249,12 @@ class PlagDetectionSettings extends React.Component {
                 {this.state.tasks.length > 0
                 ? (
                         <div className="form-group">
-                            <label htmlFor="selectLanguage">
-                        <span className="" id="selectTask" data-tip
-                              data-for='selectTaskFAQ'>
-                                <i className="fa fa-question-circle-o fa-lg"
-                                   aria-hidden="true"/>
-                        </span>
+                            <label htmlFor="selectTask">
+                                <span className="" id="selectTask" data-tip
+                                      data-for='selectTaskFAQ'>
+                                        <i className="fa fa-question-circle-o fa-lg"
+                                           aria-hidden="true"/>
+                                </span>
                                 &nbsp;Завдання:
                             </label>
                             <ReactTooltip id='selectTaskFAQ' place="left" type='info'

@@ -33,6 +33,7 @@ public class PlagDetectionResult implements Serializable {
     @NotNull
     private Boolean isSuccessful;
 
+    @Column(length = 1000)
     private String resultPath;
 
     @NotNull

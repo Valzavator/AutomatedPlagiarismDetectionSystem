@@ -31,6 +31,7 @@ public class Course implements Serializable {
     @Size(max = 255)
     private String name;
 
+    @Lob
     private String description;
 
     @NotNull

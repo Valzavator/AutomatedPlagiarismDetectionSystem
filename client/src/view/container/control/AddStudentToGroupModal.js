@@ -36,7 +36,6 @@ class AddStudentToGroupModal extends React.Component {
             strict: false
         });
         if (match) {
-            // this.loadStudents(match.params.courseId, match.params.groupId);
             this.setState({
                 courseId: match.params.courseId,
                 groupId: match.params.groupId
@@ -215,7 +214,7 @@ class AddStudentToGroupModal extends React.Component {
                 </div>
 
                 <div className="form-group mt-4">
-                    <label htmlFor="selectSensitivity">
+                    <label htmlFor="inputURL">
                         <span className="" id="inputURL" data-tip
                               data-for='inputURLFAQ'>
                                 <i className="fa fa-question-circle-o fa-lg"
@@ -238,7 +237,7 @@ class AddStudentToGroupModal extends React.Component {
                                value={this.state.studentURL}
                                onChange={this.handleChangesStudentURL}
                                className={this.state.URLVisibleError ? "form-control form-control-lg is-invalid" : "form-control form-control-lg"}
-                               id="selectSensitivity"/>
+                               id="inputURL"/>
                         <div className="invalid-feedback">
                             Некоректне посилання на репоизторій студента!
                         </div>
@@ -282,20 +281,6 @@ class AddStudentToGroupModal extends React.Component {
                                                         </div>
                                                     )
                                                 }
-
-                                                {/*{this.state.responseVisibleError ?*/}
-                                                {/*    (*/}
-                                                {/*        <div className="alert alert-danger alert-dismissible fade show"*/}
-                                                {/*             role="alert">*/}
-                                                {/*            {this.state.responseErrorMessage}*/}
-                                                {/*            <button type="button" className="close" data-dismiss="alert"*/}
-                                                {/*                    aria-label="Close">*/}
-                                                {/*                <span aria-hidden="true">&times;</span>*/}
-                                                {/*            </button>*/}
-                                                {/*        </div>*/}
-                                                {/*    )*/}
-                                                {/*    : null*/}
-                                                {/*}*/}
 
                                             </div>
                                         </div>

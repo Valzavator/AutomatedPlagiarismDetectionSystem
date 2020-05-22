@@ -4,6 +4,7 @@ import AssignTaskModal from "../container/control/AssignTaskModal";
 import {LinkContainer} from "react-router-bootstrap";
 import {matchPath, withRouter} from "react-router-dom";
 import AddStudentToGroupModal from "../container/control/AddStudentToGroupModal";
+import AddTaskToCourseModal from "../container/control/AddTaskToCourseModal";
 
 class Sidebar extends React.Component {
     constructor(props) {
@@ -111,12 +112,23 @@ class Sidebar extends React.Component {
                 <i className="fa fa-chevron-circle-left" aria-hidden="true"/>&nbsp;&nbsp;
                 Повернутися до курсу
             </button>,
-            <button className="list-group-item list-group-item-action bg-success" key={'createNewTask'}>
+            <button className="list-group-item list-group-item-action bg-success"
+                    key={'createNewTask'}
+                    data-toggle="modal"
+                    data-target="#addTaskToCourseModal"
+                    onClick={() => this.handleChangeModal('addTaskToCourseModal', true)}>
                 <i className="fa fa-book" aria-hidden="true"/>&nbsp;&nbsp;
                 Створити нове завдання
             </button>,
         ]
-        const specificCourseTasksModals = []
+        const specificCourseTasksModals = [
+            <AddTaskToCourseModal
+                id="addTaskToCourseModal"
+                key={'addTaskToCourseModal'}
+                isOpen={this.state.addTaskToCourseModal}
+                onClose={() => this.handleChangeModal('addTaskToCourseModal', false)}
+            />
+        ]
 
         const specificGroupBtns = [
             <button className="list-group-item list-group-item-action bg-primary" key={'backToAllCourses'}
@@ -136,7 +148,7 @@ class Sidebar extends React.Component {
                     data-toggle="modal"
                     data-target="#assignTaskModal"
                     key={"assignTaskModalBtn"}
-                    onClick={() => this.handleChangeModal('assignTaskModal',true)}>
+                    onClick={() => this.handleChangeModal('assignTaskModal', true)}>
                 <i className="fa fa-thumb-tack" aria-hidden="true"/>&nbsp;&nbsp;
                 Назначити завдання
             </button>,

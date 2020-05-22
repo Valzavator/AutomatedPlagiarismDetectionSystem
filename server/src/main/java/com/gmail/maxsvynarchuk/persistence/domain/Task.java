@@ -30,6 +30,7 @@ public class Task implements Serializable {
     @NotNull
     private String repositoryPrefixPath;
 
+    @Lob
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

@@ -35,9 +35,11 @@ public class PlagDetectionSettings implements Serializable {
     @Enumerated(EnumType.STRING)
     private DetectionType detectionType;
 
+    @Column(length = 1000)
     @NotBlank
     private String dataPath;
 
+    @Column(length = 1000)
     @NotBlank
     private String resultPath;
 
