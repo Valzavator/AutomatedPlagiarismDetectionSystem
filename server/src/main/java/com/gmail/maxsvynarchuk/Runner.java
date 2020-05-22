@@ -16,6 +16,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Runner {
     public static final String githubUrl = "https://github.com/Muguvara/test_github_api";
@@ -27,12 +29,19 @@ public class Runner {
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
+//        Pattern pattern = Pattern.compile("(https://bitbucket.org(/[^\\s/]+){2}|https://github.com(/[^\\s/]+){2})");
+//
+//        String a1 = "asdasdhttps://bitbucket.org/Valzavator/smart-oblik/src/master/";
+//        String a2 = "https://github.com/Valzavator/JavaLogging/tree/master/src";
+//
+//        Matcher matcher = pattern.matcher(a2);
+//        System.out.println(matcher.find());
+//        System.out.println(matcher.group());
 //        String str = "Language accepted: Javac 1.9+ based AST plugin\nCommand line: -s C:\\Users\\Valzavator\\IdeaProjects\\AutomatedPlagiarismDetectionSystem\\server\\target\\classes\\data\\zip\\2020-05-07\\19-49-15\\source.zip -r C:\\Users\\Valzavator\\IdeaProjects\\AutomatedPlagiarismDetectionSystem\\server\\target\\classes\\static\\jplag-results\\2020-05-07\\19-49-15\\source.zip -l java19 -t 12 -m 10% \r\ninitialize ok\r\n0 submissions\r\n\n0 submissions parsed successfully!\n0 parser errors!\n\n\nError: Not enough valid submissions! (only 0 are valid):\n\r\n" +
 //                 "Comparing progbase_sr3_sverhrazum.c-progbase_sr3_zverevfpm.c: 0.0\r\nComparing progbase_sr3_tiwatit.c-progbase_sr3_valerystudent.c: 0.0\r\nComparing progbase_sr3_tiwatit.c-progbase_sr3_wmdanor.c: 0.0\r\nComparing progbase_sr3_tiwatit.c-progbase_sr3_yehorf.c: 0.0\r\nComparing progbase_sr3_tiwatit.c-progbase_sr3_zverevfpm.c: 0.0\r\nComparing progbase_sr3_valerystudent.c-progbase_sr3_wmdanor.c: 23.030304\r\nComparing progbase_sr3_valerystudent.c-progbase_sr3_yehorf.c: 24.358974\r\nComparing progbase_sr3_valerystudent.c-progbase_sr3_zverevfpm.c: 0.0\r\nComparing progbase_sr3_wmdanor.c-progbase_sr3_yehorf.c: 30.76923\r\nComparing progbase_sr3_wmdanor.c-progbase_sr3_zverevfpm.c: 0.0\r\nComparing progbase_sr3_yehorf.c-progbase_sr3_zverevfpm.c: 0.0\r\n\nWriting results to: C:\\Users\\Valzavator\\IdeaProjects\\AutomatedPlagiarismDetectionSystem\\server\\target\\classes\\static\\jplag-results\\2020-05-07\\19-57-42\\source.zip\n";
 //
 //        int startIndex = str.indexOf("initialize ok");
 //        int endIndex = str.indexOf("Writing results to:");
-        System.out.println(Path.of("/asd/asdas").getParent().toString());
 
 //        System.out.println(Charset.availableCharsets());
 //        System.out.println(Charset.isSupported("ISO-8859-5"));
@@ -76,7 +85,7 @@ public class Runner {
 //        System.out.println(System.getProperty("java.version"));
 //        System.out.println(System.getenv("JAVA_HOME"));
 //        File file = new File("jplag");
-        ProcessBuilder builder = new ProcessBuilder( "\"C:\\Program Files\\Java\\jdk-12\\bin\\java\"", "", "--version");
+        ProcessBuilder builder = new ProcessBuilder("\"C:\\Program Files\\Java\\jdk-12\\bin\\java\"", "", "--version");
 //        ProcessBuilder builder = new ProcessBuilder("C:/Program Files/Java/jdk-12/bin/java",
 ////                System.getenv("JAVA_HOME") + "\\bin\\java",
 //                "-jar",
@@ -85,19 +94,18 @@ public class Runner {
 //                "-r", Path.ANALYSIS_RESULT_FOLDER,
 //                "-l", "java19"
 //        );
-        Process process = builder.start();
-        process.waitFor();
-
-        final int bufferSize = 1024;
-        final char[] buffer = new char[bufferSize];
-        final StringBuilder out = new StringBuilder();
-        Reader in = new InputStreamReader(process.getInputStream());
-        int charsRead;
-        while((charsRead = in.read(buffer, 0, buffer.length)) > 0) {
-            out.append(buffer, 0, charsRead);
-        }
+//        Process process = builder.start();
+//        process.waitFor();
+//
+//        final int bufferSize = 1024;
+//        final char[] buffer = new char[bufferSize];
+//        final StringBuilder out = new StringBuilder();
+//        Reader in = new InputStreamReader(process.getInputStream());
+//        int charsRead;
+//        while ((charsRead = in.read(buffer, 0, buffer.length)) > 0) {
+//            out.append(buffer, 0, charsRead);
+//        }
 //        System.out.println(out.toString());
-
 
 
 //        System.out.println(process.waitFor());

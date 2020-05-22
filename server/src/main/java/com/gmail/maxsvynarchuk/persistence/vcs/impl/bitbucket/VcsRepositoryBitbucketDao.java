@@ -30,6 +30,11 @@ public class VcsRepositoryBitbucketDao implements VcsRepositoryDao {
             "?pagelen=50&fields=values.path,values.type,values.links,values.size,next";
 
     @Override
+    public boolean checkAccess(AccessToken accessToken, String repositoryUrl) {
+        return Objects.nonNull(getBitbucketRepositoryInfo(accessToken, repositoryUrl));
+    }
+
+    @Override
     public RepositoryInfo getSubDirectoryRepositoryInfo(AccessToken accessToken,
                                                         String repositoryUrl,
                                                         String prefixPath,

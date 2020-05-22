@@ -8,6 +8,8 @@ import java.util.Date;
 
 public interface VcsRepositoryDao {
 
+    boolean checkAccess(AccessToken accessToken, String repositoryUrl);
+
     String getRawFileContent(AccessToken accessToken, RepositoryFileInfo fileInfo);
 
     RepositoryInfo getSubDirectoryRepositoryInfo(AccessToken accessToken,

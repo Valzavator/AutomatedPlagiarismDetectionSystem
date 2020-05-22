@@ -34,6 +34,11 @@ public class VcsRepositoryGitHubDao implements VcsRepositoryDao {
     private final Gson gson;
 
     @Override
+    public boolean checkAccess(AccessToken accessToken, String repositoryUrl) {
+        return Objects.nonNull(getGitHubRepositoryInfo(accessToken, repositoryUrl));
+    }
+
+    @Override
     public RepositoryInfo getSubDirectoryRepositoryInfo(AccessToken accessToken,
                                                         String repositoryUrl,
                                                         String prefixPath,
@@ -91,8 +96,8 @@ public class VcsRepositoryGitHubDao implements VcsRepositoryDao {
     }
 
     private Optional<GitHubCommit> getLastCommit(AccessToken accessToken,
-                                                GitHubRepositoryInfo repositoryInfo,
-                                                Date lastCommitDate) {
+                                                 GitHubRepositoryInfo repositoryInfo,
+                                                 Date lastCommitDate) {
         String repositoryCommitsUrl = getRepositoryCommitsUrl(repositoryInfo.getApiUrl(), lastCommitDate);
 
         JSONArray jsonArray = Unirest.get(repositoryCommitsUrl)
@@ -152,9 +157,8 @@ public class VcsRepositoryGitHubDao implements VcsRepositoryDao {
 
                 if (httpStatus == HttpStatus.UNAUTHORIZED) {
                     throw new OAuthIllegalTokenException(errorResponse.toString(), accessToken);
-                } else {
-                    throw new InvalidVcsUrlException(errorResponse.toString());
                 }
+                throw new InvalidVcsUrlException(errorResponse.toString());
             }
         };
     }

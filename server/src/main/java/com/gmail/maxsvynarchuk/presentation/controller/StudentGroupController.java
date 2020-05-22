@@ -2,8 +2,8 @@ package com.gmail.maxsvynarchuk.presentation.controller;
 
 import com.gmail.maxsvynarchuk.facade.StudentFacade;
 import com.gmail.maxsvynarchuk.facade.StudentGroupFacade;
-import com.gmail.maxsvynarchuk.persistence.exception.oauth.InvalidVcsUrlException;
-import com.gmail.maxsvynarchuk.presentation.payload.request.StudentGroupDto;
+import com.gmail.maxsvynarchuk.persistence.exception.oauth.VCSException;
+import com.gmail.maxsvynarchuk.presentation.payload.request.StudentGroupRequestDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.*;
 import com.gmail.maxsvynarchuk.presentation.payload.response.error.ApiError;
 import com.gmail.maxsvynarchuk.presentation.security.AuthUser;
@@ -41,13 +41,13 @@ public class StudentGroupController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> addStudentToGroup(
             @AuthUser UserPrincipal user,
-            @Valid @RequestBody StudentGroupDto dto,
+            @Valid @RequestBody StudentGroupRequestDto dto,
             HttpServletRequest request) {
         try {
-            studentGroupFacade.addStudentToGroup(user.getId(), dto);
-            return ResponseEntity.ok().build();
-        } catch (InvalidVcsUrlException ex) {
-            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, request.getRequestURI(), ex);
+            StudentGroupResponseDto studentGroupDto = studentGroupFacade.addStudentToGroup(user.getId(), dto);
+            return ResponseEntity.ok().body(studentGroupDto);
+        } catch (VCSException ex) {
+            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, request.getRequestURI(), ex.getMessage());
             return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
         }
     }

@@ -1,10 +1,11 @@
 package com.gmail.maxsvynarchuk.facade;
 
-import com.gmail.maxsvynarchuk.presentation.payload.request.StudentGroupDto;
+import com.gmail.maxsvynarchuk.presentation.payload.request.StudentGroupRequestDto;
+import com.gmail.maxsvynarchuk.presentation.payload.response.StudentGroupResponseDto;
 
 public interface StudentGroupFacade {
 
-    void addStudentToGroup(Long creatorId, StudentGroupDto dto);
+    StudentGroupResponseDto addStudentToGroup(Long creatorId, StudentGroupRequestDto dto);
 
     boolean deleteStudentFromGroup(Long studentId, Long groupId);
 

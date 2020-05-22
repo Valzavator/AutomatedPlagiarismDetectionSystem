@@ -1,11 +1,9 @@
 package com.gmail.maxsvynarchuk.persistence.exception.oauth;
 
-import com.gmail.maxsvynarchuk.persistence.exception.PersistenceException;
-
 /**
  * Artificial exception that should be thrown out of the Service layer
  */
-public class OAuthIllegalAuthorizeStateException extends PersistenceException {
+public class OAuthIllegalAuthorizeStateException extends VCSException {
 
     private static final long serialVersionUID = 4702457879252765486L;
 

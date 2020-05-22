@@ -1,12 +1,11 @@
 package com.gmail.maxsvynarchuk.persistence.exception.oauth;
 
 import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
-import com.gmail.maxsvynarchuk.persistence.exception.PersistenceException;
 
 /**
  * Artificial exception that should be thrown out of the Service layer
  */
-public class OAuthIllegalTokenException extends PersistenceException {
+public class OAuthIllegalTokenException extends VCSException {
     private AccessToken accessToken;
 
     private static final long serialVersionUID = 7176678644409382415L;

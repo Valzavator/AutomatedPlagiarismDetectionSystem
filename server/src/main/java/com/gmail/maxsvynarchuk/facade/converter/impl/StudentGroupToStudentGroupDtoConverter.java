@@ -2,20 +2,18 @@ package com.gmail.maxsvynarchuk.facade.converter.impl;
 
 import com.gmail.maxsvynarchuk.facade.converter.Converter;
 import com.gmail.maxsvynarchuk.persistence.domain.StudentGroup;
-import com.gmail.maxsvynarchuk.persistence.domain.User;
-import com.gmail.maxsvynarchuk.presentation.payload.request.SignUpDto;
-import com.gmail.maxsvynarchuk.presentation.payload.response.StudentGroupDto;
+import com.gmail.maxsvynarchuk.presentation.payload.response.StudentGroupResponseDto;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @AllArgsConstructor
 @Component
-public class StudentGroupToStudentGroupDtoConverter implements Converter<StudentGroup, StudentGroupDto> {
+public class StudentGroupToStudentGroupDtoConverter implements Converter<StudentGroup, StudentGroupResponseDto> {
     private final ModelMapper mapper;
 
     @Override
-    public StudentGroupDto convert(StudentGroup studentGroup) {
-        return mapper.map(studentGroup, StudentGroupDto.class);
+    public StudentGroupResponseDto convert(StudentGroup studentGroup) {
+        return mapper.map(studentGroup, StudentGroupResponseDto.class);
     }
 }

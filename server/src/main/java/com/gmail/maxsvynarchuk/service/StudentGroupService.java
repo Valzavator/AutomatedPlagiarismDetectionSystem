@@ -9,7 +9,7 @@ public interface StudentGroupService {
 
     Optional<StudentGroup> getStudentGroupById(StudentGroupKey id);
 
-    void addStudentToGroup(Long creatorId, StudentGroup studentGroup);
+    StudentGroup addStudentToGroup(Long creatorId, StudentGroup studentGroup);
 
     boolean deleteStudentFromGroup(StudentGroupKey id);
 

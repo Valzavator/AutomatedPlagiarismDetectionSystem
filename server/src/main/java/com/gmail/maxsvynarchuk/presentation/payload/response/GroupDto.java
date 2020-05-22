@@ -12,7 +12,7 @@ public class GroupDto {
     private Long id;
     private String name;
     private Date creationDate;
-    private Set<StudentGroupDto> studentGroups;
+    private Set<StudentGroupResponseDto> studentGroups;
     private Set<BasicTaskGroupDto> taskGroups;
 
     private String courseName;

@@ -30,7 +30,7 @@ public enum AuthorizationProvider {
             return repositoryUrl.replaceFirst(websiteRepoPrefix, apiRepoPrefix);
         }
 
-        throw new InvalidVcsUrlException(repositoryUrl);
+        throw new InvalidVcsUrlException("Invalid url for VCS services (GitHub or Bitbucket)");
     }
 
     public static AuthorizationProvider recognizeFromUrl(String url) {
@@ -42,6 +42,6 @@ public enum AuthorizationProvider {
                 url.startsWith(VCS.BITBUCKET_API_REPOSITORY_PREFIX_ENDPOINT)) {
             return BITBUCKET;
         }
-        throw new InvalidVcsUrlException(url);
+        throw new InvalidVcsUrlException("Invalid url for VCS services (GitHub or Bitbucket)");
     }
 }

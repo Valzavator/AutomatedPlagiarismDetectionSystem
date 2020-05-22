@@ -105,20 +105,13 @@ class AddStudentToGroupModal extends React.Component {
                 isLoading: true,
             });
 
-            await addStudentToGroup(this.state.courseId, this.state.groupId, {
+            let res = await addStudentToGroup(this.state.courseId, this.state.groupId, {
                 courseId: this.state.courseId,
                 groupId: this.state.groupId,
                 studentId: this.state.studentId,
                 vcsRepositoryUrl: this.state.studentURL
             });
-
-            const studentFullName = this.state.students.find(s => s.id === parseInt(this.state.studentId)).fullName;
-            this.props.workflow.addStudentToActiveGroup({
-                studentFullName: studentFullName,
-                studentId: this.state.studentId,
-                vcsRepositoryUrl: this.state.studentURL
-            });
-
+            this.props.workflow.addStudentToActiveGroup(res.data);
             let students = this.state.students.filter(s => s.id !== this.state.studentId);
             await this.setState({
                 students: students,
@@ -129,7 +122,7 @@ class AddStudentToGroupModal extends React.Component {
             });
             notify({
                 title: 'Успіх!',
-                message: `Студента ${studentFullName} успішно додано до групи.`,
+                message: `Студента ${res.data.studentFullName} успішно додано до групи.`,
                 status: 'success',
                 position: 'tc',
                 dismissible: true,

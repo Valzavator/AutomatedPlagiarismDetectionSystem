@@ -5,7 +5,6 @@ import com.gmail.maxsvynarchuk.persistence.domain.StudentGroup;
 import com.gmail.maxsvynarchuk.persistence.domain.StudentGroupKey;
 import com.gmail.maxsvynarchuk.persistence.domain.User;
 import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
-import com.gmail.maxsvynarchuk.persistence.exception.oauth.InvalidVcsUrlException;
 import com.gmail.maxsvynarchuk.service.StudentGroupService;
 import com.gmail.maxsvynarchuk.service.UserService;
 import com.gmail.maxsvynarchuk.service.vcs.VcsDownloadService;
@@ -30,12 +29,14 @@ public class StudentGroupServiceImpl implements StudentGroupService {
 
     @Transactional
     @Override
-    public void addStudentToGroup(Long creatorId, StudentGroup studentGroup) {
-        String repositoryUrl = studentGroup.getVcsRepositoryUrl();
+    public StudentGroup addStudentToGroup(Long creatorId, StudentGroup studentGroup) {
+        String repositoryUrl = vcsDownloadService.getRootRepositoryUrl(
+                studentGroup.getVcsRepositoryUrl());
         User user = userService.getRequiredUserById(creatorId);
         AccessToken accessToken = user.getAccessToken(repositoryUrl);
         vcsDownloadService.checkAccessToRepository(accessToken, repositoryUrl);
-        studentGroupDao.save(studentGroup);
+        studentGroup.setVcsRepositoryUrl(repositoryUrl);
+        return studentGroupDao.save(studentGroup);
     }
 
     @Transactional

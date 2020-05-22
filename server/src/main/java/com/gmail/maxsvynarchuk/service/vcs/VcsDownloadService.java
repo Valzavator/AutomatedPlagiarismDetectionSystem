@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface VcsDownloadService {
 
+    String getRootRepositoryUrl(String repositoryUrl);
+
     void checkAccessToRepository(AccessToken userAccessToken,
                                  String repositoryUrl);
 
