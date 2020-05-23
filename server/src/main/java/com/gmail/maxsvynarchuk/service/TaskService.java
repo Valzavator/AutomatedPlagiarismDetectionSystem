@@ -1,5 +1,6 @@
 package com.gmail.maxsvynarchuk.service;
 
+import com.gmail.maxsvynarchuk.persistence.domain.StudentGroupKey;
 import com.gmail.maxsvynarchuk.persistence.domain.Task;
 import org.springframework.data.domain.Page;
 
@@ -13,5 +14,9 @@ public interface TaskService {
     Page<Task> getAllTasksByCourseId(Long courseId, int page, int size);
 
     List<Task> getAllTasksByCourseIdAndNotAssignedToGroup(Long courseId, Long groupId);
+
+    Task saveTask(Task task);
+
+    boolean deleteTaskFromCourse(Long taskId);
 
 }

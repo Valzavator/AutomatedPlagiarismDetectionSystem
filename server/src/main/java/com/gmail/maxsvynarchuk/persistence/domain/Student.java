@@ -24,6 +24,7 @@ public class Student implements Serializable {
 
     @NotBlank
     @Size(max = 255)
+    @Column(unique = true)
     private String fullName;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

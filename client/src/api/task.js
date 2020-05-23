@@ -6,3 +6,6 @@ export const getAllCourseTasks= async (courseId, page = 0, size = 6) =>
 export const addTaskToCourse= async (courseId, data) =>
     await apiRequest('POST', `/courses/${courseId}/tasks/add`, data);
 
+export const deleteTaskFromCourse= async (courseId, taskId) =>
+    await apiRequest('POST', `/courses/${courseId}/tasks/${taskId}/delete`);
+

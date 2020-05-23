@@ -41,4 +41,24 @@ public class StudentServiceImpl implements StudentService {
         return studentDao.findAllNotAddedToCourse(userId, courseId, sort);
     }
 
+    @Override
+    public boolean saveStudent(Student student) {
+        student.setFullName(student.getFullName().trim());
+        if (studentDao.existByFullName(student.getFullName())) {
+            return false;
+        }
+        studentDao.save(student);
+        return true;
+    }
+
+    @Override
+    public boolean deleteStudentFromSystem(Long studentId) {
+        Optional<Student> studentOpt = studentDao.findOne(studentId);
+        if (studentOpt.isPresent()) {
+            studentDao.deleteById(studentId);
+            return true;
+        }
+        return false;
+    }
+
 }

@@ -47,7 +47,7 @@ class SignUpPage extends React.Component {
                         title: 'Помилка реєстрації!',
                         message: 'Такий email вже існує в системі.',
                         status: 'error',
-                        position: 'br',
+                        position: 't',
                         dismissible: true,
                         dismissAfter: 3000
                     });

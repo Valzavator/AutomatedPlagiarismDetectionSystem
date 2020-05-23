@@ -16,7 +16,7 @@ class GroupPage extends React.Component {
         this.state = {
             isLoading: true,
             updateGroupInfo: true,
-            isTaskTab:true
+            isTaskTab: true
         }
 
         this.handleDeleteTaskBtn = this.handleDeleteTaskBtn.bind(this);
@@ -24,11 +24,11 @@ class GroupPage extends React.Component {
         this.handleTabClick = this.handleTabClick.bind(this);
     }
 
-    async componentDidMount() {
-        await this.props.sidebar.changeSidebarState("group", "Керування групою: ");
-        await this.loadGroupInfo();
+    componentDidMount() {
+        this.props.sidebar.changeSidebarState("group", "Керування групою: ");
+        this.loadGroupInfo();
         this.timerID = setInterval(
-            () => this.loadGroupInfo(),
+            () => this.updateGroupInfo(),
             5000
         );
     }
@@ -43,15 +43,22 @@ class GroupPage extends React.Component {
             this.props.match.params.groupId,
             this.props.match.params.courseId);
         const updateGroupInfo = this.props.activeGroup.taskGroups
-                .find(tg => ['PENDING', 'IN_PROCESS'].includes(tg.plagDetectionStatus)) !== undefined;
+            .find(tg => ['PENDING', 'IN_PROCESS'].includes(tg.plagDetectionStatus)) !== undefined;
         await this.setState({
             isLoading: false,
             updateGroupInfo: updateGroupInfo
         });
-        if (!this.state.updateGroupInfo) {
-            clearInterval(this.timerID);
+    }
+
+    async updateGroupInfo() {
+        console.log('updateGroupInfo')
+        const updateGroupInfo = this.props.activeGroup.taskGroups
+            .find(tg => ['PENDING', 'IN_PROCESS'].includes(tg.plagDetectionStatus)) !== undefined;
+        if (updateGroupInfo) {
+            await this.loadGroupInfo();
         }
     }
+
 
     async handleDeleteTaskBtn(e) {
         e.preventDefault();
@@ -95,9 +102,9 @@ class GroupPage extends React.Component {
     }
 
     handleTabClick(isTaskTab = true) {
-       this.setState({
-           isTaskTab: isTaskTab
-       })
+        this.setState({
+            isTaskTab: isTaskTab
+        })
     }
 
     render() {
@@ -382,7 +389,9 @@ class GroupPage extends React.Component {
                                     </li>
                                 </ul>
                                 <div className="tab-content w-100" id="nav-tabContent">
-                                    <div className={this.state.isTaskTab ? "tab-pane fade" : "tab-pane fade active show"} id="nav-students">
+                                    <div
+                                        className={this.state.isTaskTab ? "tab-pane fade" : "tab-pane fade active show"}
+                                        id="nav-students">
                                         {this.props.activeGroup.studentGroups.length > 0
                                             ? (
                                                 renderStudentsTable(this.props.activeGroup.studentGroups)
@@ -395,7 +404,9 @@ class GroupPage extends React.Component {
                                             )
                                         }
                                     </div>
-                                    <div className={this.state.isTaskTab ? "tab-pane fade active show" : "tab-pane fade"} id="nav-tasks">
+                                    <div
+                                        className={this.state.isTaskTab ? "tab-pane fade active show" : "tab-pane fade"}
+                                        id="nav-tasks">
                                         {this.props.activeGroup.taskGroups.length > 0
                                             ? (
                                                 renderTasksTable(this.props.activeGroup.taskGroups)

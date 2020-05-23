@@ -8,15 +8,18 @@ import com.gmail.maxsvynarchuk.presentation.payload.response.*;
 import com.gmail.maxsvynarchuk.presentation.payload.response.error.ApiError;
 import com.gmail.maxsvynarchuk.presentation.security.AuthUser;
 import com.gmail.maxsvynarchuk.presentation.security.serivce.UserPrincipal;
+import com.gmail.maxsvynarchuk.presentation.util.ControllerUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.net.URI;
 
 
 @RestController
@@ -45,7 +48,11 @@ public class StudentGroupController {
             HttpServletRequest request) {
         try {
             StudentGroupResponseDto studentGroupDto = studentGroupFacade.addStudentToGroup(user.getId(), dto);
-            return ResponseEntity.ok().body(studentGroupDto);
+            URI location = ControllerUtil.getLocation("api/v1/courses",
+                    dto.getCourseId().toString(),
+                    "groups",
+                    dto.getGroupId().toString());
+            return ResponseEntity.created(location).body(studentGroupDto);
         } catch (VCSException ex) {
             ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, request.getRequestURI(), ex.getMessage());
             return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);

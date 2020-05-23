@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -71,8 +72,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({Throwable.class})
-    public ResponseEntity<Object> handleIllegalArgumentException(Throwable ex,
-                                                                 HttpServletRequest request) {
+    public ResponseEntity<Object> handleIllegalArgumentException(
+            Throwable ex,
+            HttpServletRequest request) throws Throwable {
+        if (ex instanceof BadCredentialsException) {
+            throw ex;
+        }
+
         log.error("", ex);
         return buildResponseEntity(
                 new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, request.getRequestURI(), ex));

@@ -53,6 +53,11 @@ public class StudentDaoImpl implements StudentDao {
     }
 
     @Override
+    public boolean existByFullName(String fullName) {
+        return repository.existsByFullName(fullName);
+    }
+
+    @Override
     public boolean exist(Long id) {
         return repository.existsById(id);
     }

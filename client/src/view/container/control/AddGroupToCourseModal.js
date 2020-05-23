@@ -9,7 +9,7 @@ import ReactTooltip from "react-tooltip";
 import $ from 'jquery';
 import {addTaskToCourse} from "../../../api/task";
 
-class AddTaskToCourseModal extends React.Component {
+class AddGroupToCourseModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -287,4 +287,4 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-export default withRouter(connect(null, mapDispatchToProps)(AddTaskToCourseModal));
+export default withRouter(connect(null, mapDispatchToProps)(AddGroupToCourseModal));

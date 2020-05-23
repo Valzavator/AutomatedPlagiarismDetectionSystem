@@ -13,4 +13,6 @@ public interface StudentDao extends GenericDao<Student, Long> {
 
     List<Student> findAllNotAddedToCourse(Long userId, Long courseId, Sort sort);
 
+    boolean existByFullName(String fullName);
+
 }

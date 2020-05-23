@@ -2,10 +2,7 @@ package com.gmail.maxsvynarchuk.presentation.controller;
 
 import com.gmail.maxsvynarchuk.facade.TaskGroupFacade;
 import com.gmail.maxsvynarchuk.presentation.payload.request.TaskGroupPlagDetectionDto;
-import com.gmail.maxsvynarchuk.presentation.payload.response.OptionsForSettingsDto;
-import com.gmail.maxsvynarchuk.presentation.payload.response.PagedDto;
-import com.gmail.maxsvynarchuk.presentation.payload.response.StudentDto;
-import com.gmail.maxsvynarchuk.presentation.payload.response.TaskGroupDto;
+import com.gmail.maxsvynarchuk.presentation.payload.response.*;
 import com.gmail.maxsvynarchuk.presentation.security.AuthUser;
 import com.gmail.maxsvynarchuk.presentation.security.serivce.UserPrincipal;
 import com.gmail.maxsvynarchuk.presentation.util.ControllerUtil;
@@ -19,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -52,10 +50,9 @@ public class TaskGroupController {
 
     @PostMapping(value = "/assign", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> assignNewTaskGroup(
-            @AuthUser UserPrincipal currentUser,
-            @PathVariable(value = "groupId") long groupId,
-            @Valid TaskGroupPlagDetectionDto dto) throws HttpMediaTypeNotSupportedException {
+    public ResponseEntity<?> assignNewTaskGroup(@PathVariable(value = "courseId") Long courseId,
+                                                @Valid TaskGroupPlagDetectionDto dto)
+            throws HttpMediaTypeNotSupportedException {
         if (Objects.nonNull(dto.getBaseCodeZip()) &&
                 dto.getBaseCodeZip().getSize() <= 0) {
             dto.setBaseCodeZip(null);
@@ -63,8 +60,12 @@ public class TaskGroupController {
                 !ControllerUtil.validateZipMediaType(dto.getBaseCodeZip())) {
             throw new HttpMediaTypeNotSupportedException("Invalid 'baseCodeZip' media type!");
         }
-        taskGroupFacade.assignNewTaskGroup(dto);
-        return ResponseEntity.ok().build();
+        BasicTaskGroupDto responseDto = taskGroupFacade.assignNewTaskGroup(dto);
+        URI location = ControllerUtil.getLocation("api/v1/courses", courseId.toString(),
+                "groups", dto.getGroupId().toString(),
+                "tasks", dto.getTaskId().toString());
+        System.out.println(location);
+        return ResponseEntity.created(location).body(responseDto);
     }
 
     @PostMapping("/{taskId}/delete")

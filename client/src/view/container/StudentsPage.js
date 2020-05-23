@@ -7,7 +7,8 @@ import * as workflowActions from "../../store/action/workflowActions";
 import {connect} from "react-redux";
 import PagePagination from "../component/PagePagination";
 import {LinkContainer} from "react-router-bootstrap";
-import {getAllStudents} from "../../api/student";
+import {deleteStudentFromSystem, getAllStudents} from "../../api/student";
+import {notify} from "reapop";
 
 class StudentsPage extends React.Component {
     constructor(props) {
@@ -19,16 +20,13 @@ class StudentsPage extends React.Component {
             totalPages: 0
         }
 
+        this.handleDeleteBtn = this.handleDeleteBtn.bind(this);
         this.handlePaginationClick = this.handlePaginationClick.bind(this);
     }
 
     componentDidMount() {
         this.props.sidebar.changeSidebarState("students", "Меню керування:");
         this.loadStudents();
-    }
-
-    componentWillUnmount() {
-        this.props.sidebar.changeSidebarState("courseCatalog")
     }
 
     async loadStudents(page = 0) {
@@ -47,14 +45,46 @@ class StudentsPage extends React.Component {
         }
     }
 
+    async handleDeleteBtn(e) {
+        e.preventDefault();
+        const studentId = parseInt(e.target.studentId.value);
+        try {
+            await this.setState({
+                isLoading: true
+            });
+            await deleteStudentFromSystem(studentId);
+            const newContent = this.state.content.filter(s => s.id !== studentId);
+            console.log(newContent)
+            if (newContent.length > 0) {
+                await this.setState({
+                    isLoading: false,
+                    content: newContent
+                });
+            } else if (this.state.page > 0) {
+                await this.loadStudents(--this.state.page);
+            }
+        } catch (err) {
+            if (err.status === 409) {
+                const {notify} = this.props;
+                notify({
+                    title: 'Невдача!',
+                    message: 'Студент прикріплений до групи!',
+                    status: 'error',
+                    position: 'tc',
+                    dismissible: true,
+                    dismissAfter: 5000
+                });
+                await this.setState({
+                    isLoading: false,
+                });
+            } else {
+                this.props.error.throwError(err);
+            }
+        }
+    }
+
     async handlePaginationClick(page) {
-        await this.setState({
-            isLoading: true
-        });
         await this.loadStudents(page);
-        await this.setState({
-            isLoading: false
-        });
     }
 
     render() {
@@ -84,11 +114,9 @@ class StudentsPage extends React.Component {
                             </LinkContainer>
                         </td>
                         <td className="align-middle">
-                            <form>
-                                <input name="delete" value={students[i].id}
-                                       hidden readOnly/>
-                                <button type="submit"
-                                        className="rmv-btn-as-link" disabled>
+                            <form onSubmit={this.handleDeleteBtn}>
+                                <input name="studentId" value={students[i].id} hidden readOnly/>
+                                <button type="submit" className="rmv-btn-as-link">
                                     <i className="fa fa-times fa-lg"
                                        aria-hidden="true"/>
                                 </button>
@@ -180,6 +208,7 @@ function mapDispatchToProps(dispatch) {
         error: bindActionCreators(errorActions, dispatch),
         sidebar: bindActionCreators(sidebarActions, dispatch),
         workflow: bindActionCreators(workflowActions, dispatch),
+        notify: bindActionCreators(notify, dispatch)
     };
 }
 

@@ -7,17 +7,16 @@ import {matchPath, withRouter} from "react-router-dom";
 import Load from "../../component/Load";
 import ReactTooltip from "react-tooltip";
 import $ from 'jquery';
-import {addTaskToCourse} from "../../../api/task";
+import {addStudentToSystem} from "../../../api/student";
+import {notify} from "reapop";
 
-class AddTaskToCourseModal extends React.Component {
+class AddStudentToSystemModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             isLoading: false,
 
-            name: '',
-            repositoryPrefixPath: '',
-            description: ''
+            fullName: ''
         }
 
         this.handleChangesField = this.handleChangesField.bind(this);
@@ -55,48 +54,59 @@ class AddTaskToCourseModal extends React.Component {
         if (!this.validateForm()) {
             return;
         }
+        const {notify} = this.props;
         try {
             await this.setState({
                 isLoading: true,
             });
-            await addTaskToCourse(this.state.courseId, {
-                courseId: this.state.courseId,
-                name: this.state.name,
-                repositoryPrefixPath: this.state.repositoryPrefixPath,
-                description: this.state.description
+            await addStudentToSystem({
+                fullName: this.state.fullName
             });
-            window.location.reload();
+            notify({
+                title: 'Успіх!',
+                message: `Студента "${this.state.fullName}" успішно додано до системи.`,
+                status: 'success',
+                position: 'tc',
+                dismissible: true,
+                dismissAfter: 3000
+            });
+            await this.setState({
+                isLoading: false,
+                fullName: ''
+            });
         } catch (err) {
-            this.props.error.throwError(err);
+            if (err.status === 400 && err.success === false) {
+                notify({
+                    title: 'Невдача!',
+                    message: `Студент з повним ім'ям "${this.state.fullName}" вже існує в системі.`,
+                    status: 'error',
+                    position: 'tc',
+                    dismissible: true,
+                    dismissAfter: 3000
+                });
+                await this.setState({
+                    isLoading: false,
+                    fullName: ''
+                });
+            } else {
+                this.props.error.throwError(err);
+            }
         }
     }
 
     validateForm() {
-        const name = this.state.name;
-        const repositoryPrefixPath = this.state.repositoryPrefixPath;
-        const description = this.state.description;
+        const fullName = this.state.fullName;
 
         let isValid = true;
-
         const regexp = /^(https:\/\/bitbucket.org\/.+|https:\/\/github.com\/.+)$/;
 
-        if (!name || name.length === 0) {
-            this.setError('name',
+        if (!fullName || fullName.length === 0) {
+            this.setError('fullName',
                 'Буль-ласка заповніть дане поле!');
             isValid = false;
-        } else if (!/^[\w \-А-яЁёІіЇїЄє]+$/.test(name)) {
-            this.setError('name',
-                "Назва може містити лище літери, цифри, пробільний символ та символи дефісу і нижньго підкреслення");
-            isValid = false;
-        }
-
-        if (!repositoryPrefixPath || repositoryPrefixPath.length === 0) {
-            this.setError('repositoryPrefixPath',
-                'Буль-ласка заповніть дане поле!');
-            isValid = false;
-        } else if (!/^([^\\/:*?"<>|\f\n\r\t\v]+\/?)*$/.test(repositoryPrefixPath)) {
-            this.setError('repositoryPrefixPath',
-                "Назви директорій не повинні містити наступні символи: \\/:*?\"<>|");
+        } else if (!/^([\wА-яЁёІіЇїЄє]+ ?)+$/.test(fullName)) {
+            this.setError('fullName',
+                "Може містити лище літери, цифри та пробільний символ");
             isValid = false;
         }
         return isValid;
@@ -117,6 +127,7 @@ class AddTaskToCourseModal extends React.Component {
             description: '',
             invalidForm: true
         })
+        window.location.reload();
     }
 
     render() {
@@ -141,92 +152,33 @@ class AddTaskToCourseModal extends React.Component {
         const form = (
             <form>
                 <div className="form-group mt-4">
-                    <label htmlFor="inputName">
-                        <span className="" id="inputName" data-tip
-                              data-for='inputNameFAQ'>
+                    <label htmlFor="inputFullName">
+                        <span className="" id="inputFullName" data-tip
+                              data-for='inputFullNameFAQ'>
                                 <i className="fa fa-question-circle-o fa-lg"
                                    aria-hidden="true"/>
                         </span>
-                        &nbsp;Назва завдання:
+                        &nbsp;Повне ім'я студента:
                     </label>
-                    <ReactTooltip id='inputNameFAQ' place="left" type='info'
+                    <ReactTooltip id='inputFullNameFAQ' place="left" type='info'
                                   multiline={true}
                                   effect="solid">
-                        Назва завдання
+                        Унакальне ім'я в студента в системі
                     </ReactTooltip>
                     <div className="input-group">
                         <div className="input-group-prepend">
-                            <span className="input-group-text" id="inputURL">
-                                <i className="fa fa-book fa-lg" aria-hidden="true"/>
+                            <span className="input-group-text" id="inputFullName">
+                                <i className="fa fa-user fa-lg" aria-hidden="true"/>
                             </span>
                         </div>
                         <input type="text"
-                               name={"name"}
-                               value={this.state.name}
+                               name={"fullName"}
+                               value={this.state.fullName}
                                onChange={this.handleChangesField}
-                               className={renderFieldStyle('name')}
-                               id="inputName"
+                               className={renderFieldStyle('fullName')}
+                               id="inputFullName"
                                maxLength="255"/>
-                        {renderErrorMessage('name')}
-                    </div>
-                </div>
-                <div className="form-group mt-4">
-                    <label htmlFor="inputPrefixPath">
-                        <span className="" id="inputPrefixPath" data-tip
-                              data-for='inputPrefixPathFAQ'>
-                                <i className="fa fa-question-circle-o fa-lg"
-                                   aria-hidden="true"/>
-                        </span>
-                        &nbsp;Директорія завдання:
-                    </label>
-                    <ReactTooltip id='inputPrefixPathFAQ' place="left" type='info'
-                                  multiline={true}
-                                  effect="solid">
-                        <p>Шлях до директорії завдання в репозиторії студента. Приклад:</p>
-                        <ul>
-                            <li>task1</li>
-                            <li>path/to/task2</li>
-                        </ul>
-                    </ReactTooltip>
-                    <div className="input-group">
-                        <div className="input-group-prepend">
-                            <span className="input-group-text" id="inputPrefixPath">
-                                <i className="fa fa-folder fa-lg" aria-hidden="true"/>
-                            </span>
-                        </div>
-                        <input type="text"
-                               name={"repositoryPrefixPath"}
-                               value={this.state.repositoryPrefixPath}
-                               onChange={this.handleChangesField}
-                               className={renderFieldStyle('repositoryPrefixPath')}
-                               id="inputPrefixPath"
-                               maxLength="255"/>
-                        {renderErrorMessage('repositoryPrefixPath')}
-                    </div>
-                </div>
-                <div className="form-group mt-4">
-                    <label htmlFor="inputDescription">
-                        <span className="" id="inputDescription" data-tip
-                              data-for='inputDescriptionFAQ'>
-                                <i className="fa fa-question-circle-o fa-lg"
-                                   aria-hidden="true"/>
-                        </span>
-                        &nbsp;Опис завдання:
-                    </label>
-                    <ReactTooltip id='inputDescriptionFAQ' place="left" type='info'
-                                  multiline={true}
-                                  effect="solid">
-                        Опис завдання
-                    </ReactTooltip>
-                    <div className="input-group">
-                        <textarea rows="5"
-                                  name={"description"}
-                                  value={this.state.description}
-                                  onChange={this.handleChangesField}
-                                  id="inputDescription"
-                                  className={renderFieldStyle('description')}
-                                  maxLength="1000"/>
-                        {renderErrorMessage('description')}
+                        {renderErrorMessage('fullName')}
                     </div>
                 </div>
             </form>
@@ -243,7 +195,7 @@ class AddTaskToCourseModal extends React.Component {
                             <div className="modal-content">
                                 <div className="modal-header">
                                     <h4 className="modal-title">
-                                        Додати завдання до курсу
+                                        Додати студента до курсу
                                     </h4>
                                     <button type="button" className="close" data-dismiss="modal" aria-label="Close"
                                             onClick={this.handleCloseModal}>
@@ -267,8 +219,8 @@ class AddTaskToCourseModal extends React.Component {
                                     </button>
                                     <button type="button" className="btn btn-primary"
                                             onClick={this.handleSubmit}>
-                                        <i className="fa fa-book fa-lg" aria-hidden="true"/>&nbsp;&nbsp;
-                                        Додати завдання
+                                        <i className="fa fa-user-plus fa-lg" aria-hidden="true"/>&nbsp;&nbsp;
+                                        Додати студента
                                     </button>
                                 </div>
                             </div>
@@ -284,7 +236,8 @@ function mapDispatchToProps(dispatch) {
     return {
         error: bindActionCreators(errorActions, dispatch),
         workflow: bindActionCreators(workflowActions, dispatch),
+        notify: bindActionCreators(notify, dispatch)
     };
 }
 
-export default withRouter(connect(null, mapDispatchToProps)(AddTaskToCourseModal));
+export default withRouter(connect(null, mapDispatchToProps)(AddStudentToSystemModal));

@@ -14,4 +14,8 @@ public interface StudentService {
 
     List<Student> getAllStudentsNotAddedToCourse(Long userId, Long courseId);
 
+    boolean saveStudent(Student student);
+
+    boolean deleteStudentFromSystem(Long studentId);
+
 }

@@ -1,6 +1,7 @@
 package com.gmail.maxsvynarchuk.facade;
 
 import com.gmail.maxsvynarchuk.presentation.payload.request.TaskGroupPlagDetectionDto;
+import com.gmail.maxsvynarchuk.presentation.payload.response.BasicTaskGroupDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.OptionsForSettingsDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.TaskGroupDto;
 
@@ -12,7 +13,7 @@ public interface TaskGroupFacade {
 
     OptionsForSettingsDto getOptionsForTaskGroupAdding(Long courseId, Long groupId);
 
-    void assignNewTaskGroup(TaskGroupPlagDetectionDto dto);
+    BasicTaskGroupDto assignNewTaskGroup(TaskGroupPlagDetectionDto dto);
 
     boolean deleteTaskGroup(Long taskId, Long groupId);
 

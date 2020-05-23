@@ -9,10 +9,7 @@ import com.gmail.maxsvynarchuk.persistence.domain.*;
 import com.gmail.maxsvynarchuk.persistence.domain.type.PlagDetectionStatus;
 import com.gmail.maxsvynarchuk.presentation.payload.request.SingleCheckPlagDetectionDto;
 import com.gmail.maxsvynarchuk.presentation.payload.request.TaskGroupPlagDetectionDto;
-import com.gmail.maxsvynarchuk.presentation.payload.response.BasicTaskDto;
-import com.gmail.maxsvynarchuk.presentation.payload.response.OptionsForSettingsDto;
-import com.gmail.maxsvynarchuk.presentation.payload.response.ProgrammingLanguageDto;
-import com.gmail.maxsvynarchuk.presentation.payload.response.TaskGroupDto;
+import com.gmail.maxsvynarchuk.presentation.payload.response.*;
 import com.gmail.maxsvynarchuk.service.GroupService;
 import com.gmail.maxsvynarchuk.service.ProgrammingLanguageService;
 import com.gmail.maxsvynarchuk.service.TaskGroupService;
@@ -38,6 +35,7 @@ public class TaskGroupFacadeImpl implements TaskGroupFacade {
 
     private final FileSystemWriter fileSystemWriter;
 
+    private final Converter<TaskGroup, BasicTaskGroupDto> taskGroupToBasicTaskGroupDto;
     private final Converter<TaskGroup, TaskGroupDto> taskGroupToTaskGroupDto;
     private final Converter<Task, BasicTaskDto> taskToBasicTaskDto;
     private final Converter<ProgrammingLanguage, ProgrammingLanguageDto> programmingLanguageDto;
@@ -68,7 +66,7 @@ public class TaskGroupFacadeImpl implements TaskGroupFacade {
     }
 
     @Override
-    public void assignNewTaskGroup(TaskGroupPlagDetectionDto dto) {
+    public BasicTaskGroupDto assignNewTaskGroup(TaskGroupPlagDetectionDto dto) {
         Group group = groupService.getGroupById(dto.getGroupId())
                 .orElseThrow();
         Task task = taskService.getTaskById(dto.getTaskId())
@@ -99,7 +97,10 @@ public class TaskGroupFacadeImpl implements TaskGroupFacade {
                 .plagDetectionSettings(settings)
                 .plagDetectionResult(result)
                 .build();
-        taskGroupService.saveTaskGroup(taskGroup);
+
+        TaskGroup newTaskGroup = taskGroupService.saveTaskGroup(taskGroup);
+        newTaskGroup.setTask(task);
+        return taskGroupToBasicTaskGroupDto.convert(newTaskGroup);
     }
 
     private void generatePaths(PlagDetectionSettings settings,

@@ -46,6 +46,12 @@ export function loadSpecificGroup(groupId, courseId) {
     };
 }
 
+export function addTaskGroupToActiveGroup(newTaskGroup) {
+    return function (dispatch) {
+        dispatch({type: types.ADD_TASK_GROUP_TO_ACTIVE_GROUP, newTaskGroup: newTaskGroup});
+    }
+}
+
 export function deleteTaskGroupFromActiveGroup(taskId) {
     return function (dispatch) {
         dispatch({type: types.DELETE_TASK_GROUP_FROM_ACTIVE_GROUP, taskId: parseInt(taskId)});

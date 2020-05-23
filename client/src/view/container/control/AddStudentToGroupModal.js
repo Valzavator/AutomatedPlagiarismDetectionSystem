@@ -121,14 +121,13 @@ class AddStudentToGroupModal extends React.Component {
             });
             notify({
                 title: 'Успіх!',
-                message: `Студента ${res.data.studentFullName} успішно додано до групи.`,
+                message: `Студента "${res.data.studentFullName}" успішно додано до групи.`,
                 status: 'success',
                 position: 'tc',
                 dismissible: true,
                 dismissAfter: 3000
             });
         } catch (err) {
-            console.log(err)
             if (err.status === 400) {
                 notify({
                     title: 'Невдача!',

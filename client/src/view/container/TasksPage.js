@@ -5,7 +5,7 @@ import * as errorActions from "../../store/action/errorActions";
 import * as sidebarActions from "../../store/action/sidebarActions";
 import {connect} from "react-redux";
 import PagePagination from "../component/PagePagination";
-import {getAllCourseTasks} from "../../api/task";
+import {deleteTaskFromCourse, getAllCourseTasks} from "../../api/task";
 
 class TasksPage extends React.Component {
     constructor(props) {
@@ -17,6 +17,7 @@ class TasksPage extends React.Component {
             totalPages: 0
         }
 
+        this.handleDeleteBtn = this.handleDeleteBtn.bind(this);
         this.handlePaginationClick = this.handlePaginationClick.bind(this);
     }
 
@@ -36,11 +37,25 @@ class TasksPage extends React.Component {
             });
             const courseId = this.props.match.params.courseId;
             let res = await getAllCourseTasks(courseId, page);
-            console.log(res.data)
             await this.setState({
                 isLoading: false,
                 ...res.data
             });
+        } catch (err) {
+            this.props.error.throwError(err);
+        }
+    }
+
+    async handleDeleteBtn(e) {
+        e.preventDefault();
+        const courseId = this.props.match.params.courseId;
+        const taskId = e.target.taskId.value;
+        try {
+            await this.setState({
+                isLoading: true
+            });
+            await deleteTaskFromCourse(courseId, taskId);
+            window.location.reload();
         } catch (err) {
             this.props.error.throwError(err);
         }
@@ -56,12 +71,12 @@ class TasksPage extends React.Component {
             return tasks.map(
                 task =>
                     <div className="col mb-4" key={task.id}>
-                        <div className="card">
+                        <div className="card h-100">
                             <ul className="list-group list-group-flush">
                                 <li className="list-group-item">
                                     Назва: <strong>{task.name}</strong>
                                 </li>
-                                <li className="list-group-item">
+                                <li className="list-group-item overflow-auto" style={{maxHeight: '200px'}}>
                                     Директорія репозиторія: <strong>"{task.repositoryPrefixPath}"</strong>
                                 </li>
                             </ul>
@@ -70,14 +85,23 @@ class TasksPage extends React.Component {
                                 {task.description ? task.description : 'Відсутній...'}
                             </div>
                             <div className="card-body text-center">
-                                <button className="btn btn-danger align-self-end m-3">
-                                    Видалити&nbsp;&nbsp;
-                                    <i className="fa fa-trash fa-lg" aria-hidden="true"/>
-                                </button>
-                                <button className="btn btn-warning align-self-end m-3">
-                                    Редагувати&nbsp;&nbsp;
-                                    <i className="fa fa-pencil-square fa-lg" aria-hidden="true"/>
-                                </button>
+                                <div className="row justify-content-center align-items-end h-100">
+                                    <div className="col-6">
+                                        <form onSubmit={this.handleDeleteBtn}>
+                                            <button className="btn btn-danger align-self-end" name="taskId"
+                                                    value={task.id}>
+                                                Видалити&nbsp;&nbsp;
+                                                <i className="fa fa-trash fa-lg" aria-hidden="true"/>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div className="col-6">
+                                        <button className="btn btn-warning align-self-end">
+                                            Редагувати&nbsp;&nbsp;
+                                            <i className="fa fa-pencil-square fa-lg" aria-hidden="true"/>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -111,7 +135,7 @@ class TasksPage extends React.Component {
                             {
                                 this.state.content.length > 0
                                     ? (
-                                        <div className="row row-cols-1 row-md-cols-1 row-cols-lg-3">
+                                        <div className="row row-cols-1 row-md-cols-1 row-cols-lg-2 row-cols-xl-3">
                                             {renderTasks(this.state.content)}
                                         </div>
                                     )

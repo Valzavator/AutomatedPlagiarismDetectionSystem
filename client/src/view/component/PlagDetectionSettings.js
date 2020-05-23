@@ -6,7 +6,6 @@ import * as errorActions from "../../store/action/errorActions";
 import {connect} from "react-redux";
 import Load from "./Load";
 import * as moment from "moment";
-import $ from "jquery";
 
 function getOr(value, orValue) {
     return value ? value : orValue;

@@ -20,4 +20,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
             "WHERE sg.course.id = :courseId)")
     List<Student> findAllNotAddedToCourse(Long userId, Long courseId, Sort sort);
 
+    boolean existsByFullName(String fullName);
+
 }

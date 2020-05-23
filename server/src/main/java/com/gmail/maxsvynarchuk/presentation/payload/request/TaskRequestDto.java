@@ -8,6 +8,8 @@ import javax.validation.constraints.Size;
 
 @Data
 public class TaskRequestDto {
+    @NotNull
+    private Long courseId;
     @NotBlank
     @Size(max = 255)
     private String name;

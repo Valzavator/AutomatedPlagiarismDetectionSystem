@@ -1,7 +1,6 @@
 package com.gmail.maxsvynarchuk.service.impl;
 
 import com.gmail.maxsvynarchuk.persistence.dao.TaskDao;
-import com.gmail.maxsvynarchuk.persistence.domain.Student;
 import com.gmail.maxsvynarchuk.persistence.domain.Task;
 import com.gmail.maxsvynarchuk.service.TaskService;
 import lombok.AllArgsConstructor;
@@ -38,5 +37,21 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<Task> getAllTasksByCourseIdAndNotAssignedToGroup(Long courseId, Long groupId) {
         return taskDao.findAllByCourseIdAndNotAssignedToGroup(courseId, groupId);
+    }
+
+    @Transactional
+    @Override
+    public Task saveTask(Task task) {
+        return taskDao.save(task);
+    }
+
+    @Override
+    public boolean deleteTaskFromCourse(Long taskId) {
+        Optional<Task> taskOpt = taskDao.findOne(taskId);
+        if (taskOpt.isPresent()) {
+            taskDao.deleteById(taskId);
+            return true;
+        }
+        return false;
     }
 }

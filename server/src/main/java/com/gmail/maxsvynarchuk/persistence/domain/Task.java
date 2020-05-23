@@ -28,6 +28,7 @@ public class Task implements Serializable {
     private String name;
 
     @NotNull
+    @Size(max = 255)
     private String repositoryPrefixPath;
 
     @Lob
@@ -38,7 +39,9 @@ public class Task implements Serializable {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Course course;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "task")
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            mappedBy = "task")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<TaskGroup> taskGroups;

@@ -5,6 +5,9 @@ import {LinkContainer} from "react-router-bootstrap";
 import {matchPath, withRouter} from "react-router-dom";
 import AddStudentToGroupModal from "../container/control/AddStudentToGroupModal";
 import AddTaskToCourseModal from "../container/control/AddTaskToCourseModal";
+import AddStudentToSystemModal from "../container/control/AddStudentToSystemModal";
+import AddCourseToSystemModal from "../container/control/AddCourseToSystemModal";
+import AddGroupToCourseModal from "../container/control/AddGroupToCourseModal";
 
 class Sidebar extends React.Component {
     constructor(props) {
@@ -69,12 +72,22 @@ class Sidebar extends React.Component {
         }
 
         const allCursesBtns = [
-            <button className="list-group-item list-group-item-action bg-success" key={'createNewCourse'}>
+            <button className="list-group-item list-group-item-action bg-success" key={'createNewCourse'}
+                    data-toggle="modal"
+                    data-target="#addCourseToSystemModal"
+                    onClick={() => this.handleChangeModal('addCourseToSystemModal', true)}>
                 <i className="fa fa-users" aria-hidden="true"/>&nbsp;&nbsp;
                 Створити новий курс
             </button>
         ]
-        const allCursesModals = []
+        const allCursesModals = [
+            <AddCourseToSystemModal
+                id="addCourseToSystemModal"
+                key={'addCourseToSystemModal'}
+                isOpen={this.state.addTaskToCourseModal}
+                onClose={() => this.handleChangeModal('addCourseToSystemModal', false)}
+            />
+        ]
 
         const renderSpecificCourseBtns = (params) => {
             return [
@@ -90,7 +103,10 @@ class Sidebar extends React.Component {
                         Завдання курсу
                     </button>
                 </LinkContainer>,
-                <button className="list-group-item list-group-item-action bg-success" key={'createNewGroup'}>
+                <button className="list-group-item list-group-item-action bg-success" key={'createNewGroup'}
+                        data-toggle="modal"
+                        data-target="#addGroupToCourseModal"
+                        onClick={() => this.handleChangeModal('addGroupToCourseModal', true)}>
                     <i className="fa fa-plus-circle" aria-hidden="true"/>&nbsp;&nbsp;
                     Створити нову групу
                 </button>,
@@ -104,7 +120,14 @@ class Sidebar extends React.Component {
                 </button>
             ]
         }
-        const specificCourseModals = []
+        const specificCourseModals = [
+            <AddGroupToCourseModal
+                id="addGroupToCourseModal"
+                key={'addGroupToCourseModal'}
+                isOpen={this.state.addTaskToCourseModal}
+                onClose={() => this.handleChangeModal('addGroupToCourseModal', false)}
+            />
+        ]
 
         const specificCourseTasksBtns = [
             <button className="list-group-item list-group-item-action bg-primary" key={'backToCourse'}
@@ -195,12 +218,23 @@ class Sidebar extends React.Component {
         const taskGroupDetailModals = []
 
         const studentsBtns = [
-            <button className="list-group-item list-group-item-action bg-info" key={'addNewStudent'}>
+            <button className="list-group-item list-group-item-action bg-info"
+                    key={'addNewStudent'}
+                    data-toggle="modal"
+                    data-target="#addStudentToSystemModal"
+                    onClick={() => this.handleChangeModal('addStudentToSystemModal', true)}>
                 <i className="fa fa-user-plus" aria-hidden="true"/>&nbsp;&nbsp;
                 Додати нового студента
             </button>
         ]
-        const studentsModals = []
+        const studentsModals = [
+            <AddStudentToSystemModal
+                id="addStudentToSystemModal"
+                key={'addStudentToSystemModal'}
+                isOpen={this.state.addTaskToCourseModal}
+                onClose={() => this.handleChangeModal('addStudentToSystemModal', false)}
+            />
+        ]
 
         return (
             <div className="bg-dark" id="sidebar-wrapper">

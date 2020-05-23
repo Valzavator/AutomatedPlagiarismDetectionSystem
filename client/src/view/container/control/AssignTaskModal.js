@@ -64,7 +64,6 @@ class AssignTaskModal extends React.Component {
             await this.setState({
                 isLoading: true,
             });
-
             const data = new FormData();
             //using File API to get chosen file
             data.append('taskId', this.state.taskId);
@@ -78,11 +77,13 @@ class AssignTaskModal extends React.Component {
             if (this.state.baseCodeZip) {
                 data.append('baseCodeZip', this.state.baseCodeZip);
             }
-            await assignNewTaskGroup(this.state.courseId, this.state.groupId, data);
+            let res = await assignNewTaskGroup(this.state.courseId, this.state.groupId, data);
             await this.setState({
                 isLoading: false,
             });
-            window.location.reload();
+            this.props.workflow.addTaskGroupToActiveGroup(res.data);
+            this.handleCloseBtn();
+            $(this.modal).modal('hide');
         } catch (err) {
             this.props.error.throwError(err);
         }

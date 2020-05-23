@@ -6,6 +6,7 @@ import com.gmail.maxsvynarchuk.presentation.payload.request.LoginDto;
 import com.gmail.maxsvynarchuk.presentation.payload.request.SignUpDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.JwtAuthenticationDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.ApiSignUpDto;
+import com.gmail.maxsvynarchuk.presentation.util.ControllerUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,10 +49,7 @@ public class AuthController {
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpDto signUpDto) {
         boolean isSuccessful = userFacade.registerUser(signUpDto);
         if (isSuccessful) {
-            URI location = ServletUriComponentsBuilder
-                    .fromCurrentContextPath().path("/api/v1/user")
-                    .buildAndExpand()
-                    .toUri();
+            URI location = ControllerUtil.getLocation("/api/v1/user");
             return ResponseEntity.created(location).body(new ApiSignUpDto(
                     HttpStatus.CREATED.value(),
                     true,
