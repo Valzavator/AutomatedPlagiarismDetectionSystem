@@ -32,7 +32,8 @@ class Layout extends React.Component {
 
         if (this.props.isAuthorized !== prevProps.isAuthorized ||
             currLocation !== prevProps.location.pathname) {
-            if (this.props.isAuthorized && pagesPrefixWithSidebar.find(prefix => currLocation.startsWith(prefix))) {
+            if (this.props.isAuthorized &&
+                pagesPrefixWithSidebar.find(prefix => currLocation.startsWith(prefix))) {
                 this.setState({renderSidebar: true});
             } else {
                 this.setState({renderSidebar: false});
@@ -52,7 +53,6 @@ class Layout extends React.Component {
                     <NotificationsSystem theme={theme}/>
                     <Header sidebarButton={this.state.renderSidebar}/>
                     <main role="main"
-                        // className={this.props.isOpenSidebar && this.props.isAuthorized ? "d-flex " : "d-flex toggled"}
                           className={this.props.isOpenSidebar ? "d-flex " : "d-flex toggled"}
                           id="wrapper">
                         {this.state.renderSidebar ? <Sidebar/> : null}

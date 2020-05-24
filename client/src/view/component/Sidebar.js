@@ -234,7 +234,7 @@ class Sidebar extends React.Component {
             </LinkContainer>,
             <button className="list-group-item list-group-item-action bg-warning" key={'editTaskGroup'}>
                 <i className="fa fa-pencil-square" aria-hidden="true"/>&nbsp;&nbsp;
-                Редагувати завдання
+                Редагувати завдання групи
             </button>,
             <button className="list-group-item list-group-item-action bg-danger" key={'removeTaskGroup'}
                     data-toggle="modal"
