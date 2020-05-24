@@ -43,7 +43,9 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public boolean saveStudent(Student student) {
-        student.setFullName(student.getFullName().trim());
+        String fullName = student.getFullName().trim()
+                .replaceAll("\\s+", " ");
+        student.setFullName(fullName);
         if (studentDao.existByFullName(student.getFullName())) {
             return false;
         }

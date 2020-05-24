@@ -3,9 +3,8 @@ package com.gmail.maxsvynarchuk.presentation.controller;
 import com.gmail.maxsvynarchuk.facade.TaskGroupFacade;
 import com.gmail.maxsvynarchuk.presentation.payload.request.TaskGroupPlagDetectionDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.*;
-import com.gmail.maxsvynarchuk.presentation.security.AuthUser;
-import com.gmail.maxsvynarchuk.presentation.security.serivce.UserPrincipal;
 import com.gmail.maxsvynarchuk.presentation.util.ControllerUtil;
+import com.gmail.maxsvynarchuk.service.TaskGroupService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -18,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Objects;
-import java.util.Optional;
 
 
 @RestController
@@ -32,10 +30,18 @@ public class TaskGroupController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getTaskGroup(
             @PathVariable(value = "taskId") long taskId,
-            @PathVariable(value = "groupId") long groupId,
-            HttpServletRequest request) {
-        Optional<TaskGroupDto> taskGroupDtoOpt = taskGroupFacade.getTaskGroupById(taskId, groupId);
-        return ControllerUtil.prepareResponse(taskGroupDtoOpt, request.getRequestURI());
+            @PathVariable(value = "groupId") long groupId) {
+        TaskGroupDto taskGroupDto = taskGroupFacade.getTaskGroupById(taskId, groupId);
+        return ResponseEntity.ok().body(taskGroupDto);
+    }
+
+    @PostMapping(value = "/{taskId}/check-now")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> checkNow(
+            @PathVariable(value = "taskId") Long taskId,
+            @PathVariable(value = "groupId") Long groupId) {
+        taskGroupFacade.checkTaskGroupNow(taskId, groupId);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/options")
@@ -64,7 +70,6 @@ public class TaskGroupController {
         URI location = ControllerUtil.getLocation("api/v1/courses", courseId.toString(),
                 "groups", dto.getGroupId().toString(),
                 "tasks", dto.getTaskId().toString());
-        System.out.println(location);
         return ResponseEntity.created(location).body(responseDto);
     }
 
@@ -72,9 +77,10 @@ public class TaskGroupController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> deleteTaskGroup(
             @PathVariable(value = "taskId") long taskId,
-            @PathVariable(value = "groupId") long groupId) {
+            @PathVariable(value = "groupId") long groupId,
+            HttpServletRequest request) {
         return taskGroupFacade.deleteTaskGroup(taskId, groupId)
                 ? ResponseEntity.noContent().build()
-                : ResponseEntity.badRequest().build();
+                : ControllerUtil.notFoundError(request.getRequestURI());
     }
 }

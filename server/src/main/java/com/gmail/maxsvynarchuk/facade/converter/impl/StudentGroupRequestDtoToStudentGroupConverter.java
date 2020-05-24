@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @AllArgsConstructor
 @Component
-public class StudentGroupDtoToStudentGroupConverter implements Converter<StudentGroupRequestDto, StudentGroup>  {
+public class StudentGroupRequestDtoToStudentGroupConverter implements Converter<StudentGroupRequestDto, StudentGroup>  {
     private final ModelMapper mapper;
 
     @Override

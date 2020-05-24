@@ -8,6 +8,7 @@ import com.gmail.maxsvynarchuk.facade.converter.Converter;
 import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionResult;
 import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionSettings;
 import com.gmail.maxsvynarchuk.persistence.domain.ProgrammingLanguage;
+import com.gmail.maxsvynarchuk.presentation.exception.BadRequestException;
 import com.gmail.maxsvynarchuk.presentation.payload.request.SingleCheckPlagDetectionDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.SingleCheckPlagDetectionResultDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.OptionsForSingleCheckSettingsDto;
@@ -51,7 +52,7 @@ public class SingleCheckPlagiarismDetectionFacadeImpl implements SingleCheckPlag
         //TODO - change to ResourceNotFoundException
         ProgrammingLanguage programmingLanguage = programmingLanguageService
                 .getProgrammingLanguageById(dto.getProgrammingLanguageId())
-                .orElseThrow();
+                .orElseThrow(BadRequestException::new);
         PlagDetectionSettings settings = settingsConverter.convert(dto);
         settings.setProgrammingLanguage(programmingLanguage);
 

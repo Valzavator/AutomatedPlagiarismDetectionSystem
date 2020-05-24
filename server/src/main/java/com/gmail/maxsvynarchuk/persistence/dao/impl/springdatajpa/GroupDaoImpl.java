@@ -4,6 +4,7 @@ import com.gmail.maxsvynarchuk.persistence.dao.GroupDao;
 import com.gmail.maxsvynarchuk.persistence.dao.repository.GroupRepository;
 import com.gmail.maxsvynarchuk.persistence.domain.Group;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -49,6 +50,13 @@ public class GroupDaoImpl implements GroupDao {
     @Override
     public boolean exist(Long id) {
         return repository.existsById(id);
+    }
+
+    @Override
+    public void deleteByIdAndCourseId(Long groupId, Long courseId) {
+        if (repository.deleteByIdAndCourseId(groupId, courseId) != 1) {
+            throw new EmptyResultDataAccessException(1);
+        }
     }
 
 }

@@ -9,13 +9,13 @@ import moment from "moment";
 import {LinkContainer} from "react-router-bootstrap";
 import {deleteTaskGroup} from "../../api/taskGroup";
 import {deleteStudentFromGroup} from "../../api/studentGroup";
+import {notify} from "reapop";
 
 class GroupPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             isLoading: true,
-            updateGroupInfo: true,
             isTaskTab: true
         }
 
@@ -38,27 +38,21 @@ class GroupPage extends React.Component {
     }
 
     async loadGroupInfo() {
-        console.log('loadGroupInfo')
         await this.props.workflow.loadSpecificGroup(
             this.props.match.params.groupId,
             this.props.match.params.courseId);
-        const updateGroupInfo = this.props.activeGroup.taskGroups
-            .find(tg => ['PENDING', 'IN_PROCESS'].includes(tg.plagDetectionStatus)) !== undefined;
         await this.setState({
             isLoading: false,
-            updateGroupInfo: updateGroupInfo
         });
     }
 
     async updateGroupInfo() {
-        console.log('updateGroupInfo')
         const updateGroupInfo = this.props.activeGroup.taskGroups
             .find(tg => ['PENDING', 'IN_PROCESS'].includes(tg.plagDetectionStatus)) !== undefined;
         if (updateGroupInfo) {
             await this.loadGroupInfo();
         }
     }
-
 
     async handleDeleteTaskBtn(e) {
         e.preventDefault();
@@ -84,6 +78,21 @@ class GroupPage extends React.Component {
     async handleDeleteStudentBtn(e) {
         e.preventDefault();
         e.persist();
+
+        const isAvailableActiveTask = this.props.activeGroup.taskGroups
+            .find(tg => ['PENDING', 'IN_PROCESS'].includes(tg.plagDetectionStatus)) !== undefined;
+        if (this.props.activeGroup.studentGroups.length === 2 && isAvailableActiveTask) {
+            const {notify} = this.props;
+            notify({
+                title: 'Невдача!',
+                message: 'В групі не може бути менше двух студентів, якщо ще є активні завдання!',
+                status: 'error',
+                position: 'tc',
+                dismissible: true,
+                dismissAfter: 5000
+            });
+            return;
+        }
         try {
             await this.setState({
                 isLoading: true
@@ -190,22 +199,22 @@ class GroupPage extends React.Component {
                                 </a>
                             </LinkContainer>
                         </td>
-                        <td>
-                            <button className="btn btn-link" id="updateLinkBtn">
-                                <i className="fa fa-pencil-square-o fa-lg" aria-hidden="true">&nbsp;&nbsp;</i>
-                            </button>
-                        </td>
-                        <td className="align-middle">
-                            <form onSubmit={this.handleDeleteTaskBtn}>
-                                <input name="deleteTaskId" value={tasks[i].taskId} hidden readOnly/>
-                                <button type="submit"
-                                        className="btn btn-link" id="deleteLinkBtn"
-                                        disabled={tasks[i].plagDetectionStatus === 'IN_PROCESS'}>
-                                    <i className="fa fa-times fa-lg"
-                                       aria-hidden="true"/>
-                                </button>
-                            </form>
-                        </td>
+                        {/*<td>*/}
+                        {/*    <button className="btn btn-link" id="updateLinkBtn">*/}
+                        {/*        <i className="fa fa-pencil-square-o fa-lg" aria-hidden="true">&nbsp;&nbsp;</i>*/}
+                        {/*    </button>*/}
+                        {/*</td>*/}
+                        {/*<td className="align-middle">*/}
+                        {/*    <form onSubmit={this.handleDeleteTaskBtn}>*/}
+                        {/*        <input name="deleteTaskId" value={tasks[i].taskId} hidden readOnly/>*/}
+                        {/*        <button type="submit"*/}
+                        {/*                className="btn btn-link" id="deleteLinkBtn"*/}
+                        {/*                disabled={tasks[i].plagDetectionStatus === 'IN_PROCESS'}>*/}
+                        {/*            <i className="fa fa-times fa-lg"*/}
+                        {/*               aria-hidden="true"/>*/}
+                        {/*        </button>*/}
+                        {/*    </form>*/}
+                        {/*</td>*/}
                     </tr>
                 )
             }
@@ -222,8 +231,8 @@ class GroupPage extends React.Component {
                             <th scope="col">Дата перевірки</th>
                             <th scope="col">Статус</th>
                             <th scope="col">Переглянути</th>
-                            <th scope="col">Редагувати</th>
-                            <th scope="col" style={{width: '97px'}}>Видалити</th>
+                            {/*<th scope="col">Редагувати</th>*/}
+                            {/*<th scope="col" style={{width: '97px'}}>Видалити</th>*/}
                         </tr>
                         </thead>
                         <tbody>
@@ -453,6 +462,7 @@ function mapDispatchToProps(dispatch) {
         error: bindActionCreators(errorActions, dispatch),
         sidebar: bindActionCreators(sidebarActions, dispatch),
         workflow: bindActionCreators(workflowActions, dispatch),
+        notify: bindActionCreators(notify, dispatch)
     };
 }
 

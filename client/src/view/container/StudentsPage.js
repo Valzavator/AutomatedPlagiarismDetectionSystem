@@ -35,7 +35,6 @@ class StudentsPage extends React.Component {
                 isLoading: true
             });
             let res = await getAllStudents(page);
-            console.log(res.data);
             await this.setState({
                 isLoading: false,
                 ...res.data
@@ -54,7 +53,6 @@ class StudentsPage extends React.Component {
             });
             await deleteStudentFromSystem(studentId);
             const newContent = this.state.content.filter(s => s.id !== studentId);
-            console.log(newContent)
             if (newContent.length > 0) {
                 await this.setState({
                     isLoading: false,

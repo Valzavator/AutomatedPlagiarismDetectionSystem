@@ -8,4 +8,6 @@ public interface GroupDao extends GenericDao<Group, Long> {
 
     Page<Group> findByCourseId(Long courseId, Pageable pageable);
 
+    void deleteByIdAndCourseId(Long groupId, Long courseId);
+
 }

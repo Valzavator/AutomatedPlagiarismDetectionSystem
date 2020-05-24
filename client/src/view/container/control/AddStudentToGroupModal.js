@@ -44,8 +44,7 @@ class AddStudentToGroupModal extends React.Component {
     }
 
     componentWillUnmount() {
-        this.props.onClose();
-        $(this.modal).modal('hide');
+        this.handleCloseModal();
     }
 
     async componentDidUpdate(prevProps, prevState, snapshot) {
@@ -89,8 +88,7 @@ class AddStudentToGroupModal extends React.Component {
 
     handleStudentsRedirectLink(e) {
         e.preventDefault();
-        $(this.modal).modal('hide');
-        this.props.onClose();
+        this.handleCloseModal();
         this.props.history.push('/students');
     }
 
@@ -149,7 +147,6 @@ class AddStudentToGroupModal extends React.Component {
     validateForm() {
         const URL = this.state.studentURL;
         const regexp = /^(https:\/\/bitbucket.org\/.+|https:\/\/github.com\/.+)$/;
-        console.log(regexp.test(URL))
         if (!regexp.test(URL)) {
             this.setState({
                 URLVisibleError: true,
@@ -161,6 +158,7 @@ class AddStudentToGroupModal extends React.Component {
     }
 
     handleCloseModal() {
+        $(this.modal).modal('hide');
         this.props.onClose();
         this.setState({
             studentId: -1,

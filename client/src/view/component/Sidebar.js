@@ -8,12 +8,14 @@ import AddTaskToCourseModal from "../container/control/AddTaskToCourseModal";
 import AddStudentToSystemModal from "../container/control/AddStudentToSystemModal";
 import AddCourseToSystemModal from "../container/control/AddCourseToSystemModal";
 import AddGroupToCourseModal from "../container/control/AddGroupToCourseModal";
+import DeleteGroupFromCourseModal from "../container/control/DeleteGroupFromCourseModal";
+import DeleteCourseFromSystemModal from "../container/control/DeleteCourseFromSystemModal";
+import DeleteTaskFromGroupModal from "../container/control/DeleteTaskFromGroupModal";
 
 class Sidebar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {}
-        this.handleBackBtn = this.handleBackBtn.bind(this);
         this.handleChangeModal = this.handleChangeModal.bind(this);
     }
 
@@ -23,17 +25,23 @@ class Sidebar extends React.Component {
         })
     }
 
-    handleBackBtn() {
-        this.props.history.goBack();
-    }
-
-    getParams() {
+    parsePath(path) {
         const match = matchPath(this.props.location.pathname, {
-            path: "/courses/:courseId",
+            path: path,
             exact: false,
             strict: false
         });
         return match ? match.params : undefined;
+    }
+
+    getCourseId() {
+        const match = this.parsePath("/courses/:courseId");
+        return match ? match.courseId : -1;
+    }
+
+    getGroupId() {
+        const match = this.parsePath("/courses/:courseId/groups/:groupId");
+        return match ? match.groupId : -1;
     }
 
     render() {
@@ -41,7 +49,7 @@ class Sidebar extends React.Component {
             if (this.props.sidebarState === 'courseCatalog') {
                 return allCursesBtns;
             } else if (this.props.sidebarState === 'course') {
-                return renderSpecificCourseBtns(this.getParams());
+                return renderSpecificCourseBtns;
             } else if (this.props.sidebarState === 'group') {
                 return specificGroupBtns;
             } else if (this.props.sidebarState === 'courseTasks') {
@@ -89,51 +97,59 @@ class Sidebar extends React.Component {
             />
         ]
 
-        const renderSpecificCourseBtns = (params) => {
-            return [
-                <LinkContainer to={`/courses`} key={'backToAllCourses'}>
-                    <button className="list-group-item list-group-item-action bg-primary">
-                        <i className="fa fa-chevron-circle-left" aria-hidden="true"/>&nbsp;&nbsp;
-                        Всі курси
-                    </button>
-                </LinkContainer>,
-                <LinkContainer to={`/courses/${params ? params.courseId : -1}/tasks`} key={'courseTasks'}>
-                    <button className="list-group-item list-group-item-action bg-info">
-                        <i className="fa fa-book" aria-hidden="true"/>&nbsp;&nbsp;
-                        Завдання курсу
-                    </button>
-                </LinkContainer>,
-                <button className="list-group-item list-group-item-action bg-success" key={'createNewGroup'}
-                        data-toggle="modal"
-                        data-target="#addGroupToCourseModal"
-                        onClick={() => this.handleChangeModal('addGroupToCourseModal', true)}>
-                    <i className="fa fa-plus-circle" aria-hidden="true"/>&nbsp;&nbsp;
-                    Створити нову групу
-                </button>,
-                <button className="list-group-item list-group-item-action bg-warning" key={'editCourse'}>
-                    <i className="fa fa-pencil-square" aria-hidden="true"/>&nbsp;&nbsp;
-                    Редагувати даний курс
-                </button>,
-                <button className="list-group-item list-group-item-action bg-danger" key={'removeCourse'}>
-                    <i className="fa fa-trash" aria-hidden="true"/>&nbsp;&nbsp;
-                    Видалити даний курс
+        const renderSpecificCourseBtns = [
+            <LinkContainer to={`/courses`} key={'backToAllCourses'}>
+                <button className="list-group-item list-group-item-action bg-primary">
+                    <i className="fa fa-chevron-circle-left" aria-hidden="true"/>&nbsp;&nbsp;
+                    Всі курси
                 </button>
-            ]
-        }
+            </LinkContainer>,
+            <LinkContainer to={`/courses/${this.getCourseId()}/tasks`} key={'courseTasks'}>
+                <button className="list-group-item list-group-item-action bg-info">
+                    <i className="fa fa-book" aria-hidden="true"/>&nbsp;&nbsp;
+                    Завдання курсу
+                </button>
+            </LinkContainer>,
+            <button className="list-group-item list-group-item-action bg-success" key={'createNewGroup'}
+                    data-toggle="modal"
+                    data-target="#addGroupToCourseModal"
+                    onClick={() => this.handleChangeModal('addGroupToCourseModal', true)}>
+                <i className="fa fa-plus-circle" aria-hidden="true"/>&nbsp;&nbsp;
+                Створити нову групу
+            </button>,
+            <button className="list-group-item list-group-item-action bg-warning" key={'editCourse'}>
+                <i className="fa fa-pencil-square" aria-hidden="true"/>&nbsp;&nbsp;
+                Редагувати даний курс
+            </button>,
+            <button className="list-group-item list-group-item-action bg-danger" key={'removeCourse'}
+                    data-toggle="modal"
+                    data-target="#deleteCourseFromSystemModal"
+                    onClick={() => this.handleChangeModal('deleteCourseFromSystemModal', true)}>
+                <i className="fa fa-trash" aria-hidden="true"/>&nbsp;&nbsp;
+                Видалити даний курс
+            </button>
+        ]
+
         const specificCourseModals = [
             <AddGroupToCourseModal
                 id="addGroupToCourseModal"
                 key={'addGroupToCourseModal'}
                 isOpen={this.state.addTaskToCourseModal}
                 onClose={() => this.handleChangeModal('addGroupToCourseModal', false)}
+            />,
+            <DeleteCourseFromSystemModal
+                id="deleteCourseFromSystemModal"
+                key={'deleteCourseFromSystemModal'}
+                isOpen={this.state.deleteGroupFromCourseModal}
+                onClose={() => this.handleChangeModal('deleteCourseFromSystemModal', false)}
             />
         ]
 
         const specificCourseTasksBtns = [
             <button className="list-group-item list-group-item-action bg-primary" key={'backToCourse'}
-                    onClick={this.handleBackBtn}>
+                    onClick={() => this.props.history.goBack()}>
                 <i className="fa fa-chevron-circle-left" aria-hidden="true"/>&nbsp;&nbsp;
-                Повернутися до курсу
+                Повернутися
             </button>,
             <button className="list-group-item list-group-item-action bg-success"
                     key={'createNewTask'}
@@ -154,11 +170,12 @@ class Sidebar extends React.Component {
         ]
 
         const specificGroupBtns = [
-            <button className="list-group-item list-group-item-action bg-primary" key={'backToAllCourses'}
-                    onClick={this.handleBackBtn}>
-                <i className="fa fa-chevron-circle-left" aria-hidden="true"/>&nbsp;&nbsp;
-                Повернутися до курсу
-            </button>,
+            <LinkContainer to={`/courses/${this.getCourseId()}`} key={'backToCourse'}>
+                <button className="list-group-item list-group-item-action bg-primary" key={'backToCourse'}>
+                    <i className="fa fa-chevron-circle-left" aria-hidden="true"/>&nbsp;&nbsp;
+                    Повернутися до курсу
+                </button>
+            </LinkContainer>,
             <button className="list-group-item list-group-item-action bg-success"
                     data-toggle="modal"
                     data-target="#addStudentToGroupModal"
@@ -179,7 +196,10 @@ class Sidebar extends React.Component {
                 <i className="fa fa-pencil-square" aria-hidden="true"/>&nbsp;&nbsp;
                 Редагувати дану групу
             </button>,
-            <button className="list-group-item list-group-item-action bg-danger" key={'removeGroup'}>
+            <button className="list-group-item list-group-item-action bg-danger" key={'removeGroup'}
+                    data-toggle="modal"
+                    data-target="#deleteGroupFromCourseModal"
+                    onClick={() => this.handleChangeModal('deleteGroupFromCourseModal', true)}>
                 <i className="fa fa-trash" aria-hidden="true"/>&nbsp;&nbsp;
                 Видалити дану групу
             </button>
@@ -196,26 +216,43 @@ class Sidebar extends React.Component {
                 key={'addStudentToGroupModal'}
                 isOpen={this.state.addStudentToGroupModal}
                 onClose={() => this.handleChangeModal('addStudentToGroupModal', false)}
+            />,
+            <DeleteGroupFromCourseModal
+                id="deleteGroupFromCourseModal"
+                key={'deleteGroupFromCourseModal'}
+                isOpen={this.state.deleteGroupFromCourseModal}
+                onClose={() => this.handleChangeModal('deleteGroupFromCourseModal', false)}
             />
         ]
 
         const taskGroupDetailBtns = [
-            <button className="list-group-item list-group-item-action bg-primary" key={'backToAllCourses'}
-                    onClick={this.handleBackBtn}>
-                <i className="fa fa-chevron-circle-left" aria-hidden="true"/>&nbsp;&nbsp;
-                Повернутися до групи
-            </button>,
+            <LinkContainer to={`/courses/${this.getCourseId()}/groups/${this.getGroupId()}`} key={'backToGroup'}>
+                <button className="list-group-item list-group-item-action bg-primary" key={'backToGroup'}>
+                    <i className="fa fa-chevron-circle-left" aria-hidden="true"/>&nbsp;&nbsp;
+                    Повернутися до групи
+                </button>
+            </LinkContainer>,
             <button className="list-group-item list-group-item-action bg-warning" key={'editTaskGroup'}>
                 <i className="fa fa-pencil-square" aria-hidden="true"/>&nbsp;&nbsp;
                 Редагувати завдання
             </button>,
-            <button className="list-group-item list-group-item-action bg-danger" key={'removeTaskGroup'}>
+            <button className="list-group-item list-group-item-action bg-danger" key={'removeTaskGroup'}
+                    data-toggle="modal"
+                    data-target="#deleteTaskFromGroupModal"
+                    onClick={() => this.handleChangeModal('deleteTaskFromGroupModal', true)}>
                 <i className="fa fa-trash" aria-hidden="true"/>&nbsp;&nbsp;
                 Видалити завдання групи
             </button>
         ]
 
-        const taskGroupDetailModals = []
+        const taskGroupDetailModals = [
+            <DeleteTaskFromGroupModal
+                id="deleteTaskFromGroupModal"
+                key={'deleteTaskFromGroupModal'}
+                isOpen={this.state.deleteGroupFromCourseModal}
+                onClose={() => this.handleChangeModal('deleteTaskFromGroupModal', false)}
+            />,
+        ]
 
         const studentsBtns = [
             <button className="list-group-item list-group-item-action bg-info"

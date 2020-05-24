@@ -1,20 +1,20 @@
 package com.gmail.maxsvynarchuk.presentation.controller;
 
+import com.gmail.maxsvynarchuk.presentation.exception.BadRequestException;
+import com.gmail.maxsvynarchuk.presentation.exception.ResourceNotFoundException;
 import com.gmail.maxsvynarchuk.presentation.payload.response.error.ApiError;
 import com.gmail.maxsvynarchuk.presentation.payload.response.error.ApiValidationError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -30,6 +30,15 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+    @ExceptionHandler({ResourceNotFoundException.class,
+            EmptyResultDataAccessException.class})
+    protected ResponseEntity<Object> handleMaxUploadSizeExceeded(RuntimeException ex,
+                                                                 HttpServletRequest request) {
+        log.debug("", ex);
+        return buildResponseEntity(
+                new ApiError(HttpStatus.NOT_FOUND, request.getRequestURI(), ex));
+    }
+
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     protected ResponseEntity<Object> handleMaxUploadSizeExceeded(MaxUploadSizeExceededException ex,
                                                                  HttpServletRequest request) {
@@ -38,8 +47,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 new ApiError(HttpStatus.PAYLOAD_TOO_LARGE, request.getRequestURI(), ex));
     }
 
-    @ExceptionHandler({IllegalArgumentException.class})
-    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex,
+    @ExceptionHandler({BadRequestException.class,
+            IllegalArgumentException.class})
+    public ResponseEntity<Object> handleIllegalArgumentException(RuntimeException ex,
                                                                  HttpServletRequest request) {
         log.debug(ex.toString());
         return buildResponseEntity(
@@ -71,6 +81,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(apiError);
     }
 
+    // This handler hides the stack trace for API-clients in exception message
     @ExceptionHandler({Throwable.class})
     public ResponseEntity<Object> handleIllegalArgumentException(
             Throwable ex,

@@ -1,7 +1,6 @@
 import React from "react";
 import {bindActionCreators} from "redux";
 import * as errorActions from "../../../store/action/errorActions";
-import * as workflowActions from "../../../store/action/workflowActions";
 import {connect} from "react-redux";
 import {matchPath, withRouter} from "react-router-dom";
 import Load from "../../component/Load";
@@ -38,8 +37,7 @@ class AddStudentToSystemModal extends React.Component {
     }
 
     componentWillUnmount() {
-        this.props.onClose();
-        $(this.modal).modal('hide');
+        this.handleCloseModal();
     }
 
     handleChangesField(e) {
@@ -75,7 +73,7 @@ class AddStudentToSystemModal extends React.Component {
                 fullName: ''
             });
         } catch (err) {
-            if (err.status === 400 && err.success === false) {
+            if (err.status === 400) {
                 notify({
                     title: 'Невдача!',
                     message: `Студент з повним ім'ям "${this.state.fullName}" вже існує в системі.`,
@@ -104,7 +102,7 @@ class AddStudentToSystemModal extends React.Component {
             this.setError('fullName',
                 'Буль-ласка заповніть дане поле!');
             isValid = false;
-        } else if (!/^([\wА-яЁёІіЇїЄє]+ ?)+$/.test(fullName)) {
+        } else if (!/^[\wА-яЁёІіЇїЄє ]+$/.test(fullName)) {
             this.setError('fullName',
                 "Може містити лище літери, цифри та пробільний символ");
             isValid = false;
@@ -120,6 +118,7 @@ class AddStudentToSystemModal extends React.Component {
     }
 
     handleCloseModal() {
+        $(this.modal).modal('hide');
         this.props.onClose();
         this.setState({
             name: '',
@@ -235,7 +234,6 @@ class AddStudentToSystemModal extends React.Component {
 function mapDispatchToProps(dispatch) {
     return {
         error: bindActionCreators(errorActions, dispatch),
-        workflow: bindActionCreators(workflowActions, dispatch),
         notify: bindActionCreators(notify, dispatch)
     };
 }

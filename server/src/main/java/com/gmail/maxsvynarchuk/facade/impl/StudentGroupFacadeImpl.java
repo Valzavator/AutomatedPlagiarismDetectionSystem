@@ -4,6 +4,7 @@ import com.gmail.maxsvynarchuk.facade.Facade;
 import com.gmail.maxsvynarchuk.facade.StudentGroupFacade;
 import com.gmail.maxsvynarchuk.facade.converter.Converter;
 import com.gmail.maxsvynarchuk.persistence.domain.*;
+import com.gmail.maxsvynarchuk.presentation.exception.BadRequestException;
 import com.gmail.maxsvynarchuk.presentation.payload.request.StudentGroupRequestDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.StudentGroupResponseDto;
 import com.gmail.maxsvynarchuk.service.CourseService;
@@ -23,7 +24,7 @@ public class StudentGroupFacadeImpl implements StudentGroupFacade {
     @Override
     public StudentGroupResponseDto addStudentToGroup(Long creatorId, StudentGroupRequestDto dto) {
         Course course = courseService.getCourseById(creatorId, dto.getCourseId())
-                .orElseThrow();
+                .orElseThrow(BadRequestException::new);
         StudentGroup studentGroup = studentGroupRequestDtoToStudentGroup.convert(dto);
         StudentGroupKey studentGroupKey = new StudentGroupKey(dto.getStudentId(), dto.getGroupId());
         studentGroup.setId(studentGroupKey);

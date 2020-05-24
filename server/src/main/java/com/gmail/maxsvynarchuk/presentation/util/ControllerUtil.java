@@ -22,11 +22,7 @@ public class ControllerUtil {
         return "redirect:" + pageToRedirect;
     }
 
-    public static ResponseEntity<?> prepareResponse(Optional<?> entityOpt, String requestURI) {
-        if (entityOpt.isPresent()) {
-            return ResponseEntity.ok()
-                    .body(entityOpt.get());
-        }
+    public static ResponseEntity<?> notFoundError(String requestURI) {
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, requestURI);
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
     }

@@ -4,6 +4,7 @@ import com.gmail.maxsvynarchuk.persistence.dao.CourseDao;
 import com.gmail.maxsvynarchuk.persistence.dao.repository.CourseRepository;
 import com.gmail.maxsvynarchuk.persistence.domain.Course;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -24,6 +25,13 @@ public class CourseDaoImpl implements CourseDao {
     @Override
     public Optional<Course> findByIdAndCreatorId(Long courseId, Long creatorId) {
         return repository.findByIdAndCreatorId(courseId, creatorId);
+    }
+
+    @Override
+    public void deleteByIdAndCreatorId(Long courseId, Long creatorId) {
+        if (repository.deleteByIdAndCreatorId(courseId, creatorId) != 1) {
+            throw new EmptyResultDataAccessException(1);
+        }
     }
 
     @Override

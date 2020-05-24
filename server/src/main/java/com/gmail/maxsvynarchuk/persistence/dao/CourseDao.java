@@ -12,4 +12,6 @@ public interface CourseDao extends GenericDao<Course, Long> {
 
     Optional<Course> findByIdAndCreatorId(Long courseId, Long creatorId);
 
+    void deleteByIdAndCreatorId(Long courseId, Long creatorId);
+
 }

@@ -13,4 +13,6 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     Optional<Course> findByIdAndCreatorId(Long courseId, Long creatorId);
 
+    long deleteByIdAndCreatorId(Long courseId, Long creatorId);
+
 }

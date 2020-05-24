@@ -5,12 +5,15 @@ import com.gmail.maxsvynarchuk.persistence.domain.PlagDetectionResult;
 import com.gmail.maxsvynarchuk.persistence.domain.TaskGroup;
 import com.gmail.maxsvynarchuk.persistence.domain.TaskGroupKey;
 import com.gmail.maxsvynarchuk.persistence.domain.type.PlagDetectionStatus;
+import com.gmail.maxsvynarchuk.presentation.exception.BadRequestException;
+import com.gmail.maxsvynarchuk.presentation.exception.ResourceNotFoundException;
 import com.gmail.maxsvynarchuk.service.PlagDetectionResultService;
 import com.gmail.maxsvynarchuk.service.TaskGroupService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -25,6 +28,19 @@ public class TaskGroupServiceImpl implements TaskGroupService {
     @Override
     public Optional<TaskGroup> getTaskGroupById(TaskGroupKey id) {
         return taskGroupDao.findOne(id);
+    }
+
+    @Transactional
+    @Override
+    public void checkTaskGroupNow(TaskGroupKey id) {
+        TaskGroup taskGroup = getTaskGroupById(id)
+                .orElseThrow(ResourceNotFoundException::new);
+        if (taskGroup.getPlagDetectionStatus() == PlagDetectionStatus.IN_PROCESS) {
+            throw new BadRequestException();
+        }
+        taskGroup.setPlagDetectionStatus(PlagDetectionStatus.PENDING);
+        taskGroup.setExpiryDate(new Date());
+        saveTaskGroup(taskGroup);
     }
 
     @Override

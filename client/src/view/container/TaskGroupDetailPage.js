@@ -6,14 +6,14 @@ import * as sidebarActions from "../../store/action/sidebarActions";
 import {connect} from "react-redux";
 import moment from "moment";
 import {LinkContainer} from "react-router-bootstrap";
-import {getTaskGroup} from "../../api/taskGroup";
+import {checkTaskNow, getTaskGroup} from "../../api/taskGroup";
 
 class GroupPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             isLoading: true,
-            updateTaskGroupInfo: true,
+            checkTaskNowBtnWasClicked: false,
             activeTaskGroup: {
                 taskId: -1,
                 taskName: 'NOT_LOADED',
@@ -38,15 +38,23 @@ class GroupPage extends React.Component {
             }
         }
 
+        this.handleCheckTaskNow = this.handleCheckTaskNow.bind(this);
         this.handleResultBtn = this.handleResultBtn.bind(this);
         this.handleBackBtn = this.handleBackBtn.bind(this);
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         this.props.sidebar.changeSidebarState("taskGroup", "Деталі завдання: ");
-        this.loadTaskGroupInfo();
+        await this.loadTaskGroupInfo();
+        if (!this.state.checkTaskNowBtnWasClicked &&
+            this.state.activeTaskGroup.plagDetectionStatus === 'PENDING' &&
+            Date.now() > Date.parse(this.state.activeTaskGroup.expiryDate)) {
+            await this.setState({
+                checkTaskNowBtnWasClicked: true
+            });
+        }
         this.timerID = setInterval(
-            () => this.loadTaskGroupInfo(),
+            () => this.updateGroupInfo(),
             5000
         );
     }
@@ -55,11 +63,14 @@ class GroupPage extends React.Component {
         clearInterval(this.timerID);
     }
 
-    async loadTaskGroupInfo() {
-        if (!this.state.updateTaskGroupInfo) {
-            clearInterval(this.timerID);
-            return;
+    async updateGroupInfo() {
+        const updateGroupInfo = ['PENDING', 'IN_PROCESS'].includes(this.state.activeTaskGroup.plagDetectionStatus);
+        if (updateGroupInfo) {
+            await this.loadTaskGroupInfo();
         }
+    }
+
+    async loadTaskGroupInfo() {
         try {
             const courseId = this.props.match.params.courseId;
             const groupId = this.props.match.params.groupId;
@@ -68,8 +79,28 @@ class GroupPage extends React.Component {
             await this.setState({
                 isLoading: false,
                 activeTaskGroup: res.data,
-                updateTaskGroupInfo: ['PENDING', 'IN_PROCESS'].includes(res.data.plagDetectionStatus)
             });
+            if (this.state.checkTaskNowBtnWasClicked &&
+                ['DONE', 'FAILED'].includes(res.data.plagDetectionStatus)) {
+                await this.setState({
+                    checkTaskNowBtnWasClicked: false
+                });
+            }
+        } catch (err) {
+            this.props.error.throwError(err);
+        }
+    }
+
+    async handleCheckTaskNow() {
+        try {
+            const courseId = this.props.match.params.courseId;
+            const groupId = this.props.match.params.groupId;
+            const taskId = this.props.match.params.taskId;
+            await checkTaskNow(courseId, groupId, taskId);
+            await this.loadTaskGroupInfo();
+            await this.setState({
+                checkTaskNowBtnWasClicked: true
+            })
         } catch (err) {
             this.props.error.throwError(err);
         }
@@ -396,13 +427,33 @@ class GroupPage extends React.Component {
                     </div>
 
                     <div className="row justify-content-center">
-                        <div className="col-md-12 text-center">
+                        <div className="col-md-6 text-center">
                             <button type="button" className="btn btn-primary btn-lg"
                                     onClick={this.handleBackBtn}>
                                 <i className="fa fa-chevron-circle-left fa-lg" aria-hidden="true"/>&nbsp;&nbsp;
                                 Повернутися до групи
                             </button>
                         </div>
+                        {this.state.activeTaskGroup.plagDetectionStatus !== "IN_PROCESS" && !this.state.checkTaskNowBtnWasClicked
+                            ? (
+                                <div className="col-md-6 text-center">
+                                    <button type="button" className="btn btn-success btn-lg"
+                                            onClick={this.handleCheckTaskNow}>
+                                        {this.state.activeTaskGroup.plagDetectionStatus === "PENDING"
+                                            ? <i className="fa fa-clock-o fa-lg" aria-hidden="true"/>
+                                            : <i className="fa fa-undo fa-lg" aria-hidden="true"/>
+                                        }
+                                        &nbsp;&nbsp;
+                                        {this.state.activeTaskGroup.plagDetectionStatus === "PENDING"
+                                            ? "Виконати перевірку зараз"
+                                            : "Виконати перевірку ще раз"
+                                        }
+                                    </button>
+                                </div>
+                            )
+                            : null
+                        }
+
                     </div>
                 </div>
             </div>

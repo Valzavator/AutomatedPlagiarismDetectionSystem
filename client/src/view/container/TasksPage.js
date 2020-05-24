@@ -6,6 +6,7 @@ import * as sidebarActions from "../../store/action/sidebarActions";
 import {connect} from "react-redux";
 import PagePagination from "../component/PagePagination";
 import {deleteTaskFromCourse, getAllCourseTasks} from "../../api/task";
+import {notify} from "reapop";
 
 class TasksPage extends React.Component {
     constructor(props) {
@@ -57,7 +58,22 @@ class TasksPage extends React.Component {
             await deleteTaskFromCourse(courseId, taskId);
             window.location.reload();
         } catch (err) {
-            this.props.error.throwError(err);
+            if (err.status === 409) {
+                const {notify} = this.props;
+                notify({
+                    title: 'Невдача!',
+                    message: 'Завдання вже опубліковано в групах!',
+                    status: 'error',
+                    position: 'tc',
+                    dismissible: true,
+                    dismissAfter: 5000
+                });
+                await this.setState({
+                    isLoading: false,
+                });
+            } else {
+                this.props.error.throwError(err);
+            }
         }
     }
 
@@ -174,7 +190,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         error: bindActionCreators(errorActions, dispatch),
-        sidebar: bindActionCreators(sidebarActions, dispatch)
+        sidebar: bindActionCreators(sidebarActions, dispatch),
+        notify: bindActionCreators(notify, dispatch)
     };
 }
 

@@ -7,7 +7,8 @@ import com.gmail.maxsvynarchuk.facade.TaskGroupFacade;
 import com.gmail.maxsvynarchuk.facade.converter.Converter;
 import com.gmail.maxsvynarchuk.persistence.domain.*;
 import com.gmail.maxsvynarchuk.persistence.domain.type.PlagDetectionStatus;
-import com.gmail.maxsvynarchuk.presentation.payload.request.SingleCheckPlagDetectionDto;
+import com.gmail.maxsvynarchuk.presentation.exception.BadRequestException;
+import com.gmail.maxsvynarchuk.presentation.exception.ResourceNotFoundException;
 import com.gmail.maxsvynarchuk.presentation.payload.request.TaskGroupPlagDetectionDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.*;
 import com.gmail.maxsvynarchuk.service.GroupService;
@@ -19,11 +20,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Facade
 @AllArgsConstructor
@@ -42,10 +41,17 @@ public class TaskGroupFacadeImpl implements TaskGroupFacade {
     private final Converter<TaskGroupPlagDetectionDto, PlagDetectionSettings> settingsConverter;
 
     @Override
-    public Optional<TaskGroupDto> getTaskGroupById(Long taskId, Long groupId) {
+    public TaskGroupDto getTaskGroupById(Long taskId, Long groupId) {
         TaskGroupKey taskGroupKey = new TaskGroupKey(taskId, groupId);
-        Optional<TaskGroup> taskGroupOpt = taskGroupService.getTaskGroupById(taskGroupKey);
-        return taskGroupOpt.map(taskGroupToTaskGroupDto::convert);
+        TaskGroup taskGroup = taskGroupService.getTaskGroupById(taskGroupKey)
+                .orElseThrow(ResourceNotFoundException::new);
+        return taskGroupToTaskGroupDto.convert(taskGroup);
+    }
+
+    @Override
+    public void checkTaskGroupNow(Long taskId, Long groupId) {
+        TaskGroupKey taskGroupKey = new TaskGroupKey(taskId, groupId);
+        taskGroupService.checkTaskGroupNow(taskGroupKey);
     }
 
     @Override
@@ -68,13 +74,12 @@ public class TaskGroupFacadeImpl implements TaskGroupFacade {
     @Override
     public BasicTaskGroupDto assignNewTaskGroup(TaskGroupPlagDetectionDto dto) {
         Group group = groupService.getGroupById(dto.getGroupId())
-                .orElseThrow();
+                .orElseThrow(BadRequestException::new);
         Task task = taskService.getTaskById(dto.getTaskId())
-                .orElseThrow();
-        //TODO - change to ResourceNotFoundException
+                .orElseThrow(BadRequestException::new);
         ProgrammingLanguage programmingLanguage = programmingLanguageService
                 .getProgrammingLanguageById(dto.getProgrammingLanguageId())
-                .orElseThrow();
+                .orElseThrow(BadRequestException::new);
         PlagDetectionSettings settings = settingsConverter.convert(dto);
         settings.setProgrammingLanguage(programmingLanguage);
 

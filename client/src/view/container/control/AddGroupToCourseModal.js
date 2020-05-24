@@ -1,23 +1,20 @@
 import React from "react";
 import {bindActionCreators} from "redux";
 import * as errorActions from "../../../store/action/errorActions";
-import * as workflowActions from "../../../store/action/workflowActions";
 import {connect} from "react-redux";
 import {matchPath, withRouter} from "react-router-dom";
 import Load from "../../component/Load";
 import ReactTooltip from "react-tooltip";
 import $ from 'jquery';
-import {addTaskToCourse} from "../../../api/task";
+import {addGroupToCourse} from "../../../api/group";
+import {addCourseToSystem} from "../../../api/course";
 
 class AddGroupToCourseModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             isLoading: false,
-
             name: '',
-            repositoryPrefixPath: '',
-            description: ''
         }
 
         this.handleChangesField = this.handleChangesField.bind(this);
@@ -39,8 +36,7 @@ class AddGroupToCourseModal extends React.Component {
     }
 
     componentWillUnmount() {
-        this.props.onClose();
-        $(this.modal).modal('hide');
+        this.handleCloseModal();
     }
 
     handleChangesField(e) {
@@ -59,13 +55,11 @@ class AddGroupToCourseModal extends React.Component {
             await this.setState({
                 isLoading: true,
             });
-            await addTaskToCourse(this.state.courseId, {
+            let res = await addGroupToCourse(this.state.courseId, {
                 courseId: this.state.courseId,
-                name: this.state.name,
-                repositoryPrefixPath: this.state.repositoryPrefixPath,
-                description: this.state.description
+                name: this.state.name
             });
-            window.location.reload();
+            this.props.history.push(`/courses/${this.state.courseId}/groups/${res.data.id}`);
         } catch (err) {
             this.props.error.throwError(err);
         }
@@ -73,13 +67,7 @@ class AddGroupToCourseModal extends React.Component {
 
     validateForm() {
         const name = this.state.name;
-        const repositoryPrefixPath = this.state.repositoryPrefixPath;
-        const description = this.state.description;
-
         let isValid = true;
-
-        const regexp = /^(https:\/\/bitbucket.org\/.+|https:\/\/github.com\/.+)$/;
-
         if (!name || name.length === 0) {
             this.setError('name',
                 'Буль-ласка заповніть дане поле!');
@@ -87,16 +75,6 @@ class AddGroupToCourseModal extends React.Component {
         } else if (!/^[\w \-А-яЁёІіЇїЄє]+$/.test(name)) {
             this.setError('name',
                 "Назва може містити лище літери, цифри, пробільний символ та символи дефісу і нижньго підкреслення");
-            isValid = false;
-        }
-
-        if (!repositoryPrefixPath || repositoryPrefixPath.length === 0) {
-            this.setError('repositoryPrefixPath',
-                'Буль-ласка заповніть дане поле!');
-            isValid = false;
-        } else if (!/^([^\\/:*?"<>|\f\n\r\t\v]+\/?)*$/.test(repositoryPrefixPath)) {
-            this.setError('repositoryPrefixPath',
-                "Назви директорій не повинні містити наступні символи: \\/:*?\"<>|");
             isValid = false;
         }
         return isValid;
@@ -110,12 +88,10 @@ class AddGroupToCourseModal extends React.Component {
     }
 
     handleCloseModal() {
+        $(this.modal).modal('hide');
         this.props.onClose();
         this.setState({
             name: '',
-            repositoryPrefixPath: '',
-            description: '',
-            invalidForm: true
         })
     }
 
@@ -147,12 +123,12 @@ class AddGroupToCourseModal extends React.Component {
                                 <i className="fa fa-question-circle-o fa-lg"
                                    aria-hidden="true"/>
                         </span>
-                        &nbsp;Назва завдання:
+                        &nbsp;Назва групи:
                     </label>
                     <ReactTooltip id='inputNameFAQ' place="left" type='info'
                                   multiline={true}
                                   effect="solid">
-                        Назва завдання
+                        Назва групи
                     </ReactTooltip>
                     <div className="input-group">
                         <div className="input-group-prepend">
@@ -170,71 +146,12 @@ class AddGroupToCourseModal extends React.Component {
                         {renderErrorMessage('name')}
                     </div>
                 </div>
-                <div className="form-group mt-4">
-                    <label htmlFor="inputPrefixPath">
-                        <span className="" id="inputPrefixPath" data-tip
-                              data-for='inputPrefixPathFAQ'>
-                                <i className="fa fa-question-circle-o fa-lg"
-                                   aria-hidden="true"/>
-                        </span>
-                        &nbsp;Директорія завдання:
-                    </label>
-                    <ReactTooltip id='inputPrefixPathFAQ' place="left" type='info'
-                                  multiline={true}
-                                  effect="solid">
-                        <p>Шлях до директорії завдання в репозиторії студента. Приклад:</p>
-                        <ul>
-                            <li>task1</li>
-                            <li>path/to/task2</li>
-                        </ul>
-                    </ReactTooltip>
-                    <div className="input-group">
-                        <div className="input-group-prepend">
-                            <span className="input-group-text" id="inputPrefixPath">
-                                <i className="fa fa-folder fa-lg" aria-hidden="true"/>
-                            </span>
-                        </div>
-                        <input type="text"
-                               name={"repositoryPrefixPath"}
-                               value={this.state.repositoryPrefixPath}
-                               onChange={this.handleChangesField}
-                               className={renderFieldStyle('repositoryPrefixPath')}
-                               id="inputPrefixPath"
-                               maxLength="255"/>
-                        {renderErrorMessage('repositoryPrefixPath')}
-                    </div>
-                </div>
-                <div className="form-group mt-4">
-                    <label htmlFor="inputDescription">
-                        <span className="" id="inputDescription" data-tip
-                              data-for='inputDescriptionFAQ'>
-                                <i className="fa fa-question-circle-o fa-lg"
-                                   aria-hidden="true"/>
-                        </span>
-                        &nbsp;Опис завдання:
-                    </label>
-                    <ReactTooltip id='inputDescriptionFAQ' place="left" type='info'
-                                  multiline={true}
-                                  effect="solid">
-                        Опис завдання
-                    </ReactTooltip>
-                    <div className="input-group">
-                        <textarea rows="5"
-                                  name={"description"}
-                                  value={this.state.description}
-                                  onChange={this.handleChangesField}
-                                  id="inputDescription"
-                                  className={renderFieldStyle('description')}
-                                  maxLength="1000"/>
-                        {renderErrorMessage('description')}
-                    </div>
-                </div>
             </form>
         );
 
         return (
             <div className="modal fade" id={this.props.id} tabIndex="-1" role="dialog" data-backdrop="static"
-                 aria-labelledby="assignTaskModalLabel" aria-hidden="true"
+                 aria-labelledby="addGroupToCourseModalLabel" aria-hidden="true"
                  ref={modal => this.modal = modal}>
                 <div className="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
                     {this.state.isLoading
@@ -243,7 +160,7 @@ class AddGroupToCourseModal extends React.Component {
                             <div className="modal-content">
                                 <div className="modal-header">
                                     <h4 className="modal-title">
-                                        Додати завдання до курсу
+                                        Додати групу до курсу
                                     </h4>
                                     <button type="button" className="close" data-dismiss="modal" aria-label="Close"
                                             onClick={this.handleCloseModal}>
@@ -268,7 +185,7 @@ class AddGroupToCourseModal extends React.Component {
                                     <button type="button" className="btn btn-primary"
                                             onClick={this.handleSubmit}>
                                         <i className="fa fa-book fa-lg" aria-hidden="true"/>&nbsp;&nbsp;
-                                        Додати завдання
+                                        Додати групу
                                     </button>
                                 </div>
                             </div>
@@ -283,7 +200,6 @@ class AddGroupToCourseModal extends React.Component {
 function mapDispatchToProps(dispatch) {
     return {
         error: bindActionCreators(errorActions, dispatch),
-        workflow: bindActionCreators(workflowActions, dispatch),
     };
 }
 

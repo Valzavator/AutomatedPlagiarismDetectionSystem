@@ -1,7 +1,6 @@
 import React from "react";
 import {bindActionCreators} from "redux";
 import * as errorActions from "../../../store/action/errorActions";
-import * as workflowActions from "../../../store/action/workflowActions";
 import {connect} from "react-redux";
 import {matchPath, withRouter} from "react-router-dom";
 import Load from "../../component/Load";
@@ -39,8 +38,7 @@ class AddTaskToCourseModal extends React.Component {
     }
 
     componentWillUnmount() {
-        this.props.onClose();
-        $(this.modal).modal('hide');
+        this.handleCloseModal();
     }
 
     handleChangesField(e) {
@@ -74,11 +72,8 @@ class AddTaskToCourseModal extends React.Component {
     validateForm() {
         const name = this.state.name;
         const repositoryPrefixPath = this.state.repositoryPrefixPath;
-        const description = this.state.description;
 
         let isValid = true;
-
-        const regexp = /^(https:\/\/bitbucket.org\/.+|https:\/\/github.com\/.+)$/;
 
         if (!name || name.length === 0) {
             this.setError('name',
@@ -110,12 +105,12 @@ class AddTaskToCourseModal extends React.Component {
     }
 
     handleCloseModal() {
+        $(this.modal).modal('hide');
         this.props.onClose();
         this.setState({
             name: '',
             repositoryPrefixPath: '',
             description: '',
-            invalidForm: true
         })
     }
 
@@ -283,7 +278,6 @@ class AddTaskToCourseModal extends React.Component {
 function mapDispatchToProps(dispatch) {
     return {
         error: bindActionCreators(errorActions, dispatch),
-        workflow: bindActionCreators(workflowActions, dispatch),
     };
 }
 

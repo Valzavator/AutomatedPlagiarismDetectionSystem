@@ -5,11 +5,12 @@ import com.gmail.maxsvynarchuk.presentation.payload.response.BasicTaskGroupDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.OptionsForSettingsDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.TaskGroupDto;
 
-import java.util.Optional;
 
 public interface TaskGroupFacade {
 
-    Optional<TaskGroupDto> getTaskGroupById(Long taskId, Long groupId);
+    TaskGroupDto getTaskGroupById(Long taskId, Long groupId);
+
+    void checkTaskGroupNow(Long taskId, Long groupId);
 
     OptionsForSettingsDto getOptionsForTaskGroupAdding(Long courseId, Long groupId);
 

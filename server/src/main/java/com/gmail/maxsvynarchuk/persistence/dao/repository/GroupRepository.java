@@ -16,4 +16,6 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     @EntityGraph(value = "Group.detail", type = EntityGraph.EntityGraphType.FETCH)
     Optional<Group> findById(Long groupId);
 
+    long deleteByIdAndCourseId(Long groupId, Long courseId);
+
 }

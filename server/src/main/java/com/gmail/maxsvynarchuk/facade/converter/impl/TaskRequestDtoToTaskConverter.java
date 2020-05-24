@@ -14,6 +14,7 @@ public class TaskRequestDtoToTaskConverter implements Converter<TaskRequestDto, 
 
     @Override
     public Task convert(TaskRequestDto taskRequestDto) {
+        mapper.typeMap(TaskRequestDto.class, Task.class).addMappings(mp -> mp.skip(Task::setId));
         return mapper.map(taskRequestDto, Task.class);
     }
 }

@@ -70,7 +70,7 @@ public class StudentsController {
         try {
             return studentService.deleteStudentFromSystem(studentId)
                     ? ResponseEntity.noContent().build()
-                    : ResponseEntity.badRequest().build();
+                    : ControllerUtil.notFoundError(request.getRequestURI());
         } catch (DataIntegrityViolationException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(
                     new ApiError(HttpStatus.CONFLICT,

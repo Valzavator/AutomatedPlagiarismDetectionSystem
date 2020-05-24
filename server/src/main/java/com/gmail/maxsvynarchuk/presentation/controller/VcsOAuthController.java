@@ -55,7 +55,7 @@ public class VcsOAuthController {
         if (!user.isAccessTokenPresented(AuthorizationProvider.BITBUCKET)) {
             AccessToken accessToken = vcsOAuthBitbucketService.getAuthorizeOAuthToken(
                     code, request.getRequestURL().toString());
-            System.out.println(userService.addAccessTokenToUser(user, accessToken));
+            userService.addAccessTokenToUser(user, accessToken);
         } else {
             log.error("User already have access token for Bitbucket service!");
         }
@@ -65,13 +65,15 @@ public class VcsOAuthController {
 
     @PostMapping("/delete/{authorizationProvider}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> deleteToken(@AuthUser UserPrincipal currentUser,
-                                              @PathVariable("authorizationProvider") AuthorizationProvider authorizationProvider) {
+    public ResponseEntity<?> deleteToken(
+            @AuthUser UserPrincipal currentUser,
+            @PathVariable("authorizationProvider") AuthorizationProvider authorizationProvider,
+            HttpServletRequest request) {
         User user = userService.getRequiredUserById(currentUser.getId());
         boolean isSuccess = userService.deleteAccessTokenToUser(user, authorizationProvider);
         return isSuccess
                 ? ResponseEntity.noContent().build()
-                : new ResponseEntity<>(new ApiError(HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+                : ControllerUtil.notFoundError(request.getRequestURI());
     }
 
 }

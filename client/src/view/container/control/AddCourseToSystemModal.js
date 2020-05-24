@@ -7,7 +7,7 @@ import {matchPath, withRouter} from "react-router-dom";
 import Load from "../../component/Load";
 import ReactTooltip from "react-tooltip";
 import $ from 'jquery';
-import {addTaskToCourse} from "../../../api/task";
+import {addCourseToSystem} from "../../../api/course";
 
 class AddCourseToSystemModal extends React.Component {
     constructor(props) {
@@ -16,7 +16,6 @@ class AddCourseToSystemModal extends React.Component {
             isLoading: false,
 
             name: '',
-            repositoryPrefixPath: '',
             description: ''
         }
 
@@ -39,8 +38,7 @@ class AddCourseToSystemModal extends React.Component {
     }
 
     componentWillUnmount() {
-        this.props.onClose();
-        $(this.modal).modal('hide');
+        this.handleCloseModal();
     }
 
     handleChangesField(e) {
@@ -59,13 +57,11 @@ class AddCourseToSystemModal extends React.Component {
             await this.setState({
                 isLoading: true,
             });
-            await addTaskToCourse(this.state.courseId, {
-                courseId: this.state.courseId,
+            let res = await addCourseToSystem({
                 name: this.state.name,
-                repositoryPrefixPath: this.state.repositoryPrefixPath,
                 description: this.state.description
             });
-            window.location.reload();
+            this.props.history.push(`/courses/${res.data.id}`);
         } catch (err) {
             this.props.error.throwError(err);
         }
@@ -73,13 +69,7 @@ class AddCourseToSystemModal extends React.Component {
 
     validateForm() {
         const name = this.state.name;
-        const repositoryPrefixPath = this.state.repositoryPrefixPath;
-        const description = this.state.description;
-
         let isValid = true;
-
-        const regexp = /^(https:\/\/bitbucket.org\/.+|https:\/\/github.com\/.+)$/;
-
         if (!name || name.length === 0) {
             this.setError('name',
                 'Буль-ласка заповніть дане поле!');
@@ -87,16 +77,6 @@ class AddCourseToSystemModal extends React.Component {
         } else if (!/^[\w \-А-яЁёІіЇїЄє]+$/.test(name)) {
             this.setError('name',
                 "Назва може містити лище літери, цифри, пробільний символ та символи дефісу і нижньго підкреслення");
-            isValid = false;
-        }
-
-        if (!repositoryPrefixPath || repositoryPrefixPath.length === 0) {
-            this.setError('repositoryPrefixPath',
-                'Буль-ласка заповніть дане поле!');
-            isValid = false;
-        } else if (!/^([^\\/:*?"<>|\f\n\r\t\v]+\/?)*$/.test(repositoryPrefixPath)) {
-            this.setError('repositoryPrefixPath',
-                "Назви директорій не повинні містити наступні символи: \\/:*?\"<>|");
             isValid = false;
         }
         return isValid;
@@ -110,12 +90,11 @@ class AddCourseToSystemModal extends React.Component {
     }
 
     handleCloseModal() {
+        $(this.modal).modal('hide');
         this.props.onClose();
         this.setState({
             name: '',
-            repositoryPrefixPath: '',
-            description: '',
-            invalidForm: true
+            description: ''
         })
     }
 
@@ -147,12 +126,12 @@ class AddCourseToSystemModal extends React.Component {
                                 <i className="fa fa-question-circle-o fa-lg"
                                    aria-hidden="true"/>
                         </span>
-                        &nbsp;Назва завдання:
+                        &nbsp;Назва курсу:
                     </label>
                     <ReactTooltip id='inputNameFAQ' place="left" type='info'
                                   multiline={true}
                                   effect="solid">
-                        Назва завдання
+                        Назва курсу
                     </ReactTooltip>
                     <div className="input-group">
                         <div className="input-group-prepend">
@@ -171,52 +150,18 @@ class AddCourseToSystemModal extends React.Component {
                     </div>
                 </div>
                 <div className="form-group mt-4">
-                    <label htmlFor="inputPrefixPath">
-                        <span className="" id="inputPrefixPath" data-tip
-                              data-for='inputPrefixPathFAQ'>
-                                <i className="fa fa-question-circle-o fa-lg"
-                                   aria-hidden="true"/>
-                        </span>
-                        &nbsp;Директорія завдання:
-                    </label>
-                    <ReactTooltip id='inputPrefixPathFAQ' place="left" type='info'
-                                  multiline={true}
-                                  effect="solid">
-                        <p>Шлях до директорії завдання в репозиторії студента. Приклад:</p>
-                        <ul>
-                            <li>task1</li>
-                            <li>path/to/task2</li>
-                        </ul>
-                    </ReactTooltip>
-                    <div className="input-group">
-                        <div className="input-group-prepend">
-                            <span className="input-group-text" id="inputPrefixPath">
-                                <i className="fa fa-folder fa-lg" aria-hidden="true"/>
-                            </span>
-                        </div>
-                        <input type="text"
-                               name={"repositoryPrefixPath"}
-                               value={this.state.repositoryPrefixPath}
-                               onChange={this.handleChangesField}
-                               className={renderFieldStyle('repositoryPrefixPath')}
-                               id="inputPrefixPath"
-                               maxLength="255"/>
-                        {renderErrorMessage('repositoryPrefixPath')}
-                    </div>
-                </div>
-                <div className="form-group mt-4">
                     <label htmlFor="inputDescription">
                         <span className="" id="inputDescription" data-tip
                               data-for='inputDescriptionFAQ'>
                                 <i className="fa fa-question-circle-o fa-lg"
                                    aria-hidden="true"/>
                         </span>
-                        &nbsp;Опис завдання:
+                        &nbsp;Опис курсу:
                     </label>
                     <ReactTooltip id='inputDescriptionFAQ' place="left" type='info'
                                   multiline={true}
                                   effect="solid">
-                        Опис завдання
+                        Опис курсу
                     </ReactTooltip>
                     <div className="input-group">
                         <textarea rows="5"
@@ -243,7 +188,7 @@ class AddCourseToSystemModal extends React.Component {
                             <div className="modal-content">
                                 <div className="modal-header">
                                     <h4 className="modal-title">
-                                        Додати завдання до курсу
+                                        Створити новий курс
                                     </h4>
                                     <button type="button" className="close" data-dismiss="modal" aria-label="Close"
                                             onClick={this.handleCloseModal}>
@@ -268,7 +213,7 @@ class AddCourseToSystemModal extends React.Component {
                                     <button type="button" className="btn btn-primary"
                                             onClick={this.handleSubmit}>
                                         <i className="fa fa-book fa-lg" aria-hidden="true"/>&nbsp;&nbsp;
-                                        Додати завдання
+                                        Додати курс
                                     </button>
                                 </div>
                             </div>

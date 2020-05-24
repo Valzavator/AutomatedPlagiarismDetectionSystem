@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -32,6 +33,19 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Optional<Course> getCourseById(Long creatorId, Long courseId) {
         return courseDao.findByIdAndCreatorId(courseId, creatorId);
+    }
+
+    @Transactional
+    @Override
+    public Course saveCourse(Course course) {
+        course.setCreationDate(new Date());
+        return courseDao.save(course);
+    }
+
+    @Transactional
+    @Override
+    public void deleteCourseFromSystem(Long creatorId, Long courseId) {
+        courseDao.deleteByIdAndCreatorId(courseId, creatorId);
     }
 
 }

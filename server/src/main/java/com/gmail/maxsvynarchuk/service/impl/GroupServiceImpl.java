@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -32,6 +33,19 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public Optional<Group> getGroupById(Long groupId) {
         return groupDao.findOne(groupId);
+    }
+
+    @Transactional
+    @Override
+    public Group saveGroup(Group group) {
+        group.setCreationDate(new Date());
+        return groupDao.save(group);
+    }
+
+    @Transactional
+    @Override
+    public void deleteGroupFromCourse(Long groupId, Long courseId) {
+        groupDao.deleteByIdAndCourseId(groupId, courseId);
     }
 
 }

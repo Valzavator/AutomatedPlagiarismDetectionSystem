@@ -35,8 +35,7 @@ class AssignTaskModal extends React.Component {
     }
 
     componentWillUnmount() {
-        this.props.onClose();
-        $(this.modal).modal('hide');
+        this.handleCloseBtn();
     }
 
     onSettingsChange(settings) {
@@ -83,13 +82,13 @@ class AssignTaskModal extends React.Component {
             });
             this.props.workflow.addTaskGroupToActiveGroup(res.data);
             this.handleCloseBtn();
-            $(this.modal).modal('hide');
         } catch (err) {
             this.props.error.throwError(err);
         }
     }
 
     handleCloseBtn() {
+        $(this.modal).modal('hide');
         this.props.onClose();
         this.setState({
             taskId: -1,
@@ -105,7 +104,6 @@ class AssignTaskModal extends React.Component {
 
     handleTasksRedirectLink(e) {
         e.preventDefault();
-        $(this.modal).modal('hide');
         this.handleCloseBtn();
         this.props.history.push(`/courses/${this.state.courseId}/tasks`);
     }
@@ -131,6 +129,16 @@ class AssignTaskModal extends React.Component {
                             <div className="container-fluid">
                                 <div className="row justify-content-center">
                                     <div className="col-lg-8">
+
+                                        {this.props.activeGroup.studentGroups.length < 2
+                                            ? (
+                                                <div className="alert alert-warning text-center" role="alert">
+                                                    Спочатку додайте не меншу двох студентів до групи!
+                                                </div>
+                                            )
+                                            : null
+                                        }
+
                                         {this.props.isOpen
                                             ? (
                                                 <PlagDetectionSettings
@@ -156,7 +164,7 @@ class AssignTaskModal extends React.Component {
                             </button>
                             <button type="button" className="btn btn-primary"
                                     onClick={this.handleSubmit}
-                                    disabled={this.state.invalidForm}>
+                                    disabled={this.state.invalidForm || this.props.activeGroup.studentGroups.length === 0}>
                                 <i className="fa fa-plus-circle fa-lg" aria-hidden="true"/>&nbsp;&nbsp;
                                 Назначити завдання
                             </button>

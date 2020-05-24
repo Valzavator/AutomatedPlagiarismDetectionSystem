@@ -36,10 +36,9 @@ public class Task implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "course_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Course course;
 
-    @OneToMany(cascade = CascadeType.ALL,
+    @OneToMany(
             fetch = FetchType.LAZY,
             mappedBy = "task")
     @ToString.Exclude

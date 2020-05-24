@@ -8,6 +8,8 @@ import com.gmail.maxsvynarchuk.persistence.domain.type.AuthorizationProvider;
 import com.gmail.maxsvynarchuk.persistence.domain.type.RoleType;
 import com.gmail.maxsvynarchuk.persistence.domain.vcs.AccessToken;
 import com.gmail.maxsvynarchuk.presentation.exception.AppException;
+import com.gmail.maxsvynarchuk.presentation.exception.BadRequestException;
+import com.gmail.maxsvynarchuk.presentation.exception.ResourceNotFoundException;
 import com.gmail.maxsvynarchuk.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -82,7 +84,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getRequiredUserById(Long userId) {
         return userDao.findOne(userId)
-                .orElseThrow();
+                .orElseThrow(BadRequestException::new);
     }
 
 }

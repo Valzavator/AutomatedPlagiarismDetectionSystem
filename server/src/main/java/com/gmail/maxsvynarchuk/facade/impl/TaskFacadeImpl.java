@@ -5,6 +5,7 @@ import com.gmail.maxsvynarchuk.facade.Facade;
 import com.gmail.maxsvynarchuk.facade.converter.Converter;
 import com.gmail.maxsvynarchuk.persistence.domain.Course;
 import com.gmail.maxsvynarchuk.persistence.domain.Task;
+import com.gmail.maxsvynarchuk.presentation.exception.BadRequestException;
 import com.gmail.maxsvynarchuk.presentation.payload.request.TaskRequestDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.PagedDto;
 import com.gmail.maxsvynarchuk.presentation.payload.response.TaskDto;
@@ -40,7 +41,7 @@ public class TaskFacadeImpl implements TaskFacade {
     @Override
     public void addTaskToCourse(Long userId, TaskRequestDto dto) {
         Course course = courseService.getCourseById(userId, dto.getCourseId())
-                .orElseThrow();
+                .orElseThrow(BadRequestException::new);
         Task newTask = taskRequestDtoToTask.convert(dto);
         newTask.setCourse(course);
         taskService.saveTask(newTask);

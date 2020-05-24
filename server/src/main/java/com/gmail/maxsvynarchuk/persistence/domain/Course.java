@@ -1,11 +1,9 @@
 package com.gmail.maxsvynarchuk.persistence.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -39,16 +37,26 @@ public class Course implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private User creator;
 
-//    @OneToMany(cascade = CascadeType.ALL,
-//            fetch = FetchType.LAZY,
-//            mappedBy = "course")
-//    private Set<Group> groups;
-//
-//    @OneToMany(cascade = CascadeType.ALL,
-//            fetch = FetchType.LAZY,
-//            mappedBy = "course")
-//    private Set<Task> tasks;
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            mappedBy = "course")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Group> groups;
+
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            mappedBy = "course")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<StudentGroup> studentGroups;
+
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            mappedBy = "course")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Task> tasks;
 }

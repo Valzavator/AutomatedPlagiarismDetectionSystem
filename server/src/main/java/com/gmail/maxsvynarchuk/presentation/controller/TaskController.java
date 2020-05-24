@@ -14,6 +14,7 @@ import com.gmail.maxsvynarchuk.presentation.util.ControllerUtil;
 import com.gmail.maxsvynarchuk.service.TaskService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -56,10 +57,18 @@ public class TaskController {
     @PostMapping("/{taskId}/delete")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> deleteTaskFromCourse(
-            @PathVariable(value = "taskId") long taskId) {
-        return taskService.deleteTaskFromCourse(taskId)
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.badRequest().build();
+            @PathVariable(value = "taskId") long taskId,
+            HttpServletRequest request) {
+        try {
+            return taskService.deleteTaskFromCourse(taskId)
+                    ? ResponseEntity.noContent().build()
+                    : ControllerUtil.notFoundError(request.getRequestURI());
+        } catch (DataIntegrityViolationException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                    new ApiError(HttpStatus.CONFLICT,
+                            request.getRequestURI(),
+                            "The task is assigned to groups!"));
+        }
     }
 
 }
