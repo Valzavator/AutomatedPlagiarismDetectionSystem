@@ -47,7 +47,8 @@ class AddGroupToCourseModal extends React.Component {
         this.setError(fieldName, '', false)
     }
 
-    async handleSubmit() {
+    async handleSubmit(e) {
+        e.preventDefault();
         if (!this.validateForm()) {
             return;
         }
@@ -115,7 +116,7 @@ class AddGroupToCourseModal extends React.Component {
         };
 
         const form = (
-            <form>
+            <form onSubmit={this.handleSubmit}>
                 <div className="form-group mt-4">
                     <label htmlFor="inputName">
                         <span className="" id="inputName" data-tip

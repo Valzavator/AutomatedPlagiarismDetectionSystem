@@ -96,7 +96,6 @@ class AddStudentToSystemModal extends React.Component {
         const fullName = this.state.fullName;
 
         let isValid = true;
-        const regexp = /^(https:\/\/bitbucket.org\/.+|https:\/\/github.com\/.+)$/;
 
         if (!fullName || fullName.length === 0) {
             this.setError('fullName',

@@ -58,8 +58,8 @@ class StudentsPage extends React.Component {
                     isLoading: false,
                     content: newContent
                 });
-            } else if (this.state.page > 0) {
-                await this.loadStudents(--this.state.page);
+            } else {
+                await this.loadStudents(this.state.page > 0 ? --this.state.page: 0);
             }
         } catch (err) {
             if (err.status === 409) {

@@ -437,7 +437,7 @@ class GroupPage extends React.Component {
                         {this.state.activeTaskGroup.plagDetectionStatus !== "IN_PROCESS" && !this.state.checkTaskNowBtnWasClicked
                             ? (
                                 <div className="col-md-6 text-center">
-                                    <button type="button" className="btn btn-success btn-lg"
+                                    <button type="button" className="btn btn-warning btn-lg"
                                             onClick={this.handleCheckTaskNow}>
                                         {this.state.activeTaskGroup.plagDetectionStatus === "PENDING"
                                             ? <i className="fa fa-clock-o fa-lg" aria-hidden="true"/>
