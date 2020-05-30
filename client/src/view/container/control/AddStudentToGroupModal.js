@@ -92,7 +92,9 @@ class AddStudentToGroupModal extends React.Component {
         this.props.history.push('/students');
     }
 
-    async handleSubmit() {
+    async handleSubmit(e) {
+        e.preventDefault();
+
         const {notify} = this.props;
         if (!this.validateForm()) {
             return;
@@ -170,7 +172,7 @@ class AddStudentToGroupModal extends React.Component {
     render() {
 
         const form = (
-            <form>
+            <form onSubmit={this.handleSubmit}>
                 <div className="form-group">
                     <label htmlFor="selectLanguage">
                         <span className="" id="selectStudent" data-tip

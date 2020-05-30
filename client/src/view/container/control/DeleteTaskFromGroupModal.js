@@ -6,6 +6,7 @@ import {matchPath, withRouter} from "react-router-dom";
 import $ from 'jquery';
 import Load from "../../component/Load";
 import {deleteTaskGroup} from "../../../api/taskGroup";
+import {notify} from "reapop";
 
 class DeleteTaskFromGroupModal extends React.Component {
     constructor(props) {
@@ -48,7 +49,22 @@ class DeleteTaskFromGroupModal extends React.Component {
             this.handleCloseBtn();
             this.props.history.push(`/courses/${this.state.courseId}/groups/${this.state.groupId}`);
         } catch (err) {
-            this.props.error.throwError(err);
+            if (err.status === 400) {
+                await this.setState({
+                    isLoading: false,
+                });
+                const {notify} = this.props;
+                notify({
+                    title: 'Невдача!',
+                    message: 'Дочекайтеся кінця перевірки!',
+                    status: 'error',
+                    position: 'tc',
+                    dismissible: true,
+                    dismissAfter: 5000
+                });
+            } else {
+                this.props.error.throwError(err);
+            }
         }
     }
 
@@ -108,6 +124,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         error: bindActionCreators(errorActions, dispatch),
+        notify: bindActionCreators(notify, dispatch)
     };
 }
 

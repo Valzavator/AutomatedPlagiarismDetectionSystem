@@ -7,7 +7,6 @@ import Load from "../../component/Load";
 import ReactTooltip from "react-tooltip";
 import $ from 'jquery';
 import {addGroupToCourse} from "../../../api/group";
-import {addCourseToSystem} from "../../../api/course";
 
 class AddGroupToCourseModal extends React.Component {
     constructor(props) {
