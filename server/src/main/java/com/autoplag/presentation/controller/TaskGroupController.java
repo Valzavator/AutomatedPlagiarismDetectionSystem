@@ -14,7 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Objects;
@@ -78,10 +77,8 @@ public class TaskGroupController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> deleteTaskGroup(
             @PathVariable(value = "taskId") long taskId,
-            @PathVariable(value = "groupId") long groupId,
-            HttpServletRequest request) {
-        return taskGroupFacade.deleteTaskGroup(taskId, groupId)
-                ? ResponseEntity.noContent().build()
-                : ControllerUtil.notFoundError(request.getRequestURI());
+            @PathVariable(value = "groupId") long groupId) {
+        taskGroupFacade.deleteTaskGroup(taskId, groupId);
+        return ResponseEntity.noContent().build();
     }
 }

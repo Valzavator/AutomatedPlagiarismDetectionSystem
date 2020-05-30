@@ -2,7 +2,9 @@ package com.autoplag.service.impl;
 
 import com.autoplag.persistence.dao.StudentDao;
 import com.autoplag.persistence.domain.Student;
+import com.autoplag.persistence.domain.User;
 import com.autoplag.service.StudentService;
+import com.autoplag.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,19 +14,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class StudentServiceImpl implements StudentService {
+    private final UserService userService;
     private final StudentDao studentDao;
-
-    @Transactional(readOnly = true)
-    @Override
-    public Optional<Student> getStudentById(Long studentId) {
-        //TODO - find by id and creatorId
-        return studentDao.findOne(studentId);
-    }
 
     @Transactional(readOnly = true)
     @Override
@@ -36,31 +32,28 @@ public class StudentServiceImpl implements StudentService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Student> getAllStudentsNotAddedToCourse(Long userId, Long courseId) {
+    public List<Student> getAllStudentsNotAddedToCourse(Long creatorId, Long courseId) {
         Sort sort = Sort.by(Sort.Order.asc("fullName"));
-        return studentDao.findAllNotAddedToCourse(userId, courseId, sort);
+        return studentDao.findAllNotAddedToCourse(creatorId, courseId, sort);
     }
 
     @Override
-    public boolean saveStudent(Student student) {
+    public boolean saveStudent(Long creatorId, Student student) {
         String fullName = student.getFullName().trim()
                 .replaceAll("\\s+", " ");
         student.setFullName(fullName);
         if (studentDao.existByFullName(student.getFullName())) {
             return false;
         }
+        User user = userService.getUserById(creatorId);
+        student.setCreator(user);
         studentDao.save(student);
         return true;
     }
 
     @Override
-    public boolean deleteStudentFromSystem(Long studentId) {
-        Optional<Student> studentOpt = studentDao.findOne(studentId);
-        if (studentOpt.isPresent()) {
-            studentDao.deleteById(studentId);
-            return true;
-        }
-        return false;
+    public void deleteStudentFromSystem(Long studentId) {
+        studentDao.deleteById(studentId);
     }
 
 }

@@ -1,8 +1,11 @@
 package com.autoplag.service.impl;
 
 import com.autoplag.persistence.dao.GroupDao;
+import com.autoplag.persistence.domain.Course;
 import com.autoplag.persistence.domain.Group;
+import com.autoplag.service.CourseService;
 import com.autoplag.service.GroupService;
+import com.autoplag.service.exception.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,11 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.Optional;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class GroupServiceImpl implements GroupService {
+    private final CourseService courseService;
     private final GroupDao groupDao;
 
     @Transactional(readOnly = true)
@@ -31,18 +35,19 @@ public class GroupServiceImpl implements GroupService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<Group> getGroupById(Long groupId) {
-        return groupDao.findOne(groupId);
+    public Group getGroupById(Long groupId) {
+        return groupDao.findOne(groupId)
+                .orElseThrow(ResourceNotFoundException::new);
     }
 
-    @Transactional
     @Override
-    public Group saveGroup(Group group) {
+    public Group saveGroup(Long creatorId, Long courseId, Group group) {
+        Course course = courseService.getCourseById(creatorId, courseId);
+        group.setCourse(course);
         group.setCreationDate(new Date());
         return groupDao.save(group);
     }
 
-    @Transactional
     @Override
     public void deleteGroupFromCourse(Long groupId, Long courseId) {
         groupDao.deleteByIdAndCourseId(groupId, courseId);

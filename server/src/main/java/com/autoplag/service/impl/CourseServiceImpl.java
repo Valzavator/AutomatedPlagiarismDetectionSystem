@@ -2,7 +2,10 @@ package com.autoplag.service.impl;
 
 import com.autoplag.persistence.dao.CourseDao;
 import com.autoplag.persistence.domain.Course;
+import com.autoplag.persistence.domain.User;
 import com.autoplag.service.CourseService;
+import com.autoplag.service.UserService;
+import com.autoplag.service.exception.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,11 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.Optional;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class CourseServiceImpl implements CourseService {
+    private final UserService userService;
     private final CourseDao courseDao;
 
     @Transactional(readOnly = true)
@@ -31,18 +35,19 @@ public class CourseServiceImpl implements CourseService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<Course> getCourseById(Long creatorId, Long courseId) {
-        return courseDao.findByIdAndCreatorId(courseId, creatorId);
+    public Course getCourseById(Long creatorId, Long courseId) {
+        return courseDao.findByIdAndCreatorId(courseId, creatorId)
+                .orElseThrow(ResourceNotFoundException::new);
     }
 
-    @Transactional
     @Override
-    public Course saveCourse(Course course) {
+    public Course saveCourse(Long creatorId, Course course) {
+        User creator = userService.getUserById(creatorId);
+        course.setCreator(creator);
         course.setCreationDate(new Date());
         return courseDao.save(course);
     }
 
-    @Transactional
     @Override
     public void deleteCourseFromSystem(Long creatorId, Long courseId) {
         courseDao.deleteByIdAndCreatorId(courseId, creatorId);

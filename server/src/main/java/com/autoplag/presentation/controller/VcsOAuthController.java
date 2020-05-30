@@ -33,7 +33,7 @@ public class VcsOAuthController {
     public String addGitHubToken(@PathVariable("userId") Long userId,
                                  @RequestParam String code,
                                  @RequestParam String state) {
-        User user = userService.getRequiredUserById(userId);
+        User user = userService.getUserById(userId);
         if (!user.isAccessTokenPresented(AuthorizationProvider.GITHUB)) {
             AccessToken accessToken = vcsOAuthGitHubService.getAuthorizeOAuthToken(code, state);
             userService.addAccessTokenToUser(user, accessToken);
@@ -49,7 +49,7 @@ public class VcsOAuthController {
     public String saveBitbucketToken(@PathVariable("userId") Long userId,
                                      @RequestParam String code,
                                      HttpServletRequest request) {
-        User user = userService.getRequiredUserById(userId);
+        User user = userService.getUserById(userId);
         if (!user.isAccessTokenPresented(AuthorizationProvider.BITBUCKET)) {
             AccessToken accessToken = vcsOAuthBitbucketService.getAuthorizeOAuthToken(
                     code, request.getRequestURL().toString());
@@ -67,7 +67,7 @@ public class VcsOAuthController {
             @AuthUser UserPrincipal currentUser,
             @PathVariable("authorizationProvider") AuthorizationProvider authorizationProvider,
             HttpServletRequest request) {
-        User user = userService.getRequiredUserById(currentUser.getId());
+        User user = userService.getUserById(currentUser.getId());
         boolean isSuccess = userService.deleteAccessTokenToUser(user, authorizationProvider);
         return isSuccess
                 ? ResponseEntity.noContent().build()

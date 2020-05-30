@@ -3,13 +3,10 @@ package com.autoplag.facade.impl;
 import com.autoplag.facade.Facade;
 import com.autoplag.facade.TaskFacade;
 import com.autoplag.facade.converter.Converter;
-import com.autoplag.persistence.domain.Course;
 import com.autoplag.persistence.domain.Task;
-import com.autoplag.presentation.exception.BadRequestException;
 import com.autoplag.presentation.payload.request.TaskRequestDto;
 import com.autoplag.presentation.payload.response.PagedDto;
 import com.autoplag.presentation.payload.response.TaskDto;
-import com.autoplag.service.CourseService;
 import com.autoplag.service.TaskService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,7 +16,6 @@ import java.util.List;
 @Facade
 @AllArgsConstructor
 public class TaskFacadeImpl implements TaskFacade {
-    private final CourseService courseService;
     private final TaskService taskService;
 
     private final Converter<Task, TaskDto> taskToTaskDto;
@@ -39,11 +35,9 @@ public class TaskFacadeImpl implements TaskFacade {
     }
 
     @Override
-    public void addTaskToCourse(Long userId, TaskRequestDto dto) {
-        Course course = courseService.getCourseById(userId, dto.getCourseId())
-                .orElseThrow(BadRequestException::new);
+    public void addTaskToCourse(Long creatorId, TaskRequestDto dto) {
         Task newTask = taskRequestDtoToTask.convert(dto);
-        newTask.setCourse(course);
-        taskService.saveTask(newTask);
+        taskService.saveTask(creatorId, dto.getCourseId(), newTask);
     }
+
 }

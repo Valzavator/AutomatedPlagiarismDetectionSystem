@@ -9,8 +9,8 @@ public interface StudentFacade {
 
     PagedDto<StudentDto> getStudentsByCreatorId(Long creatorId, int page, int size);
 
-    StudentContainerDto getStudentsForAddingToCourse(Long userId, Long courseId);
+    StudentContainerDto getStudentsForAddingToCourse(Long creatorId, Long courseId);
 
-    boolean addStudentToSystem(Long userId, StudentRequestDto dto);
+    boolean addStudentToSystem(Long creatorId, StudentRequestDto dto);
 
 }

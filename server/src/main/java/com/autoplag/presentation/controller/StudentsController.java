@@ -64,14 +64,13 @@ public class StudentsController {
             @PathVariable(value = "studentId") long studentId,
             HttpServletRequest request) {
         try {
-            return studentService.deleteStudentFromSystem(studentId)
-                    ? ResponseEntity.noContent().build()
-                    : ControllerUtil.notFoundError(request.getRequestURI());
+            studentService.deleteStudentFromSystem(studentId);
+            return ResponseEntity.noContent().build();
         } catch (DataIntegrityViolationException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(
                     new ApiError(HttpStatus.CONFLICT,
-                    request.getRequestURI(),
-                    "The student is attached to groups!"));
+                            request.getRequestURI(),
+                            "The student is attached to groups!"));
         }
     }
 

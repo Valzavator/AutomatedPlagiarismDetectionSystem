@@ -63,11 +63,9 @@ public class StudentGroupController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> deleteStudentFromGroup(
             @PathVariable(value = "studentId") long studentId,
-            @PathVariable(value = "groupId") long groupId,
-            HttpServletRequest request) {
-        return studentGroupFacade.deleteStudentFromGroup(studentId, groupId)
-                ? ResponseEntity.noContent().build()
-                : ControllerUtil.notFoundError(request.getRequestURI());
+            @PathVariable(value = "groupId") long groupId) {
+        studentGroupFacade.deleteStudentFromGroup(studentId, groupId);
+        return ResponseEntity.noContent().build();
     }
 
 }

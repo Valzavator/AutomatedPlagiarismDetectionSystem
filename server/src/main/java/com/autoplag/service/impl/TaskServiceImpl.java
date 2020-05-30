@@ -1,8 +1,11 @@
 package com.autoplag.service.impl;
 
 import com.autoplag.persistence.dao.TaskDao;
+import com.autoplag.persistence.domain.Course;
 import com.autoplag.persistence.domain.Task;
+import com.autoplag.service.CourseService;
 import com.autoplag.service.TaskService;
+import com.autoplag.service.exception.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,17 +15,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class TaskServiceImpl implements TaskService {
+    private final CourseService courseService;
     private final TaskDao taskDao;
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<Task> getTaskById(Long taskId) {
-        return taskDao.findOne(taskId);
+    public Task getTaskById(Long taskId) {
+        return taskDao.findOne(taskId)
+                .orElseThrow(ResourceNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
@@ -39,19 +44,16 @@ public class TaskServiceImpl implements TaskService {
         return taskDao.findAllByCourseIdAndNotAssignedToGroup(courseId, groupId);
     }
 
-    @Transactional
     @Override
-    public Task saveTask(Task task) {
+    public Task saveTask(Long creatorId, Long courseId, Task task) {
+        Course course = courseService.getCourseById(creatorId, courseId);
+        task.setCourse(course);
         return taskDao.save(task);
     }
 
     @Override
-    public boolean deleteTaskFromCourse(Long taskId) {
-        Optional<Task> taskOpt = taskDao.findOne(taskId);
-        if (taskOpt.isPresent()) {
-            taskDao.deleteById(taskId);
-            return true;
-        }
-        return false;
+    public void deleteTaskFromCourse(Long taskId) {
+        taskDao.deleteById(taskId);
     }
+
 }

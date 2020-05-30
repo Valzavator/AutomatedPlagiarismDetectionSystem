@@ -28,7 +28,7 @@ public class UserFacadeImpl implements UserFacade {
 
     @Override
     public UserProfileDto getUserProfile(Long userId) {
-        User user = userService.getRequiredUserById(userId);
+        User user = userService.getUserById(userId);
         UserProfileDto userProfileDto = userToUserProfileDto.convert(user);
 
         //TODO - calculate real statistic
@@ -43,7 +43,7 @@ public class UserFacadeImpl implements UserFacade {
 
     @Override
     public UserProfileVcsDto getUserProfileVcs(Long userId) {
-        User user = userService.getRequiredUserById(userId);
+        User user = userService.getUserById(userId);
         return userToUserProfileVcsDto.convert(user);
     }
 

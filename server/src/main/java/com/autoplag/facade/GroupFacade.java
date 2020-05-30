@@ -7,12 +7,10 @@ import com.autoplag.presentation.payload.response.PagedDto;
 
 public interface GroupFacade {
 
-    PagedDto<BasicGroupDto> getGroupsByCourseId(Long courseId,
-                                                int page,
-                                                int size);
+    PagedDto<BasicGroupDto> getGroupsByCourseId(Long courseId, int page, int size);
 
     GroupDto getGroupById(Long groupId);
 
-    BasicGroupDto addGroupToCourse(Long userId, GroupRequestDto dto);
+    BasicGroupDto addGroupToCourse(Long creatorId, GroupRequestDto dto);
 
 }

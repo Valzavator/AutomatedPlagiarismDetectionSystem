@@ -4,13 +4,11 @@ import com.autoplag.facade.Facade;
 import com.autoplag.facade.StudentFacade;
 import com.autoplag.facade.converter.Converter;
 import com.autoplag.persistence.domain.Student;
-import com.autoplag.persistence.domain.User;
 import com.autoplag.presentation.payload.request.StudentRequestDto;
 import com.autoplag.presentation.payload.response.PagedDto;
 import com.autoplag.presentation.payload.response.StudentContainerDto;
 import com.autoplag.presentation.payload.response.StudentDto;
 import com.autoplag.service.StudentService;
-import com.autoplag.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 
@@ -19,7 +17,6 @@ import java.util.List;
 @Facade
 @AllArgsConstructor
 public class StudentFacadeImpl implements StudentFacade {
-    private final UserService userService;
     private final StudentService studentService;
 
     private final Converter<Student, StudentDto> studentToStudentDto;
@@ -39,18 +36,16 @@ public class StudentFacadeImpl implements StudentFacade {
     }
 
     @Override
-    public StudentContainerDto getStudentsForAddingToCourse(Long userId, Long courseId) {
-        List<Student> students = studentService.getAllStudentsNotAddedToCourse(userId, courseId);
+    public StudentContainerDto getStudentsForAddingToCourse(Long creatorId, Long courseId) {
+        List<Student> students = studentService.getAllStudentsNotAddedToCourse(creatorId, courseId);
         List<StudentDto> studentDtos = studentToStudentDto.convertAll(students);
         return new StudentContainerDto(studentDtos);
     }
 
     @Override
-    public boolean addStudentToSystem(Long userId, StudentRequestDto dto) {
-        User user = userService.getRequiredUserById(userId);
+    public boolean addStudentToSystem(Long creatorId, StudentRequestDto dto) {
         Student student = studentRequestDtoToStudent.convert(dto);
-        student.setCreator(user);
-        return studentService.saveStudent(student);
+        return studentService.saveStudent(creatorId, student);
     }
 
 }

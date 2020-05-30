@@ -7,6 +7,6 @@ public interface StudentGroupFacade {
 
     StudentGroupResponseDto addStudentToGroup(Long creatorId, StudentGroupRequestDto dto);
 
-    boolean deleteStudentFromGroup(Long studentId, Long groupId);
+    void deleteStudentFromGroup(Long studentId, Long groupId);
 
 }

@@ -16,6 +16,6 @@ public interface TaskGroupFacade {
 
     BasicTaskGroupDto assignNewTaskGroup(TaskGroupPlagDetectionDto dto);
 
-    boolean deleteTaskGroup(Long taskId, Long groupId);
+    void deleteTaskGroup(Long taskId, Long groupId);
 
 }

@@ -1,9 +1,9 @@
 package com.autoplag.presentation.controller;
 
-import com.autoplag.presentation.exception.BadRequestException;
-import com.autoplag.presentation.exception.ResourceNotFoundException;
 import com.autoplag.presentation.payload.response.error.ApiError;
 import com.autoplag.presentation.payload.response.error.ApiValidationError;
+import com.autoplag.service.exception.BadRequestException;
+import com.autoplag.service.exception.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -32,11 +32,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({ResourceNotFoundException.class,
             EmptyResultDataAccessException.class})
-    protected ResponseEntity<Object> handleMaxUploadSizeExceeded(RuntimeException ex,
-                                                                 HttpServletRequest request) {
+    protected ResponseEntity<Object> handleResourceNotFound(RuntimeException ex,
+                                                            HttpServletRequest request) {
         log.debug("", ex);
         return buildResponseEntity(
                 new ApiError(HttpStatus.NOT_FOUND, request.getRequestURI(), ex));
+    }
+
+    @ExceptionHandler({BadRequestException.class,
+            IllegalArgumentException.class})
+    public ResponseEntity<Object> handleBadRequest(RuntimeException ex,
+                                                   HttpServletRequest request) {
+        log.debug(ex.toString());
+        return buildResponseEntity(
+                new ApiError(HttpStatus.BAD_REQUEST, request.getRequestURI(), ex));
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
@@ -45,15 +54,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.debug(ex.toString());
         return buildResponseEntity(
                 new ApiError(HttpStatus.PAYLOAD_TOO_LARGE, request.getRequestURI(), ex));
-    }
-
-    @ExceptionHandler({BadRequestException.class,
-            IllegalArgumentException.class})
-    public ResponseEntity<Object> handleIllegalArgumentException(RuntimeException ex,
-                                                                 HttpServletRequest request) {
-        log.debug(ex.toString());
-        return buildResponseEntity(
-                new ApiError(HttpStatus.BAD_REQUEST, request.getRequestURI(), ex));
     }
 
     @Override
@@ -83,7 +83,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     // This handler hides the stack trace for API-clients in exception message
     @ExceptionHandler({Throwable.class})
-    public ResponseEntity<Object> handleIllegalArgumentException(
+    public ResponseEntity<Object> handleAllException(
             Throwable ex,
             HttpServletRequest request) throws Throwable {
         if (ex instanceof BadCredentialsException) {

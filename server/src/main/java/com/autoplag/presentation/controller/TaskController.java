@@ -57,9 +57,8 @@ public class TaskController {
             @PathVariable(value = "taskId") long taskId,
             HttpServletRequest request) {
         try {
-            return taskService.deleteTaskFromCourse(taskId)
-                    ? ResponseEntity.noContent().build()
-                    : ControllerUtil.notFoundError(request.getRequestURI());
+            taskService.deleteTaskFromCourse(taskId);
+            return ResponseEntity.noContent().build();
         } catch (DataIntegrityViolationException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(
                     new ApiError(HttpStatus.CONFLICT,

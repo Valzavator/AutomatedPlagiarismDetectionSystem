@@ -1,10 +1,10 @@
-package com.autoplag.presentation.exception;
+package com.autoplag.service.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class ResourceNotFoundException extends RuntimeException {
+public class ResourceNotFoundException extends ServiceException {
     private static final long serialVersionUID = -115575572001583862L;
 
     public ResourceNotFoundException() {

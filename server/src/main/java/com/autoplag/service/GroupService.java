@@ -3,17 +3,13 @@ package com.autoplag.service;
 import com.autoplag.persistence.domain.Group;
 import org.springframework.data.domain.Page;
 
-import java.util.Optional;
-
 public interface GroupService {
 
-    Page<Group> getAllGroupsByCourseId(Long courseId,
-                                       int page,
-                                       int size);
+    Page<Group> getAllGroupsByCourseId(Long courseId, int page, int size);
 
-    Optional<Group> getGroupById(Long groupId);
+    Group getGroupById(Long groupId);
 
-    Group saveGroup(Group group);
+    Group saveGroup(Long creatorId, Long courseId, Group group);
 
     void deleteGroupFromCourse(Long groupId, Long courseId);
 

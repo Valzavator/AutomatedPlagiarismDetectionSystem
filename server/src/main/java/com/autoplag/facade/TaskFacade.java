@@ -6,10 +6,8 @@ import com.autoplag.presentation.payload.response.TaskDto;
 
 public interface TaskFacade {
 
-    PagedDto<TaskDto> getTasksForCourse(Long courseId,
-                                        int page,
-                                        int size);
+    PagedDto<TaskDto> getTasksForCourse(Long courseId, int page, int size);
 
-    void addTaskToCourse(Long userId, TaskRequestDto dto);
+    void addTaskToCourse(Long creatorId, TaskRequestDto dto);
 
 }

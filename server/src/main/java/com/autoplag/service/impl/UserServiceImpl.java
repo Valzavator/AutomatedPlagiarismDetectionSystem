@@ -7,9 +7,8 @@ import com.autoplag.persistence.domain.User;
 import com.autoplag.persistence.domain.type.AuthorizationProvider;
 import com.autoplag.persistence.domain.type.RoleType;
 import com.autoplag.persistence.domain.vcs.AccessToken;
-import com.autoplag.presentation.exception.AppException;
-import com.autoplag.presentation.exception.BadRequestException;
 import com.autoplag.service.UserService;
+import com.autoplag.service.exception.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,20 +16,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
+@Transactional
 @AllArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserDao userDao;
     private final RoleDao roleDao;
     private final PasswordEncoder passwordEncoder;
-
-    @Override
-    public User updateUser(User user) {
-        return userDao.save(user);
-    }
 
     @Override
     public User addAccessTokenToUser(User user, AccessToken accessToken) {
@@ -48,7 +42,6 @@ public class UserServiceImpl implements UserService {
         return false;
     }
 
-    @Transactional
     @Override
     public boolean registerUser(User user) {
         log.debug("Attempt to register new user");
@@ -63,7 +56,7 @@ public class UserServiceImpl implements UserService {
             roleType = user.getRole().getName();
         }
         Role role = roleDao.findByName(roleType)
-                .orElseThrow(() -> new AppException("User Role not set."));
+                .orElseThrow(() -> new IllegalStateException("User Role not set."));
         user.setRole(role);
         user.setPassword(
                 passwordEncoder.encode(user.getPassword())
@@ -75,15 +68,9 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<User> getUserById(Long userId) {
-        return userDao.findOne(userId);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public User getRequiredUserById(Long userId) {
+    public User getUserById(Long userId) {
         return userDao.findOne(userId)
-                .orElseThrow(BadRequestException::new);
+                .orElseThrow(ResourceNotFoundException::new);
     }
 
 }

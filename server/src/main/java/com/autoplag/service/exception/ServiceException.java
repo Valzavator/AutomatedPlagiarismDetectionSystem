@@ -1,8 +1,10 @@
 package com.autoplag.service.exception;
 
-/**
- * Artificial exception that should be thrown out of the Service layer
- */
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+
+@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 public class ServiceException extends RuntimeException {
 
     private static final long serialVersionUID = 8524304161616176522L;
