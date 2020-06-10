@@ -12,6 +12,9 @@ public class Runner {
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
+
+        System.out.println(Runtime.getRuntime().availableProcessors());
+
 //        Pattern pattern = Pattern.compile("(https://bitbucket.org(/[^\\s/]+){2}|https://github.com(/[^\\s/]+){2})");
 //
 //        String a1 = "asdasdhttps://bitbucket.org/Valzavator/smart-oblik/src/master/";

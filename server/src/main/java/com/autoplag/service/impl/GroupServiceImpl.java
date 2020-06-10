@@ -6,6 +6,7 @@ import com.autoplag.persistence.domain.Group;
 import com.autoplag.service.CourseService;
 import com.autoplag.service.GroupService;
 import com.autoplag.service.exception.ResourceNotFoundException;
+import com.autoplag.util.StringUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,6 +46,9 @@ public class GroupServiceImpl implements GroupService {
         Course course = courseService.getCourseById(creatorId, courseId);
         group.setCourse(course);
         group.setCreationDate(new Date());
+        group.setName(StringUtil.processWhitespace(
+                group.getName()
+        ));
         return groupDao.save(group);
     }
 

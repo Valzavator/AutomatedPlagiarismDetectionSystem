@@ -135,12 +135,23 @@ public class SoftwarePlagDetectionToolImpl implements SoftwarePlagDetectionTool 
         int startIndex = data.indexOf("initialize ok");
         int endIndex = data.indexOf("Writing results to:");
         if (startIndex == -1) {
-            return data;
+            return handleJVMErrors(data);
         }
         if (endIndex == -1) {
             return data.substring(startIndex);
         }
         return data.substring(startIndex, endIndex);
+    }
+
+    public static final String memoryError = "There is insufficient memory for the Java Runtime Environment to continue.";
+
+    private String handleJVMErrors(String log) {
+        StringBuilder newLog = new StringBuilder("Server error!\n");
+        boolean isMemoryError = log.contains(memoryError);
+        if (isMemoryError) {
+            newLog.append(memoryError);
+        }
+        return newLog.toString();
     }
 
 }

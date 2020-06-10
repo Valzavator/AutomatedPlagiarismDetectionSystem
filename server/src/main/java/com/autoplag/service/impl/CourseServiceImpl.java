@@ -6,6 +6,7 @@ import com.autoplag.persistence.domain.User;
 import com.autoplag.service.CourseService;
 import com.autoplag.service.UserService;
 import com.autoplag.service.exception.ResourceNotFoundException;
+import com.autoplag.util.StringUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,6 +46,9 @@ public class CourseServiceImpl implements CourseService {
         User creator = userService.getUserById(creatorId);
         course.setCreator(creator);
         course.setCreationDate(new Date());
+        course.setName(StringUtil.processWhitespace(
+                course.getName()
+        ));
         return courseDao.save(course);
     }
 

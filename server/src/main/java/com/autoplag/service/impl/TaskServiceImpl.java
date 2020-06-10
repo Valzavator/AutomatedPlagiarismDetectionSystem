@@ -6,6 +6,7 @@ import com.autoplag.persistence.domain.Task;
 import com.autoplag.service.CourseService;
 import com.autoplag.service.TaskService;
 import com.autoplag.service.exception.ResourceNotFoundException;
+import com.autoplag.util.StringUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -48,6 +49,9 @@ public class TaskServiceImpl implements TaskService {
     public Task saveTask(Long creatorId, Long courseId, Task task) {
         Course course = courseService.getCourseById(creatorId, courseId);
         task.setCourse(course);
+        task.setName(StringUtil.processWhitespace(
+                task.getName()
+        ));
         return taskDao.save(task);
     }
 
